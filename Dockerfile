@@ -7,7 +7,7 @@ RUN go env -w GOPRIVATE=github.com/scanet9
 
 RUN apk add git
 
-RUN git config --global url."https://golang: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@github.com".insteadOf "https://github.com"
+RUN git config --global url."https://golang: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@github.com".insteadOf "https://github.com"
 
 # Set the Current Working Directory inside the container
 WORKDIR /app/go-mongo-restapi

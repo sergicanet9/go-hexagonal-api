@@ -3,7 +3,7 @@ ApiREST making use of own [scv-go-framework](https://github.com/scanet9/scv-go-f
 
 Provides:
 - Basic CRUD functionalities for user management
-- MongoDB as storage option
+- MongoDB persistent storage
 - JWT token-based authorization.
 ## To run it locally:
 ```
@@ -16,7 +16,7 @@ go build main.go
 ./main
 ```
 
-## To run it in docker:
+## To run it in a docker container:
 ```
 docker build -t go-mongo-restapi .
 docker run --name go_mongo -p 8080:8080 go-mongo-restapi
