@@ -73,6 +73,8 @@ github.com/rogpeppe/go-internal v1.2.2/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/scanet9/scv-go-framework v0.7.0 h1:Ogr4OYyLSob9bdw8W80ZRkdVkDrLTtR/eSCuIEUgpec=
 github.com/scanet9/scv-go-framework v0.7.0/go.mod h1:rTNOZS7kVCGsF7TFz0neArgiyRmMAAHawQ99aHnkeX4=
+github.com/scanet9/scv-go-framework v1.0.0 h1:LoFyOcpS6iFo5RfMw/jYMcPhT+Iak9RsYMWjqwNAu9g=
+github.com/scanet9/scv-go-framework v1.0.0/go.mod h1:rTNOZS7kVCGsF7TFz0neArgiyRmMAAHawQ99aHnkeX4=
 github.com/sirupsen/logrus v1.4.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
