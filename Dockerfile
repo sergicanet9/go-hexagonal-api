@@ -7,8 +7,10 @@ RUN go env -w GOPRIVATE=github.com/scanet9
 
 RUN apk add git
 
+RUN git config --global url."https://golang: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@github.com".insteadOf "https://github.com"
+
 # Set the Current Working Directory inside the container
-WORKDIR /app
+WORKDIR /app/go-mongo-restapi
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -19,15 +21,11 @@ RUN go mod download
 # Copy everything from the current directory to the Working Directory inside the container
 COPY . .
 
-RUN git config --global url."https://golang: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@github.com:scanet9".insteadOf "https://github.com/scanet9"
-
 # Build the Go app
-RUN go build -o main .
+RUN go build -o ./out/go-mongo-restapi cmd/main.go
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
-#ENTRYPOINT ["/app"]
-
 # Command to run the executable
-CMD ["./main"]
+CMD ["./out/go-mongo-restapi"]
