@@ -23,6 +23,12 @@ func SetUserRoutes(r *mux.Router, s business.UserService) {
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(s), config.JWTSecret)).Methods("DELETE")
 }
 
+// @Summary Login user
+// @Description Logs in an user
+// @Tags Users
+// @Param login body requests.Login true "Login request"
+// @Success 200 {object} responses.Login "OK"
+// @Router /api/users/login [post]
 func loginUser(s business.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var credentials requests.Login
@@ -32,6 +38,12 @@ func loginUser(s business.UserService) http.Handler {
 	})
 }
 
+// @Summary Create user
+// @Description Creates a new user
+// @Tags Users
+// @Param login body entities.User true "New user to be created"
+// @Success 200 {object} responses.Creation "OK"
+// @Router /api/users [post]
 func createUser(s business.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var user entities.User
@@ -41,6 +53,12 @@ func createUser(s business.UserService) http.Handler {
 	})
 }
 
+// @Summary Get all users
+// @Description Gets all the users
+// @Tags Users
+// @Security Bearer
+// @Success 200 {array} entities.User "OK"
+// @Router /api/users [get]
 func getAllUsers(s business.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		users := s.GetAll()
@@ -48,6 +66,13 @@ func getAllUsers(s business.UserService) http.Handler {
 	})
 }
 
+// @Summary Get user by email
+// @Description Get a user by email
+// @Tags Users
+// @Security Bearer
+// @Param email path string true "Email"
+// @Success 200 {object} entities.User "OK"
+// @Router /api/users/email/{email} [get]
 func getUserByEmail(s business.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
@@ -56,6 +81,13 @@ func getUserByEmail(s business.UserService) http.Handler {
 	})
 }
 
+// @Summary Get user by ID
+// @Description Get a user by ID
+// @Tags Users
+// @Security Bearer
+// @Param ID path string true "ID"
+// @Success 200 {object} entities.User "OK"
+// @Router /api/users/{id} [get]
 func getUserByID(s business.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
@@ -64,6 +96,14 @@ func getUserByID(s business.UserService) http.Handler {
 	})
 }
 
+// @Summary Update user
+// @Description Update a user
+// @Tags Users
+// @Security Bearer
+// @Param ID path string true "ID"
+// @Param User body entities.User true "User"
+// @Success 200 "OK"
+// @Router /api/users/{id} [put]
 func updateUser(s business.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
@@ -74,6 +114,13 @@ func updateUser(s business.UserService) http.Handler {
 	})
 }
 
+// @Summary Delete user
+// @Description Delete a user
+// @Tags Users
+// @Security Bearer
+// @Param ID path string true "ID"
+// @Success 200 "OK"
+// @Router /api/users/{id} [delete]
 func deleteUser(s business.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)

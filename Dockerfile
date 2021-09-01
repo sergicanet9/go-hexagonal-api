@@ -3,11 +3,7 @@ FROM golang:alpine
 
 RUN GOCACHE=OFF
 
-RUN go env -w GOPRIVATE=github.com/scanet9
-
 RUN apk add git
-
-RUN git config --global url."https://golang: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@github.com".insteadOf "https://github.com"
 
 # Set the Current Working Directory inside the container
 WORKDIR /app/go-mongo-restapi
@@ -20,6 +16,11 @@ RUN go mod download
 
 # Copy everything from the current directory to the Working Directory inside the container
 COPY . .
+
+# Download Swagger packages and generate the spec
+RUN go get -u github.com/swaggo/swag/cmd/swag@v1.6.7
+RUN go get -u github.com/swaggo/http-swagger
+RUN $GOPATH/bin/swag init -g cmd/main.go
 
 # Build the Go app
 RUN go build -o ./out/go-mongo-restapi cmd/main.go
