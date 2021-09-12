@@ -58,7 +58,7 @@ var doc = `{
                 "parameters": [
                     {
                         "description": "New user to be created",
-                        "name": "login",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {

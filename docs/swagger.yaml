@@ -59,7 +59,7 @@ paths:
       parameters:
       - description: New user to be created
         in: body
-        name: login
+        name: user
         required: true
         schema:
           $ref: '#/definitions/entities.User'

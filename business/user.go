@@ -9,7 +9,7 @@ import (
 	"github.com/scanet9/go-mongo-restapi/models/entities"
 	"github.com/scanet9/go-mongo-restapi/models/requests"
 	"github.com/scanet9/go-mongo-restapi/models/responses"
-	"github.com/scanet9/scv-go-framework/infrastructure"
+	infrastructure "github.com/scanet9/scv-go-framework/v2/infrastructure/mongo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -34,14 +34,17 @@ type UserService interface {
 func NewUserService(db *mongo.Database) *Service {
 	return &Service{
 		db:   db,
-		repo: *infrastructure.NewMongoRepository(db.Collection(entities.CollectionNameUser), func() interface{} { return &entities.User{} }),
+		repo: *infrastructure.NewMongoRepository(db.Collection(entities.CollectionNameUser), &entities.User{}),
 	}
 }
 
 // Login user
 func (s *Service) Login(credentials requests.Login) responses.Login {
 	filter := bson.M{"email": credentials.Email}
-	result := s.repo.Get(context.Background(), filter)
+	result, err := s.repo.Get(context.Background(), filter)
+	if err != nil {
+		panic(err)
+	}
 	if len(result) < 1 {
 		panic("Email not found")
 	}
@@ -61,13 +64,19 @@ func (s *Service) Login(credentials requests.Login) responses.Login {
 //Create user
 func (s *Service) Create(user entities.User) responses.Creation {
 	user.PasswordHash = hashPassword(user.PasswordHash)
-	insertedID := s.repo.Create(context.Background(), user)
+	insertedID, err := s.repo.Create(context.Background(), user)
+	if err != nil {
+		panic(err)
+	}
 	return responses.Creation{InsertedID: insertedID}
 }
 
 // GetAll users
 func (s *Service) GetAll() []entities.User {
-	result := s.repo.Get(context.Background(), bson.M{})
+	result, err := s.repo.Get(context.Background(), bson.M{})
+	if err != nil {
+		panic(err)
+	}
 
 	users := make([]entities.User, len(result))
 	for i, v := range result {
@@ -80,25 +89,35 @@ func (s *Service) GetAll() []entities.User {
 //GetByEmail users
 func (s *Service) GetByEmail(email string) entities.User {
 	filter := bson.M{"email": email}
-	result := s.repo.Get(context.Background(), filter)
+	result, err := s.repo.Get(context.Background(), filter)
+	if err != nil {
+		panic(err)
+	}
 	user := *(result[0].(*entities.User))
 	return user
 }
 
 // GetByID user
 func (s *Service) GetByID(ID string) entities.User {
-	user := s.repo.GetByID(context.Background(), ID)
+	user, err := s.repo.GetByID(context.Background(), ID)
+	if err != nil {
+		panic(err)
+	}
 	return *user.(*entities.User)
 }
 
 // Update user
 func (s *Service) Update(ID string, user entities.User) {
-	s.repo.Update(context.Background(), ID, user)
+	if err := s.repo.Update(context.Background(), ID, user); err != nil {
+		panic(err)
+	}
 }
 
 // Delete user
 func (s *Service) Delete(ID string) {
-	s.repo.Delete(context.Background(), ID)
+	if err := s.repo.Delete(context.Background(), ID); err != nil {
+		panic(err)
+	}
 }
 
 // AtomicTransationProof creates two entities atomically, creating a sessionContext

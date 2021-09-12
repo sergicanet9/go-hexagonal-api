@@ -9,7 +9,7 @@ import (
 	"github.com/scanet9/go-mongo-restapi/config"
 	"github.com/scanet9/go-mongo-restapi/models/entities"
 	"github.com/scanet9/go-mongo-restapi/models/requests"
-	"github.com/scanet9/scv-go-framework/api/utils"
+	"github.com/scanet9/scv-go-framework/v2/api/utils"
 )
 
 // SetUserRoutes creates user routes
@@ -41,7 +41,7 @@ func loginUser(s business.UserService) http.Handler {
 // @Summary Create user
 // @Description Creates a new user
 // @Tags Users
-// @Param login body entities.User true "New user to be created"
+// @Param user body entities.User true "New user to be created"
 // @Success 200 {object} responses.Creation "OK"
 // @Router /api/users [post]
 func createUser(s business.UserService) http.Handler {
