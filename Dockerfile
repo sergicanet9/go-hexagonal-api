@@ -17,11 +17,6 @@ RUN go mod download
 # Copy everything from the current directory to the Working Directory inside the container
 COPY . .
 
-# Download Swagger packages and generate the spec
-RUN go get -u github.com/swaggo/swag/cmd/swag@v1.6.7
-RUN go get -u github.com/swaggo/http-swagger
-RUN $GOPATH/bin/swag init -g cmd/main.go
-
 # Build the Go app
 RUN go build -o ./out/go-mongo-restapi cmd/main.go
 
