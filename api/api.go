@@ -16,30 +16,34 @@ import (
 
 // API struct
 type API struct {
+	Config config.Config
 	Router *mux.Router
 }
 
 // Initialize API
-func (a *API) Initialize() {
+func (a *API) Initialize(cfg config.Config) {
+	a.Config = cfg
+
 	router := mux.NewRouter()
 	a.Router = router
 
 	a.Router.PathPrefix("/swagger").Handler(
-		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://localhost:%d/swagger/doc.json", config.APIPort))),
+		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", a.Config.Address, a.Config.Port))),
 	)
 
-	db, err := infrastructure.ConnectMongoDB(config.DbName, config.DbConnectionString)
+	db, err := infrastructure.ConnectMongoDB(a.Config.DbName, a.Config.DbConnectionString)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	userService := business.NewUserService(db)
-	handlers.SetUserRoutes(a.Router, userService)
+	userService := business.NewUserService(a.Config, db)
+	handlers.SetUserRoutes(a.Config, a.Router, userService)
 }
 
 // Run API
 func (a *API) Run() {
-	log.Printf("Listening on port %d", config.APIPort)
-	log.Printf("Open http://localhost:%d in the browser", config.APIPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.APIPort), a.Router))
+	log.Printf("Listening on port %d", a.Config.Port)
+	log.Printf("Environment: %s", a.Config.Env)
+	log.Printf("Open http://%s:%d/swagger/index.html in the browser", a.Config.Address, a.Config.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.Config.Port), a.Router))
 }

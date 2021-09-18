@@ -1,6 +1,13 @@
 package main
 
-import "github.com/scanet9/go-mongo-restapi/api"
+import (
+	"flag"
+	"fmt"
+	"log"
+
+	"github.com/scanet9/go-mongo-restapi/api"
+	"github.com/scanet9/go-mongo-restapi/config"
+)
 
 // @title Go Mongo RestAPI
 // @version 1.0
@@ -11,7 +18,17 @@ import "github.com/scanet9/go-mongo-restapi/api"
 // @name Authorization (Format: Bearer {yourToken})
 
 func main() {
+	defaultPath := "."
+	defaultEnv := "local"
+	envF := flag.String("env", defaultEnv, "environment")
+	flag.Parse()
+
+	cfg, err := config.ReadConfig(*envF, defaultPath)
+	if err != nil {
+		log.Fatal(fmt.Errorf("cannot parse config file in path %s for env %s: %w", defaultPath, *envF, err))
+	}
+
 	a := api.API{}
-	a.Initialize()
+	a.Initialize(cfg)
 	a.Run()
 }

@@ -1,0 +1,5 @@
+{
+    "DbConnectionString": "mongodb+srv://admin:admin@cluster0.qy8ev.mongodb.net/go-mongo-restapi?retryWrites=true&w=majority",
+    "DbName": "go-mongo-restapi",
+    "JWTSecret": "CTeemck6Gg"
+} 

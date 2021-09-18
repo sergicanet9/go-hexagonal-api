@@ -18,10 +18,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o ./out/go-mongo-restapi cmd/main.go
-
-# Expose port 8080 to the outside world
-EXPOSE 8080
+RUN go build -o ./opt/go-mongo-restapi cmd/main.go
 
 # Command to run the executable
-CMD ["./out/go-mongo-restapi"]
+CMD ["./opt/go-mongo-restapi", "-env", "docker"] 

@@ -31,7 +31,7 @@ type UserService interface {
 }
 
 // NewUserService creates a new user service
-func NewUserService(db *mongo.Database) *Service {
+func NewUserService(cfg config.Config, db *mongo.Database) *Service {
 	return &Service{
 		db:   db,
 		repo: *infrastructure.NewMongoRepository(db.Collection(entities.CollectionNameUser), &entities.User{}),
@@ -51,7 +51,7 @@ func (s *Service) Login(credentials requests.Login) responses.Login {
 	user := *result[0].(*entities.User)
 
 	if checkPasswordHash(credentials.Password, user.PasswordHash) {
-		token := createToken(user.ID.Hex())
+		token := createToken(user.ID.Hex(), s.config.JWTSecret)
 		result := responses.Login{
 			User:  user,
 			Token: token,
@@ -157,14 +157,14 @@ func (s *Service) AtomicTransationProof() {
 	}
 }
 
-func createToken(userid string) string {
+func createToken(userid string, jwtSecret string) string {
 	var err error
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
 	atClaims["user_id"] = userid
 	atClaims["exp"] = time.Now().Add(time.Hour * 168).Unix()
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := at.SignedString([]byte(config.JWTSecret))
+	token, err := at.SignedString([]byte(jwtSecret))
 	if err != nil {
 		panic(err)
 	}
