@@ -43,7 +43,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.User"
+                                "$ref": "#/definitions/responses.User"
                             }
                         }
                     }
@@ -62,12 +62,12 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/requests.User"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/responses.Creation"
@@ -101,7 +101,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/responses.User"
                         }
                     }
                 }
@@ -151,7 +151,7 @@ var doc = `{
                     {
                         "type": "string",
                         "description": "ID",
-                        "name": "ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -160,43 +160,8 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/responses.User"
                         }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update a user",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Update user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID",
-                        "name": "ID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "User",
-                        "name": "User",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 }
             },
@@ -215,9 +180,44 @@ var doc = `{
                     {
                         "type": "string",
                         "description": "ID",
-                        "name": "ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a user",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User",
+                        "name": "User",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.Update"
+                        }
                     }
                 ],
                 "responses": {
@@ -229,26 +229,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "entities.User": {
-            "type": "object",
-            "properties": {
-                "_id": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "passwordHash": {
-                    "type": "string"
-                },
-                "surnames": {
-                    "type": "string"
-                }
-            }
-        },
         "requests.Login": {
             "type": "object",
             "properties": {
@@ -256,6 +236,43 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.Update": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
+                },
+                "old_password": {
+                    "type": "string"
+                },
+                "surnames": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "surnames": {
                     "type": "string"
                 }
             }
@@ -276,7 +293,24 @@ var doc = `{
                 },
                 "user": {
                     "type": "object",
-                    "$ref": "#/definitions/entities.User"
+                    "$ref": "#/definitions/responses.User"
+                }
+            }
+        },
+        "responses.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surnames": {
+                    "type": "string"
                 }
             }
         }
@@ -284,7 +318,7 @@ var doc = `{
     "securityDefinitions": {
         "Bearer": {
             "type": "apiKey",
-            "name": "Authorization (Format: Bearer {yourToken})",
+            "name": "Authorization",
             "in": "header"
         }
     }

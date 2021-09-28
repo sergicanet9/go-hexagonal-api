@@ -9,9 +9,9 @@ const CollectionNameUser = "users"
 
 // User struct
 type User struct {
-	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Name         string             `json:"name" bson:"name"`
-	Surnames     string             `json:"surnames" bson:"surnames"`
-	Email        string             `json:"email" bson:"email"`
-	PasswordHash string             `json:"passwordHash" bson:"passwordHash"`
+	ID           primitive.ObjectID `bson:"_id"`
+	Name         string             `bson:"name"`
+	Surnames     string             `bson:"surnames"`
+	Email        string             `bson:"email"`
+	PasswordHash string             `bson:"passwordHash"`
 }

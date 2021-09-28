@@ -42,8 +42,8 @@ func (a *API) Initialize(cfg config.Config) {
 
 // Run API
 func (a *API) Run() {
-	log.Printf("Listening on port %d", a.Config.Port)
 	log.Printf("Environment: %s", a.Config.Env)
+	log.Printf("Listening on port %d", a.Config.Port)
 	log.Printf("Open http://%s:%d/swagger/index.html in the browser", a.Config.Address, a.Config.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.Config.Port), a.Router))
 }

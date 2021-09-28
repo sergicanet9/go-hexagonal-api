@@ -2,6 +2,7 @@ package business
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -20,117 +21,166 @@ import (
 
 // UserService interface represents a UserService
 type UserService interface {
-	Login(credentials requests.Login) responses.Login
-	Create(user entities.User) responses.Creation
-	GetAll() []entities.User
-	GetByEmail(email string) entities.User
-	GetByID(ID string) entities.User
-	Update(ID string, user entities.User)
-	Delete(ID string)
-	AtomicTransationProof()
+	Login(credentials requests.Login) (responses.Login, error)
+	Create(u requests.User) (responses.Creation, error)
+	GetAll() ([]responses.User, error)
+	GetByEmail(email string) (responses.User, error)
+	GetByID(ID string) (responses.User, error)
+	Update(ID string, u requests.Update) error
+	Delete(ID string) error
+	AtomicTransationProof() error
 }
 
 // NewUserService creates a new user service
 func NewUserService(cfg config.Config, db *mongo.Database) *Service {
 	return &Service{
-		db:   db,
-		repo: *infrastructure.NewMongoRepository(db.Collection(entities.CollectionNameUser), &entities.User{}),
+		config: cfg,
+		db:     db,
+		repo:   *infrastructure.NewMongoRepository(db.Collection(entities.CollectionNameUser), &entities.User{}),
 	}
 }
 
 // Login user
-func (s *Service) Login(credentials requests.Login) responses.Login {
+func (s *Service) Login(credentials requests.Login) (responses.Login, error) {
 	filter := bson.M{"email": credentials.Email}
 	result, err := s.repo.Get(context.Background(), filter)
 	if err != nil {
-		panic(err)
+		return responses.Login{}, err
 	}
 	if len(result) < 1 {
-		panic("Email not found")
+		return responses.Login{}, fmt.Errorf("email not found")
 	}
-	user := *result[0].(*entities.User)
+	user := responses.User(*result[0].(*entities.User))
 
 	if checkPasswordHash(credentials.Password, user.PasswordHash) {
-		token := createToken(user.ID.Hex(), s.config.JWTSecret)
+		token, err := createToken(user.ID.Hex(), s.config.JWTSecret)
+		if err != nil {
+			return responses.Login{}, err
+		}
+
 		result := responses.Login{
 			User:  user,
 			Token: token,
 		}
-		return result
+		return result, nil
 	}
-	panic("Incorrect password")
+	return responses.Login{}, fmt.Errorf("incorrect password")
 }
 
 //Create user
-func (s *Service) Create(user entities.User) responses.Creation {
-	user.PasswordHash = hashPassword(user.PasswordHash)
-	insertedID, err := s.repo.Create(context.Background(), user)
+func (s *Service) Create(u requests.User) (responses.Creation, error) {
+	err := hashPassword(&u.PasswordHash)
 	if err != nil {
-		panic(err)
+		return responses.Creation{}, err
 	}
-	return responses.Creation{InsertedID: insertedID}
+
+	insertedID, err := s.repo.Create(context.Background(), entities.User(u))
+	if err != nil {
+		return responses.Creation{}, err
+	}
+	return responses.Creation{InsertedID: insertedID}, nil
 }
 
 // GetAll users
-func (s *Service) GetAll() []entities.User {
+func (s *Service) GetAll() ([]responses.User, error) {
 	result, err := s.repo.Get(context.Background(), bson.M{})
 	if err != nil {
-		panic(err)
+		return []responses.User{}, err
 	}
 
-	users := make([]entities.User, len(result))
+	users := make([]responses.User, len(result))
 	for i, v := range result {
-		users[i] = *(v.(*entities.User))
+		users[i] = responses.User(**(v.(**entities.User)))
 	}
 
-	return users
+	return users, nil
 }
 
 //GetByEmail users
-func (s *Service) GetByEmail(email string) entities.User {
+func (s *Service) GetByEmail(email string) (responses.User, error) {
 	filter := bson.M{"email": email}
 	result, err := s.repo.Get(context.Background(), filter)
 	if err != nil {
-		panic(err)
+		return responses.User{}, err
 	}
-	user := *(result[0].(*entities.User))
-	return user
+	user := responses.User(*(result[0].(*entities.User)))
+	return user, nil
 }
 
 // GetByID user
-func (s *Service) GetByID(ID string) entities.User {
+func (s *Service) GetByID(ID string) (responses.User, error) {
 	user, err := s.repo.GetByID(context.Background(), ID)
 	if err != nil {
-		panic(err)
+		return responses.User{}, err
 	}
-	return *user.(*entities.User)
+	return responses.User(*user.(*entities.User)), nil
 }
 
 // Update user
-func (s *Service) Update(ID string, user entities.User) {
-	if err := s.repo.Update(context.Background(), ID, user); err != nil {
-		panic(err)
+func (s *Service) Update(ID string, u requests.Update) error {
+	result, err := s.repo.GetByID(context.Background(), ID)
+	if err != nil {
+		return err
 	}
+	user := requests.User(*result.(*entities.User))
+	if u.Name != nil {
+		user.Name = *u.Name
+	}
+	if u.Surnames != nil {
+		user.Surnames = *u.Surnames
+	}
+	if u.Email != nil {
+		user.Email = *u.Email
+	}
+	if u.NewPassword != nil {
+		if checkPasswordHash(*u.OldPassword, user.PasswordHash) {
+			err = hashPassword(u.NewPassword)
+			if err != nil {
+				return err
+			}
+
+			user.PasswordHash = *u.NewPassword
+		} else {
+			return fmt.Errorf("old password incorrect")
+		}
+	}
+
+	if err := s.repo.Update(context.Background(), ID, user); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Delete user
-func (s *Service) Delete(ID string) {
+func (s *Service) Delete(ID string) error {
 	if err := s.repo.Delete(context.Background(), ID); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 // AtomicTransationProof creates two entities atomically, creating a sessionContext
-func (s *Service) AtomicTransationProof() {
+func (s *Service) AtomicTransationProof() error {
 	wc := writeconcern.New(writeconcern.WMajority())
 	rc := readconcern.Snapshot()
 	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
 
 	session, err := s.db.Client().StartSession()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer session.EndSession(context.Background())
+
+	user1Hash := "Entity1"
+	err = hashPassword(&user1Hash)
+	if err != nil {
+		return err
+	}
+	user2Hash := "Entity2"
+	err = hashPassword(&user2Hash)
+	if err != nil {
+		return err
+	}
 
 	callback := func(sessionContext mongo.SessionContext) (interface{}, error) {
 		s.repo.Create(sessionContext,
@@ -138,26 +188,27 @@ func (s *Service) AtomicTransationProof() {
 				Name:         "Entity1",
 				Surnames:     "Entity1",
 				Email:        "Entity1",
-				PasswordHash: "Entity1",
+				PasswordHash: user1Hash,
 			})
 
 		s.repo.Create(sessionContext,
 			entities.User{
-				Name:         "Entity1",
-				Surnames:     "Entity1",
-				Email:        "Entity1",
-				PasswordHash: "Entity1",
+				Name:         "Entity2",
+				Surnames:     "Entity2",
+				Email:        "Entity2",
+				PasswordHash: user2Hash,
 			})
 		return nil, nil
 	}
 
 	_, err = session.WithTransaction(context.Background(), callback, txnOpts)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
-func createToken(userid string, jwtSecret string) string {
+func createToken(userid string, jwtSecret string) (string, error) {
 	var err error
 	atClaims := jwt.MapClaims{}
 	atClaims["authorized"] = true
@@ -166,17 +217,18 @@ func createToken(userid string, jwtSecret string) string {
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(jwtSecret))
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	return token
+	return token, nil
 }
 
-func hashPassword(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+func hashPassword(password *string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	return string(bytes)
+	*password = string(bytes)
+	return nil
 }
 
 func checkPasswordHash(password, hash string) bool {

@@ -15,7 +15,7 @@ import (
 
 // @securityDefinitions.apikey Bearer
 // @in header
-// @name Authorization (Format: Bearer {yourToken})
+// @name Authorization
 
 func main() {
 	defaultPath := "."
