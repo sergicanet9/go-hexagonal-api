@@ -50,7 +50,7 @@ func (s *Service) Login(credentials requests.Login) (responses.Login, error) {
 	if len(result) < 1 {
 		return responses.Login{}, fmt.Errorf("email not found")
 	}
-	user := responses.User(*result[0].(*entities.User))
+	user := responses.User(**result[0].(**entities.User))
 
 	if checkPasswordHash(credentials.Password, user.PasswordHash) {
 		token, err := createToken(user.ID.Hex(), s.config.JWTSecret)
@@ -122,7 +122,7 @@ func (s *Service) Update(ID string, u requests.Update) error {
 	if err != nil {
 		return err
 	}
-	user := requests.User(*result.(*entities.User))
+	user := *result.(*entities.User)
 	if u.Name != nil {
 		user.Name = *u.Name
 	}
