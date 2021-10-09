@@ -12,6 +12,7 @@ import (
 	"github.com/scanet9/go-mongo-restapi/models/responses"
 	infrastructure "github.com/scanet9/scv-go-framework/v2/infrastructure/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readconcern"
@@ -74,6 +75,7 @@ func (s *Service) Create(u requests.User) (responses.Creation, error) {
 		return responses.Creation{}, err
 	}
 
+	u.ID = primitive.NewObjectID()
 	insertedID, err := s.repo.Create(context.Background(), entities.User(u))
 	if err != nil {
 		return responses.Creation{}, err
