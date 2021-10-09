@@ -1,5 +1,5 @@
 # go-mongo-restapi
-REST API making use of own [scv-go-framework](https://github.com/sergicanet9/scv-go-framework).
+REST API making use of own [scv-go-framework](https://github.com/sergicanet9/scv-go-framework) package.
 
 Provides:
 - Basic CRUD functionalities for user management
