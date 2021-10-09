@@ -1,5 +1,5 @@
 # go-mongo-restapi
-REST API making use of own [scv-go-framework](https://github.com/scanet9/scv-go-framework).
+REST API making use of own [scv-go-framework](https://github.com/sergicanet9/scv-go-framework).
 
 Provides:
 - Basic CRUD functionalities for user management
@@ -23,7 +23,7 @@ Then open http://localhost:{port}/swagger/index.html in the browser.
 <br />
  NOTES:
 - The env flag is optional. The default value is "local" and will launch the app in port 8080.
-- It is also possible to debug it in Visual Studio Code with the provided [launch.json](https://github.com/scanet9/go-mongo-restapi/blob/main/.vscode/launch.json).
+- It is also possible to debug it in Visual Studio Code with the provided [launch.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/.vscode/launch.json).
 
 ## Run the application in a docker container
 ```
