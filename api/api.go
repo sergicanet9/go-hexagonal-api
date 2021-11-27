@@ -16,34 +16,34 @@ import (
 
 // API struct
 type API struct {
-	Config config.Config
-	Router *mux.Router
+	config config.Config
+	router *mux.Router
 }
 
 // Initialize API
 func (a *API) Initialize(cfg config.Config) {
-	a.Config = cfg
+	a.config = cfg
 
 	router := mux.NewRouter()
-	a.Router = router
+	a.router = router
 
-	a.Router.PathPrefix("/swagger").Handler(
-		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", a.Config.Address, a.Config.Port))),
+	a.router.PathPrefix("/swagger").Handler(
+		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", a.config.Address, a.config.Port))),
 	)
 
-	db, err := infrastructure.ConnectMongoDB(a.Config.DbName, a.Config.DbConnectionString)
+	db, err := infrastructure.ConnectMongoDB(a.config.DbName, a.config.DbConnectionString)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	userService := business.NewUserService(a.Config, db)
-	handlers.SetUserRoutes(a.Config, a.Router, userService)
+	userService := business.NewUserService(a.config, db)
+	handlers.SetUserRoutes(a.config, a.router, userService)
 }
 
 // Run API
 func (a *API) Run() {
-	log.Printf("Environment: %s", a.Config.Env)
-	log.Printf("Listening on port %d", a.Config.Port)
-	log.Printf("Open http://%s:%d/swagger/index.html in the browser", a.Config.Address, a.Config.Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.Config.Port), a.Router))
+	log.Printf("Environment: %s", a.config.Env)
+	log.Printf("Listening on port %d", a.config.Port)
+	log.Printf("Open http://%s:%d/swagger/index.html in the browser", a.config.Address, a.config.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), a.router))
 }
