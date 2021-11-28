@@ -12,8 +12,8 @@ type Config struct {
 	Env                string
 	Address            string
 	Port               int
-	DbConnectionString string
-	DbName             string
+	DBConnectionString string
+	DBName             string
 	JWTSecret          string
 }
 

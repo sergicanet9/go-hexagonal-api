@@ -31,7 +31,7 @@ func (a *API) Initialize(cfg config.Config) {
 		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", a.config.Address, a.config.Port))),
 	)
 
-	db, err := infrastructure.ConnectMongoDB(a.config.DbName, a.config.DbConnectionString)
+	db, err := infrastructure.ConnectMongoDB(a.config.DBName, a.config.DBConnectionString)
 	if err != nil {
 		log.Fatal(err)
 	}
