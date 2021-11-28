@@ -13,13 +13,13 @@ import (
 
 // SetUserRoutes creates user routes
 func SetUserRoutes(cfg config.Config, r *mux.Router, s user.UserService) {
-	r.Handle("/api/users/login", loginUser(s)).Methods("POST")
-	r.Handle("/api/users", createUser(s)).Methods("POST")
-	r.Handle("/api/users", utils.JWTMiddleware(getAllUsers(s), cfg.JWTSecret)).Methods("GET")
-	r.Handle("/api/users/email/{email}", utils.JWTMiddleware(getUserByEmail(s), cfg.JWTSecret)).Methods("GET")
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(getUserByID(s), cfg.JWTSecret)).Methods("GET")
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(s), cfg.JWTSecret)).Methods("PATCH")
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(s), cfg.JWTSecret)).Methods("DELETE")
+	r.Handle("/api/users/login", loginUser(s)).Methods(http.MethodPost)
+	r.Handle("/api/users", createUser(s)).Methods(http.MethodPost)
+	r.Handle("/api/users", utils.JWTMiddleware(getAllUsers(s), cfg.JWTSecret)).Methods(http.MethodGet)
+	r.Handle("/api/users/email/{email}", utils.JWTMiddleware(getUserByEmail(s), cfg.JWTSecret)).Methods(http.MethodGet)
+	r.Handle("/api/users/{id}", utils.JWTMiddleware(getUserByID(s), cfg.JWTSecret)).Methods(http.MethodGet)
+	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(s), cfg.JWTSecret)).Methods(http.MethodPatch)
+	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(s), cfg.JWTSecret)).Methods(http.MethodDelete)
 }
 
 // @Summary Login user
