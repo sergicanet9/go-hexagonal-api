@@ -33,16 +33,16 @@ func loginUser(s user.UserService) http.Handler {
 		var credentials requests.Login
 		err := json.NewDecoder(r.Body).Decode(&credentials)
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		response, err := s.Login(credentials)
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, http.StatusOK, response)
+		utils.ResponseJSON(w, r, http.StatusOK, response)
 	})
 }
 
@@ -57,16 +57,16 @@ func createUser(s user.UserService) http.Handler {
 		var user requests.User
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		result, err := s.Create(user)
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, http.StatusCreated, result)
+		utils.ResponseJSON(w, r, http.StatusCreated, result)
 	})
 }
 
@@ -80,10 +80,10 @@ func getAllUsers(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		users, err := s.GetAll()
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, http.StatusOK, users)
+		utils.ResponseJSON(w, r, http.StatusOK, users)
 	})
 }
 
@@ -99,10 +99,10 @@ func getUserByEmail(s user.UserService) http.Handler {
 		var params = mux.Vars(r)
 		user, err := s.GetByEmail(params["email"])
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, http.StatusOK, user)
+		utils.ResponseJSON(w, r, http.StatusOK, user)
 	})
 }
 
@@ -118,10 +118,10 @@ func getUserByID(s user.UserService) http.Handler {
 		var params = mux.Vars(r)
 		user, err := s.GetByID(params["id"])
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, http.StatusOK, user)
+		utils.ResponseJSON(w, r, http.StatusOK, user)
 	})
 }
 
@@ -139,16 +139,16 @@ func updateUser(s user.UserService) http.Handler {
 		var user requests.Update
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		err = s.Update(params["id"], user)
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, http.StatusOK, nil)
+		utils.ResponseJSON(w, r, http.StatusOK, nil)
 	})
 }
 
@@ -164,9 +164,9 @@ func deleteUser(s user.UserService) http.Handler {
 		var params = mux.Vars(r)
 		err := s.Delete(params["id"])
 		if err != nil {
-			utils.ResponseError(w, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, http.StatusOK, nil)
+		utils.ResponseJSON(w, r, http.StatusOK, nil)
 	})
 }
