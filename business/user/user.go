@@ -1,4 +1,4 @@
-package business
+package user
 
 import (
 	"context"
@@ -19,6 +19,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 	"golang.org/x/crypto/bcrypt"
 )
+
+//Service struct
+type Service struct {
+	config config.Config
+	db     *mongo.Database
+	repo   infrastructure.MongoRepository
+}
 
 // UserService interface represents a UserService
 type UserService interface {

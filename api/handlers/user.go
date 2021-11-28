@@ -5,14 +5,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/scanet9/go-mongo-restapi/business"
+	"github.com/scanet9/go-mongo-restapi/business/user"
 	"github.com/scanet9/go-mongo-restapi/config"
 	"github.com/scanet9/go-mongo-restapi/models/requests"
 	"github.com/scanet9/scv-go-framework/v2/api/utils"
 )
 
 // SetUserRoutes creates user routes
-func SetUserRoutes(cfg config.Config, r *mux.Router, s business.UserService) {
+func SetUserRoutes(cfg config.Config, r *mux.Router, s user.UserService) {
 	r.Handle("/api/users/login", loginUser(s)).Methods("POST")
 	r.Handle("/api/users", createUser(s)).Methods("POST")
 	r.Handle("/api/users", utils.JWTMiddleware(getAllUsers(s), cfg.JWTSecret)).Methods("GET")
@@ -28,7 +28,7 @@ func SetUserRoutes(cfg config.Config, r *mux.Router, s business.UserService) {
 // @Param login body requests.Login true "Login request"
 // @Success 200 {object} responses.Login "OK"
 // @Router /api/users/login [post]
-func loginUser(s business.UserService) http.Handler {
+func loginUser(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var credentials requests.Login
 		err := json.NewDecoder(r.Body).Decode(&credentials)
@@ -52,7 +52,7 @@ func loginUser(s business.UserService) http.Handler {
 // @Param user body requests.User true "New user to be created"
 // @Success 201 {object} responses.Creation "OK"
 // @Router /api/users [post]
-func createUser(s business.UserService) http.Handler {
+func createUser(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var user requests.User
 		err := json.NewDecoder(r.Body).Decode(&user)
@@ -76,7 +76,7 @@ func createUser(s business.UserService) http.Handler {
 // @Security Bearer
 // @Success 200 {array} responses.User "OK"
 // @Router /api/users [get]
-func getAllUsers(s business.UserService) http.Handler {
+func getAllUsers(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		users, err := s.GetAll()
 		if err != nil {
@@ -94,7 +94,7 @@ func getAllUsers(s business.UserService) http.Handler {
 // @Param email path string true "Email"
 // @Success 200 {object} responses.User "OK"
 // @Router /api/users/email/{email} [get]
-func getUserByEmail(s business.UserService) http.Handler {
+func getUserByEmail(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
 		user, err := s.GetByEmail(params["email"])
@@ -113,7 +113,7 @@ func getUserByEmail(s business.UserService) http.Handler {
 // @Param id path string true "ID"
 // @Success 200 {object} responses.User "OK"
 // @Router /api/users/{id} [get]
-func getUserByID(s business.UserService) http.Handler {
+func getUserByID(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
 		user, err := s.GetByID(params["id"])
@@ -133,7 +133,7 @@ func getUserByID(s business.UserService) http.Handler {
 // @Param User body requests.Update true "User"
 // @Success 200 "OK"
 // @Router /api/users/{id} [patch]
-func updateUser(s business.UserService) http.Handler {
+func updateUser(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
 		var user requests.Update
@@ -159,7 +159,7 @@ func updateUser(s business.UserService) http.Handler {
 // @Param id path string true "ID"
 // @Success 200 "OK"
 // @Router /api/users/{id} [delete]
-func deleteUser(s business.UserService) http.Handler {
+func deleteUser(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
 		err := s.Delete(params["id"])
