@@ -154,7 +154,7 @@ func (s *Service) Update(ID string, u requests.Update) error {
 		}
 	}
 
-	if err := s.repo.Update(context.Background(), ID, user); err != nil {
+	if err := s.repo.Update(context.Background(), ID, user, false); err != nil {
 		return err
 	}
 	return nil
@@ -211,10 +211,7 @@ func (s *Service) AtomicTransationProof() error {
 	}
 
 	_, err = session.WithTransaction(context.Background(), callback, txnOpts)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func createToken(userid string, jwtSecret string) (string, error) {
