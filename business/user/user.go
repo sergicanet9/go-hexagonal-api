@@ -112,7 +112,7 @@ func (s *Service) GetByEmail(email string) (responses.User, error) {
 	if err != nil {
 		return responses.User{}, err
 	}
-	user := responses.User(*(result[0].(*entities.User)))
+	user := responses.User(**(result[0].(**entities.User)))
 	return user, nil
 }
 
