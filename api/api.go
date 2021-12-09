@@ -28,7 +28,7 @@ func (a *API) Initialize(cfg config.Config) {
 	a.router = router
 
 	a.router.PathPrefix("/swagger").Handler(
-		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("http://%s:%d/swagger/doc.json", a.config.Address, a.config.Port))),
+		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s:%d/swagger/doc.json", a.config.Address, a.config.Port))),
 	)
 
 	db, err := infrastructure.ConnectMongoDB(a.config.DBName, a.config.DBConnectionString)
@@ -44,6 +44,6 @@ func (a *API) Initialize(cfg config.Config) {
 func (a *API) Run() {
 	log.Printf("Environment: %s", a.config.Env)
 	log.Printf("Listening on port %d", a.config.Port)
-	log.Printf("Open http://%s:%d/swagger/index.html in the browser", a.config.Address, a.config.Port)
+	log.Printf("Open %s:%d/swagger/index.html in the browser", a.config.Address, a.config.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), a.router))
 }
