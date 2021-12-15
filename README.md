@@ -40,3 +40,9 @@ NOTES:
 ```
 swag init -g cmd/main.go
 ```
+
+## Author
+Sergi Canet Vela
+
+## License
+This project is licensed under the terms of the MIT license.
