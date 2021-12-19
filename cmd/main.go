@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/scanet9/go-mongo-restapi/api"
-	"github.com/scanet9/go-mongo-restapi/config"
+	"github.com/sergicanet9/go-mongo-restapi/api"
+	"github.com/sergicanet9/go-mongo-restapi/config"
 )
 
 // @title Go Mongo RestAPI
 // @version 1.0
-// @description Powered by scv-go-framework - https://github.com/scanet9/scv-go-framework
+// @description Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework
 
 // @securityDefinitions.apikey Bearer
 // @in header

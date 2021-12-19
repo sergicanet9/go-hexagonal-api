@@ -56,7 +56,7 @@ definitions:
     type: object
 info:
   contact: {}
-  description: Powered by scv-go-framework - https://github.com/scanet9/scv-go-framework
+  description: Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework
   license: {}
   title: Go Mongo RestAPI
   version: "1.0"

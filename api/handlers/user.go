@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/scanet9/go-mongo-restapi/business/user"
-	"github.com/scanet9/go-mongo-restapi/config"
-	"github.com/scanet9/go-mongo-restapi/models/requests"
-	"github.com/scanet9/scv-go-framework/v2/api/utils"
+	"github.com/sergicanet9/go-mongo-restapi/business/user"
+	"github.com/sergicanet9/go-mongo-restapi/config"
+	"github.com/sergicanet9/go-mongo-restapi/models/requests"
+	"github.com/sergicanet9/scv-go-framework/v2/api/utils"
 )
 
 // SetUserRoutes creates user routes

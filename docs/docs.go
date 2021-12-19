@@ -340,7 +340,7 @@ var SwaggerInfo = swaggerInfo{
 	BasePath:    "",
 	Schemes:     []string{},
 	Title:       "Go Mongo RestAPI",
-	Description: "Powered by scv-go-framework - https://github.com/scanet9/scv-go-framework",
+	Description: "Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework",
 }
 
 type s struct{}
