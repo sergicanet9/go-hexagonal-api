@@ -105,13 +105,17 @@ func (s *Service) GetAll() ([]responses.User, error) {
 	return users, nil
 }
 
-//GetByEmail users
+//GetByEmail user
 func (s *Service) GetByEmail(email string) (responses.User, error) {
 	filter := bson.M{"email": email}
 	result, err := s.repo.Get(context.Background(), filter)
 	if err != nil {
 		return responses.User{}, err
 	}
+	if len(result) < 1 {
+		return responses.User{}, fmt.Errorf("email not found")
+	}
+
 	user := responses.User(**(result[0].(**entities.User)))
 	return user, nil
 }
