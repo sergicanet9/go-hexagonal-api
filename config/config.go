@@ -44,7 +44,7 @@ func (c *Config) loadJSON(filePath string) error {
 		return fmt.Errorf("ignoring config file %v: %w", filePath, err)
 	}
 
-	file, err := os.Open(filePath) //nolint:gosec
+	file, err := os.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("error opening file %v: %w", filePath, err)
 	}
