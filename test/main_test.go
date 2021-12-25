@@ -35,11 +35,12 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("could not start resource: %s", err)
 	}
+	os.Setenv(mongoPortEnv, resource.GetPort(mongoInternalPort))
 
 	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	if err := pool.Retry(func() error {
 		var err error
-		client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://localhost:%s", resource.GetPort(mongoInternalPort))))
+		client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://localhost:%s", os.Getenv(mongoPortEnv))))
 		if err != nil {
 			return err
 		}
@@ -48,8 +49,6 @@ func TestMain(m *testing.M) {
 	}); err != nil {
 		log.Fatalf("could not connect to docker: %s", err)
 	}
-
-	os.Setenv(mongoPortEnv, resource.GetPort(mongoInternalPort))
 
 	// Run the tests
 	code := m.Run()
