@@ -79,7 +79,6 @@ func Test_Create_Created(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), testUser)
 
 	// Act
 	body := requests.User(testUser)
