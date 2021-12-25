@@ -50,7 +50,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("could not connect to docker: %s", err)
 	}
 
-	// Run the tests
+	// Runs the tests
 	code := m.Run()
 
 	// When it´s done, kill and remove the container
