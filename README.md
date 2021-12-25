@@ -2,12 +2,13 @@
 REST API making use of own [scv-go-framework](https://github.com/sergicanet9/scv-go-framework) package.
 
 Provides:
-- Basic CRUD functionalities for user management
+- CRUD functionalities for user management
 - MongoDB persistent storage
 - Multi-environment configs
 - JWT token-based authorization
 - Swagger UI documentation
 - Dockerized app
+- Integration tests
 
 ## Run the application locally
 ```
@@ -24,6 +25,17 @@ Then open {address}:{port}/swagger/index.html in the browser, where {address} an
  NOTES:
 - The env flag is optional. Default value: "local".
 - It is also possible to debug it in Visual Studio Code with the provided [launch.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/.vscode/launch.json), in which the env flag can be modified as well.
+
+## Run the integration tests
+```
+go test ./test -coverpkg=./... -coverprofile=test/coverage.out
+```
+Then to see the coverage report run the following command:
+```
+go tool cover -html=test/coverage.out
+```
+ NOTES:
+- The docker daemon needs to be up and running for executing the tests.
 
 ## Run the application in a docker container
 ```
