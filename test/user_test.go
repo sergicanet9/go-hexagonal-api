@@ -19,8 +19,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const nonExpiryTestToken = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlfQ.sNqMUoCjbo995YsmwCXzxZ3EVF4SoHRZp8w6lhjx2GM"
-
 func Test_Login_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
@@ -133,7 +131,7 @@ func Test_GetAllUsers_Ok(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Authorization", nonExpiryTestToken)
+	req.Header.Set("Authorization", nonExpiryToken)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -173,7 +171,7 @@ func Test_GetByEmail_Ok(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Authorization", nonExpiryTestToken)
+	req.Header.Set("Authorization", nonExpiryToken)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -213,7 +211,7 @@ func Test_GetByID_Ok(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Authorization", nonExpiryTestToken)
+	req.Header.Set("Authorization", nonExpiryToken)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -261,7 +259,7 @@ func Test_Update_Ok(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Authorization", nonExpiryTestToken)
+	req.Header.Set("Authorization", nonExpiryToken)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -308,7 +306,7 @@ func Test_Delete_Ok(t *testing.T) {
 	}
 
 	req.Header.Set("Content-Type", contentType)
-	req.Header.Set("Authorization", nonExpiryTestToken)
+	req.Header.Set("Authorization", nonExpiryToken)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

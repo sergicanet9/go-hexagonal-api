@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
 	"github.com/pkg/errors"
 	"github.com/sergicanet9/go-mongo-restapi/api"
 	"github.com/sergicanet9/go-mongo-restapi/config"
@@ -17,9 +18,12 @@ import (
 )
 
 const (
-	contentType       = "application/json"
-	mongoInternalPort = "27017/tcp"
-	mongoPortEnv      = "mongoPort"
+	contentType        = "application/json"
+	mongoInternalPort  = "27017/tcp"
+	mongoDBName        = "test-db"
+	mongoConnectionEnv = "mongoConnection"
+	jwtSecret          = "eaeBbXUxks"
+	nonExpiryToken     = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlfQ.sNqMUoCjbo995YsmwCXzxZ3EVF4SoHRZp8w6lhjx2GM"
 )
 
 // TestMain does the setup before running the tests and the teardown afterwards
@@ -31,16 +35,29 @@ func TestMain(m *testing.M) {
 	}
 
 	// Pulls an image, creates a container based on it and runs it
-	resource, err := pool.Run("mongo", "3.0", nil)
+	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
+		Repository: "mongo",
+		Tag:        "3.0",
+		Env: []string{
+			"listen_addresses = '*'",
+		},
+	}, func(config *docker.HostConfig) {
+		// set AutoRemove to true so that stopped container goes away by itself
+		config.AutoRemove = true
+		config.RestartPolicy = docker.RestartPolicy{
+			Name: "no",
+		}
+	})
 	if err != nil {
 		log.Fatalf("could not start resource: %s", err)
 	}
-	os.Setenv(mongoPortEnv, resource.GetPort(mongoInternalPort))
+	connectionString := fmt.Sprintf("mongodb://localhost:%s", resource.GetPort(mongoInternalPort))
+	os.Setenv(mongoConnectionEnv, connectionString)
 
 	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	if err := pool.Retry(func() error {
 		var err error
-		client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://localhost:%s", os.Getenv(mongoPortEnv))))
+		client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectionString))
 		if err != nil {
 			return err
 		}
@@ -58,7 +75,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("could not purge resource: %s", err)
 	}
 
-	os.Unsetenv(mongoPortEnv)
+	os.Unsetenv(mongoConnectionEnv)
 	os.Exit(code)
 }
 
@@ -89,9 +106,9 @@ func testConfig() (c config.Config, err error) {
 	}
 	c.Port = port
 	c.Address = "http://localhost"
-	c.DBConnectionString = fmt.Sprintf("mongodb://localhost:%s", os.Getenv(mongoPortEnv))
-	c.DBName = "test-db"
-	c.JWTSecret = "eaeBbXUxks"
+	c.DBConnectionString = os.Getenv(mongoConnectionEnv)
+	c.DBName = mongoDBName
+	c.JWTSecret = jwtSecret
 
 	return c, nil
 }
