@@ -150,6 +150,17 @@ paths:
       summary: Update user
       tags:
       - Users
+  /api/users/atomic:
+    post:
+      description: Insert two users atomically
+      responses:
+        "200":
+          description: OK
+      security:
+      - Bearer: []
+      summary: Atomic transaction proof
+      tags:
+      - Users
   /api/users/email/{email}:
     get:
       description: Get a user by email

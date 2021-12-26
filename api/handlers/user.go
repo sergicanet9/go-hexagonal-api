@@ -20,6 +20,7 @@ func SetUserRoutes(cfg config.Config, r *mux.Router, s user.UserService) {
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(getUserByID(s), cfg.JWTSecret)).Methods(http.MethodGet)
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(s), cfg.JWTSecret)).Methods(http.MethodPatch)
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(s), cfg.JWTSecret)).Methods(http.MethodDelete)
+	r.Handle("/api/users/atomic", utils.JWTMiddleware(atomicTransactionProof(s), cfg.JWTSecret)).Methods(http.MethodPost)
 }
 
 // @Summary Login user
@@ -163,6 +164,23 @@ func deleteUser(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
 		err := s.Delete(params["id"])
+		if err != nil {
+			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			return
+		}
+		utils.ResponseJSON(w, r, http.StatusOK, nil)
+	})
+}
+
+// @Summary Atomic transaction proof
+// @Description Insert two users atomically
+// @Tags Users
+// @Security Bearer
+// @Success 200 "OK"
+// @Router /api/users/atomic [post]
+func atomicTransactionProof(s user.UserService) http.Handler {
+	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+		err := s.AtomicTransationProof()
 		if err != nil {
 			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
 			return

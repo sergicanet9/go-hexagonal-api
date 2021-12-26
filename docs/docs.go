@@ -76,6 +76,25 @@ var doc = `{
                 }
             }
         },
+        "/api/users/atomic": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Insert two users atomically",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Atomic transaction proof",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/users/email/{email}": {
             "get": {
                 "security": [

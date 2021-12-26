@@ -196,21 +196,30 @@ func (s *Service) AtomicTransationProof() error {
 	}
 
 	callback := func(sessionContext mongo.SessionContext) (interface{}, error) {
-		s.repo.Create(sessionContext,
+		_, err = s.repo.Create(sessionContext,
 			entities.User{
+				ID:           primitive.NewObjectID(),
 				Name:         "Entity1",
 				Surnames:     "Entity1",
 				Email:        "Entity1",
 				PasswordHash: user1Hash,
 			})
+		if err != nil {
+			return nil, err
+		}
 
-		s.repo.Create(sessionContext,
+		_, err = s.repo.Create(sessionContext,
 			entities.User{
+				ID:           primitive.NewObjectID(),
 				Name:         "Entity2",
 				Surnames:     "Entity2",
 				Email:        "Entity2",
 				PasswordHash: user2Hash,
 			})
+		if err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}
 
