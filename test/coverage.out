@@ -1,16 +1,4 @@
 mode: set
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:348.30,353.41 3 0
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:358.2,358.16 1 0
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:362.2,363.47 2 0
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:367.2,367.21 1 0
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:353.41,356.4 2 0
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:358.16,360.3 1 0
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:363.47,365.3 1 0
-github.com/sergicanet9/go-mongo-restapi/docs/docs.go:370.13,372.2 1 1
-github.com/sergicanet9/go-mongo-restapi/api/api.go:24.45,35.16 6 1
-github.com/sergicanet9/go-mongo-restapi/api/api.go:39.2,40.57 2 1
-github.com/sergicanet9/go-mongo-restapi/api/api.go:35.16,37.3 1 0
-github.com/sergicanet9/go-mongo-restapi/api/api.go:44.21,49.2 4 1
 github.com/sergicanet9/go-mongo-restapi/config/config.go:23.57,29.16 5 0
 github.com/sergicanet9/go-mongo-restapi/config/config.go:33.2,33.15 1 0
 github.com/sergicanet9/go-mongo-restapi/config/config.go:39.2,39.15 1 0
@@ -125,3 +113,15 @@ github.com/sergicanet9/go-mongo-restapi/api/handlers/user.go:162.50,163.85 1 1
 github.com/sergicanet9/go-mongo-restapi/api/handlers/user.go:163.85,166.17 3 1
 github.com/sergicanet9/go-mongo-restapi/api/handlers/user.go:170.3,170.47 1 1
 github.com/sergicanet9/go-mongo-restapi/api/handlers/user.go:166.17,169.4 2 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:348.30,353.41 3 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:358.2,358.16 1 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:362.2,363.47 2 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:367.2,367.21 1 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:353.41,356.4 2 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:358.16,360.3 1 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:363.47,365.3 1 0
+github.com/sergicanet9/go-mongo-restapi/docs/docs.go:370.13,372.2 1 1
+github.com/sergicanet9/go-mongo-restapi/api/api.go:24.45,35.16 6 1
+github.com/sergicanet9/go-mongo-restapi/api/api.go:39.2,40.57 2 1
+github.com/sergicanet9/go-mongo-restapi/api/api.go:35.16,37.3 1 0
+github.com/sergicanet9/go-mongo-restapi/api/api.go:44.21,49.2 4 1

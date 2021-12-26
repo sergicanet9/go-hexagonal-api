@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"testing"
 
@@ -23,16 +24,15 @@ func Test_Login_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-
-	db, err := infrastructure.ConnectMongoDB(cfg.DBName, cfg.DBConnectionString)
+	testUser.Email = "testlogin@test.com"
+	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
-	db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), testUser)
 
 	// Act
 	body := requests.User{
-		Email:        "test@test.com",
+		Email:        "testlogin@test.com",
 		PasswordHash: "test",
 	}
 	b, err := json.Marshal(body)
@@ -73,11 +73,6 @@ func Test_Create_Created(t *testing.T) {
 	cfg := New(t)
 	testUser := getNewTestUser()
 
-	db, err := infrastructure.ConnectMongoDB(cfg.DBName, cfg.DBConnectionString)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// Act
 	body := requests.User(testUser)
 	b, err := json.Marshal(body)
@@ -110,9 +105,10 @@ func Test_Create_Created(t *testing.T) {
 		t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 	}
 	assert.NotEmpty(t, response.InsertedID)
-
-	var createdUser entities.User
-	db.Collection(entities.CollectionNameUser).FindOne(context.Background(), bson.M{"_id": response.InsertedID}).Decode(&createdUser)
+	createdUser, err := findUser(response.InsertedID, cfg.DBName, cfg.DBConnectionString)
+	if err != nil {
+		t.Fatalf("unexpected error while finding the created user: %s", err)
+	}
 	assert.Equal(t, testUser.Name, createdUser.Name)
 	assert.Equal(t, testUser.Surnames, createdUser.Surnames)
 	assert.Equal(t, testUser.Email, createdUser.Email)
@@ -155,12 +151,10 @@ func Test_GetByEmail_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-
-	db, err := infrastructure.ConnectMongoDB(cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
-	db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), testUser)
 
 	// Act
 	url := fmt.Sprintf("%s:%d/api/users/email/%s", cfg.Address, cfg.Port, testUser.Email)
@@ -195,12 +189,10 @@ func Test_GetByID_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-
-	db, err := infrastructure.ConnectMongoDB(cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
-	db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), testUser)
 
 	// Act
 	url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID.Hex())
@@ -235,12 +227,10 @@ func Test_Update_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-
-	db, err := infrastructure.ConnectMongoDB(cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
-	db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), testUser)
 
 	// Act
 	testUser.Name = "modified"
@@ -272,9 +262,10 @@ func Test_Update_Ok(t *testing.T) {
 	if want, got := http.StatusOK, resp.StatusCode; want != got {
 		t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 	}
-
-	var updatedUser entities.User
-	db.Collection(entities.CollectionNameUser).FindOne(context.Background(), bson.M{"_id": testUser.ID}).Decode(&updatedUser)
+	updatedUser, err := findUser(testUser.ID, cfg.DBName, cfg.DBConnectionString)
+	if err != nil {
+		t.Fatalf("unexpected error while finding the created user: %s", err)
+	}
 	assert.Equal(t, testUser.Name, updatedUser.Name)
 	assert.Equal(t, testUser.Surnames, updatedUser.Surnames)
 	assert.Equal(t, testUser.Email, updatedUser.Email)
@@ -284,12 +275,10 @@ func Test_Delete_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-
-	db, err := infrastructure.ConnectMongoDB(cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
-	db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), testUser)
 
 	// Act
 	body := requests.User(testUser)
@@ -319,9 +308,7 @@ func Test_Delete_Ok(t *testing.T) {
 	if want, got := http.StatusOK, resp.StatusCode; want != got {
 		t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 	}
-
-	var deletedUser entities.User
-	err = db.Collection(entities.CollectionNameUser).FindOne(context.Background(), bson.M{"_id": testUser.ID}).Decode(&deletedUser)
+	_, err = findUser(testUser.ID, cfg.DBName, cfg.DBConnectionString)
 	assert.Equal(t, mongo.ErrNoDocuments, err)
 }
 
@@ -330,7 +317,28 @@ func getNewTestUser() entities.User {
 		ID:           primitive.NewObjectID(),
 		Name:         "test",
 		Surnames:     "test",
-		Email:        "test@test.com",
+		Email:        fmt.Sprintf("test%d@test.com", rand.Int()),
 		PasswordHash: "$2a$10$Q71DDcyvQhzt2K1EbRp1cOh4ToUh9de9ETsixwXGOVeRorTh8tjN2", // test hashed
 	}
+}
+
+func insertUser(u *entities.User, dbname, connection string) error {
+	db, err := infrastructure.ConnectMongoDB(dbname, connection)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), u)
+	return err
+}
+
+func findUser(ID primitive.ObjectID, dbname, connection string) (entities.User, error) {
+	db, err := infrastructure.ConnectMongoDB(dbname, connection)
+	if err != nil {
+		return entities.User{}, err
+	}
+
+	var u entities.User
+	err = db.Collection(entities.CollectionNameUser).FindOne(context.Background(), bson.M{"_id": ID}).Decode(&u)
+	return u, err
 }
