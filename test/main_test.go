@@ -23,7 +23,7 @@ const (
 	mongoDBName        = "test-db"
 	mongoConnectionEnv = "mongoConnection"
 	jwtSecret          = "eaeBbXUxks"
-	nonExpiryToken     = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlfQ.sNqMUoCjbo995YsmwCXzxZ3EVF4SoHRZp8w6lhjx2GM"
+	nonExpiryToken     = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiYXV0aG9yaXplZCI6dHJ1ZX0.cCKM32os5ROKxeE3IiDWoOyRew9T8puzPUKurPhrDug"
 )
 
 // TestMain does the setup before running the tests and the teardown afterwards
