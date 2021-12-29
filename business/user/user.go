@@ -225,6 +225,7 @@ func (s *Service) AtomicTransationProof() error {
 				Surnames:     "Entity1",
 				Email:        "Entity1",
 				PasswordHash: user1Hash,
+				Claims:       nil,
 			})
 		if err != nil {
 			return nil, err
@@ -237,6 +238,7 @@ func (s *Service) AtomicTransationProof() error {
 				Surnames:     "Entity2",
 				Email:        "Entity2",
 				PasswordHash: user2Hash,
+				Claims:       nil,
 			})
 		if err != nil {
 			return nil, err
