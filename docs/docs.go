@@ -262,6 +262,12 @@ var doc = `{
         "requests.Update": {
             "type": "object",
             "properties": {
+                "claims": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Claim"
+                    }
+                },
                 "email": {
                     "type": "string"
                 },
@@ -282,6 +288,9 @@ var doc = `{
         "requests.User": {
             "type": "object",
             "properties": {
+                "claims": {
+                    "type": "integer"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -319,6 +328,12 @@ var doc = `{
         "responses.User": {
             "type": "object",
             "properties": {
+                "claims": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -329,6 +344,9 @@ var doc = `{
                     "type": "string"
                 },
                 "surnames": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

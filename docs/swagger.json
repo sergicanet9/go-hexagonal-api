@@ -245,6 +245,12 @@
         "requests.Update": {
             "type": "object",
             "properties": {
+                "claims": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.Claim"
+                    }
+                },
                 "email": {
                     "type": "string"
                 },
@@ -265,6 +271,9 @@
         "requests.User": {
             "type": "object",
             "properties": {
+                "claims": {
+                    "type": "integer"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -302,6 +311,12 @@
         "responses.User": {
             "type": "object",
             "properties": {
+                "claims": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -312,6 +327,9 @@
                     "type": "string"
                 },
                 "surnames": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

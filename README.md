@@ -5,7 +5,7 @@ Provides:
 - CRUD functionalities for user management
 - MongoDB persistent storage
 - Multi-environment configs
-- JWT token-based authorization
+- JWT authentication and claim-based authorization
 - Swagger UI documentation
 - Dockerized app
 - Integration tests

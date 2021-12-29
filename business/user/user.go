@@ -61,7 +61,7 @@ func (s *Service) Login(credentials requests.Login) (responses.Login, error) {
 	user := responses.User(**result[0].(**entities.User))
 
 	if checkPasswordHash(credentials.Password, user.PasswordHash) {
-		token, err := createToken(user.ID.Hex(), s.config.JWTSecret)
+		token, err := createToken(user.ID.Hex(), s.config.JWTSecret, user.Claims)
 		if err != nil {
 			return responses.Login{}, err
 		}
@@ -82,7 +82,10 @@ func (s *Service) Create(u requests.User) (responses.Creation, error) {
 		return responses.Creation{}, err
 	}
 
+	now := time.Now().UTC()
 	u.ID = primitive.NewObjectID()
+	u.CreatedAt = now
+	u.UpdatedAt = now
 	insertedID, err := s.repo.Create(context.Background(), entities.User(u))
 	if err != nil {
 		return responses.Creation{}, err
@@ -157,6 +160,10 @@ func (s *Service) Update(ID string, u requests.Update) error {
 			return fmt.Errorf("old password incorrect")
 		}
 	}
+	if u.Claims != nil {
+		user.Claims = *u.Claims
+	}
+	user.UpdatedAt = time.Now().UTC()
 
 	if err := s.repo.Update(context.Background(), ID, user, false); err != nil {
 		return err
@@ -227,14 +234,23 @@ func (s *Service) AtomicTransationProof() error {
 	return err
 }
 
-func createToken(userid string, jwtSecret string) (string, error) {
+func createToken(userid string, jwtSecret string, claims []entities.Claim) (string, error) {
 	var err error
-	atClaims := jwt.MapClaims{}
-	atClaims["authorized"] = true
-	atClaims["user_id"] = userid
-	atClaims["exp"] = time.Now().Add(time.Hour * 168).Unix()
-	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
-	token, err := at.SignedString([]byte(jwtSecret))
+	addClaims := jwt.MapClaims{}
+	addClaims["authorized"] = true
+	addClaims["user_id"] = userid
+	addClaims["exp"] = time.Now().UTC().Add(time.Hour * 168).Unix()
+
+	for _, claim := range claims {
+		if ok := claim.IsValid(); ok {
+			addClaims[claim.String()] = true
+		} else {
+			return "", fmt.Errorf("not valid claim detected: %d", claim)
+		}
+	}
+
+	add := jwt.NewWithClaims(jwt.SigningMethodHS256, addClaims)
+	token, err := add.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", err
 	}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-mongo-restapi/business/user"
 	"github.com/sergicanet9/go-mongo-restapi/config"
@@ -15,12 +16,12 @@ import (
 func SetUserRoutes(cfg config.Config, r *mux.Router, s user.UserService) {
 	r.Handle("/api/users/login", loginUser(s)).Methods(http.MethodPost)
 	r.Handle("/api/users", createUser(s)).Methods(http.MethodPost)
-	r.Handle("/api/users", utils.JWTMiddleware(getAllUsers(s), cfg.JWTSecret)).Methods(http.MethodGet)
-	r.Handle("/api/users/email/{email}", utils.JWTMiddleware(getUserByEmail(s), cfg.JWTSecret)).Methods(http.MethodGet)
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(getUserByID(s), cfg.JWTSecret)).Methods(http.MethodGet)
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(s), cfg.JWTSecret)).Methods(http.MethodPatch)
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(s), cfg.JWTSecret)).Methods(http.MethodDelete)
-	r.Handle("/api/users/atomic", utils.JWTMiddleware(atomicTransactionProof(s), cfg.JWTSecret)).Methods(http.MethodPost)
+	r.Handle("/api/users", utils.JWTMiddleware(getAllUsers(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/api/users/email/{email}", utils.JWTMiddleware(getUserByEmail(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/api/users/{id}", utils.JWTMiddleware(getUserByID(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
+	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
+	r.Handle("/api/users/atomic", utils.JWTMiddleware(atomicTransactionProof(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
 }
 
 // @Summary Login user
