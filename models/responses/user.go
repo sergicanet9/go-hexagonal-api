@@ -3,7 +3,6 @@ package responses
 import (
 	"time"
 
-	"github.com/sergicanet9/go-mongo-restapi/models/entities"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -14,7 +13,7 @@ type User struct {
 	Surnames     string             `json:"surnames"`
 	Email        string             `json:"email"`
 	PasswordHash string             `json:"-"`
-	Claims       []entities.Claim   `bson:"claims"`
+	Claims       []int              `bson:"claims"`
 	CreatedAt    time.Time          `json:"createdAt"`
 	UpdatedAt    time.Time          `json:"updatedAt"`
 }

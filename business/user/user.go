@@ -234,7 +234,7 @@ func (s *Service) AtomicTransationProof() error {
 	return err
 }
 
-func createToken(userid string, jwtSecret string, claims []entities.Claim) (string, error) {
+func createToken(userid string, jwtSecret string, claims []int) (string, error) {
 	var err error
 	addClaims := jwt.MapClaims{}
 	addClaims["authorized"] = true
@@ -242,8 +242,8 @@ func createToken(userid string, jwtSecret string, claims []entities.Claim) (stri
 	addClaims["exp"] = time.Now().UTC().Add(time.Hour * 168).Unix()
 
 	for _, claim := range claims {
-		if ok := claim.IsValid(); ok {
-			addClaims[claim.String()] = true
+		if ok := entities.Claim(claim).IsValid(); ok {
+			addClaims[entities.Claim(claim).String()] = true
 		} else {
 			return "", fmt.Errorf("not valid claim detected: %d", claim)
 		}

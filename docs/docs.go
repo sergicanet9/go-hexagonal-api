@@ -265,7 +265,7 @@ var doc = `{
                 "claims": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entities.Claim"
+                        "type": "integer"
                     }
                 },
                 "email": {
@@ -289,7 +289,10 @@ var doc = `{
             "type": "object",
             "properties": {
                 "claims": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "email": {
                     "type": "string"
@@ -329,7 +332,10 @@ var doc = `{
             "type": "object",
             "properties": {
                 "claims": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "createdAt": {
                     "type": "string"

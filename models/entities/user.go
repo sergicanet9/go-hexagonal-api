@@ -39,7 +39,7 @@ type User struct {
 	Surnames     string             `bson:"surnames"`
 	Email        string             `bson:"email"`
 	PasswordHash string             `bson:"passwordHash"`
-	Claims       []Claim            `bson:"claims"`
+	Claims       []int              `bson:"claims"`
 	CreatedAt    time.Time          `bson:"createdAt"`
 	UpdatedAt    time.Time          `bson:"updatedAt"`
 }
