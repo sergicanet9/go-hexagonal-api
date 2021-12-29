@@ -25,6 +25,28 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/claims": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Gets all claims",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get claims",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "security": [
@@ -83,7 +105,7 @@ var doc = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Insert two users atomically",
+                "description": "Inserts two users atomically",
                 "tags": [
                     "Users"
                 ],
@@ -102,7 +124,7 @@ var doc = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get a user by email",
+                "description": "Gets a user by email",
                 "tags": [
                     "Users"
                 ],
@@ -161,7 +183,7 @@ var doc = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Get a user by ID",
+                "description": "Gets a user by ID",
                 "tags": [
                     "Users"
                 ],
@@ -216,7 +238,7 @@ var doc = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Update a user",
+                "description": "Updates a user",
                 "tags": [
                     "Users"
                 ],

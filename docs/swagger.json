@@ -8,6 +8,28 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/claims": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Gets all claims",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get claims",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "security": [
@@ -66,7 +88,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Insert two users atomically",
+                "description": "Inserts two users atomically",
                 "tags": [
                     "Users"
                 ],
@@ -85,7 +107,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Get a user by email",
+                "description": "Gets a user by email",
                 "tags": [
                     "Users"
                 ],
@@ -144,7 +166,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Get a user by ID",
+                "description": "Gets a user by ID",
                 "tags": [
                     "Users"
                 ],
@@ -199,7 +221,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Update a user",
+                "description": "Updates a user",
                 "tags": [
                     "Users"
                 ],

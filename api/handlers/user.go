@@ -21,6 +21,7 @@ func SetUserRoutes(cfg config.Config, r *mux.Router, s user.UserService) {
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(getUserByID(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
+	r.Handle("/api/claims", utils.JWTMiddleware(getUserClaims(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
 	r.Handle("/api/users/atomic", utils.JWTMiddleware(atomicTransactionProof(s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
 }
 
@@ -90,7 +91,7 @@ func getAllUsers(s user.UserService) http.Handler {
 }
 
 // @Summary Get user by email
-// @Description Get a user by email
+// @Description Gets a user by email
 // @Tags Users
 // @Security Bearer
 // @Param email path string true "Email"
@@ -109,7 +110,7 @@ func getUserByEmail(s user.UserService) http.Handler {
 }
 
 // @Summary Get user by ID
-// @Description Get a user by ID
+// @Description Gets a user by ID
 // @Tags Users
 // @Security Bearer
 // @Param id path string true "ID"
@@ -128,7 +129,7 @@ func getUserByID(s user.UserService) http.Handler {
 }
 
 // @Summary Update user
-// @Description Update a user
+// @Description Updates a user
 // @Tags Users
 // @Security Bearer
 // @Param id path string true "ID"
@@ -173,8 +174,21 @@ func deleteUser(s user.UserService) http.Handler {
 	})
 }
 
+// @Summary Get claims
+// @Description Gets all claims
+// @Tags Users
+// @Security Bearer
+// @Success 200 {object} object "OK"
+// @Router /api/claims [get]
+func getUserClaims(s user.UserService) http.Handler {
+	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+		claims := s.GetClaims()
+		utils.ResponseJSON(w, r, http.StatusOK, claims)
+	})
+}
+
 // @Summary Atomic transaction proof
-// @Description Insert two users atomically
+// @Description Inserts two users atomically
 // @Tags Users
 // @Security Bearer
 // @Success 200 "OK"

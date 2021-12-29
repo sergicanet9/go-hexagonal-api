@@ -36,6 +36,7 @@ type UserService interface {
 	GetByID(ID string) (responses.User, error)
 	Update(ID string, u requests.Update) error
 	Delete(ID string) error
+	GetClaims() map[int]string
 	AtomicTransationProof() error
 }
 
@@ -177,6 +178,11 @@ func (s *Service) Delete(ID string) error {
 		return err
 	}
 	return nil
+}
+
+// Get user claims
+func (s *Service) GetClaims() map[int]string {
+	return entities.GetClaims()
 }
 
 // AtomicTransationProof creates two entities atomically, creating a sessionContext

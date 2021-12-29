@@ -77,6 +77,19 @@ info:
   title: Go Mongo RestAPI
   version: "1.0"
 paths:
+  /api/claims:
+    get:
+      description: Gets all claims
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      security:
+      - Bearer: []
+      summary: Get claims
+      tags:
+      - Users
   /api/users:
     get:
       description: Gets all the users
@@ -127,7 +140,7 @@ paths:
       tags:
       - Users
     get:
-      description: Get a user by ID
+      description: Gets a user by ID
       parameters:
       - description: ID
         in: path
@@ -145,7 +158,7 @@ paths:
       tags:
       - Users
     patch:
-      description: Update a user
+      description: Updates a user
       parameters:
       - description: ID
         in: path
@@ -168,7 +181,7 @@ paths:
       - Users
   /api/users/atomic:
     post:
-      description: Insert two users atomically
+      description: Inserts two users atomically
       responses:
         "200":
           description: OK
@@ -179,7 +192,7 @@ paths:
       - Users
   /api/users/email/{email}:
     get:
-      description: Get a user by email
+      description: Gets a user by email
       parameters:
       - description: Email
         in: path
