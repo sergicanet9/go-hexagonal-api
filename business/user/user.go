@@ -83,6 +83,11 @@ func (s *Service) Create(u requests.User) (responses.Creation, error) {
 		return responses.Creation{}, err
 	}
 
+	err = validateClaims(u.Claims)
+	if err != nil {
+		return responses.Creation{}, err
+	}
+
 	now := time.Now().UTC()
 	u.ID = primitive.NewObjectID()
 	u.CreatedAt = now
@@ -162,6 +167,10 @@ func (s *Service) Update(ID string, u requests.Update) error {
 		}
 	}
 	if u.Claims != nil {
+		err = validateClaims(*u.Claims)
+		if err != nil {
+			return err
+		}
 		user.Claims = *u.Claims
 	}
 	user.UpdatedAt = time.Now().UTC()
@@ -247,12 +256,12 @@ func createToken(userid string, jwtSecret string, claims []int) (string, error) 
 	addClaims["user_id"] = userid
 	addClaims["exp"] = time.Now().UTC().Add(time.Hour * 168).Unix()
 
+	err = validateClaims(claims)
+	if err != nil {
+		return "", err
+	}
 	for _, claim := range claims {
-		if ok := entities.Claim(claim).IsValid(); ok {
-			addClaims[entities.Claim(claim).String()] = true
-		} else {
-			return "", fmt.Errorf("not valid claim detected: %d", claim)
-		}
+		addClaims[entities.Claim(claim).String()] = true
 	}
 
 	add := jwt.NewWithClaims(jwt.SigningMethodHS256, addClaims)
@@ -261,6 +270,15 @@ func createToken(userid string, jwtSecret string, claims []int) (string, error) 
 		return "", err
 	}
 	return token, nil
+}
+
+func validateClaims(claims []int) error {
+	for _, claim := range claims {
+		if ok := entities.Claim(claim).IsValid(); !ok {
+			return fmt.Errorf("not valid claim detected: %d", claim)
+		}
+	}
+	return nil
 }
 
 func hashPassword(password *string) error {
