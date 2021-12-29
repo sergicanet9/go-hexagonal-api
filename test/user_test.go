@@ -312,6 +312,39 @@ func Test_Delete_Ok(t *testing.T) {
 	assert.Equal(t, mongo.ErrNoDocuments, err)
 }
 
+func Test_GetClaims_Ok(t *testing.T) {
+	// Arrange
+	cfg := New(t)
+
+	// Act
+	url := fmt.Sprintf("%s:%d/api/claims", cfg.Address, cfg.Port)
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Authorization", nonExpiryToken)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer resp.Body.Close()
+
+	// Assert
+	if want, got := http.StatusOK, resp.StatusCode; want != got {
+		t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
+	}
+	var response map[int]string
+	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
+	}
+	assert.NotEmpty(t, response)
+}
+
 func getNewTestUser() entities.User {
 	return entities.User{
 		ID:           primitive.NewObjectID(),
