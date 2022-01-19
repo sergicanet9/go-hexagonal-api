@@ -1,9 +1,7 @@
-version: "3.9"
 services:
   api:
+    image: go-mongo-restapi_api.local:$TAG
     build:
-      context: .
-      dockerfile: docker/Dockerfile
       args:
         environment: local
     ports:

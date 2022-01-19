@@ -9,8 +9,9 @@ Provides:
 - Swagger UI documentation
 - Dockerized app
 - Integration tests
+- CI/CD with Github Actions
 
-## Run the application locally
+## Run and debug the application locally
 ```
     go run cmd/main.go -env={env}
 ```
@@ -24,34 +25,49 @@ Then open {address}:{port}/swagger/index.html in the browser, where {address} an
 <br />
  NOTES:
 - The env flag is optional. Default value: "local".
-- It is also possible to debug it in Visual Studio Code with the provided [launch.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/.vscode/launch.json), in which the env flag can be modified as well.
+- For debugging the application with Visual Studio Code´s build-in debugger, select Run and Debug on the Debug start view or press F5. The env flag can be changed in the debugging configuration provided in [launch.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/.vscode/launch.json).
+
+## Run the application in a local docker container
+```
+make up
+```
+Then open {address}:{port}/swagger/index.html in the browser, where {address} and {port} are the values specified in config.local.json.
+<br />
+<br />
+NOTES:
+- When running this command, the docker image will be built using the value "local" for the env flag.
+
+### Stop and remove the running container
+```
+make down
+```
 
 ## Run the integration tests
 ```
-go test ./test -coverpkg=./... -coverprofile=test/coverage.out
+make test
 ```
 Then to see the coverage report run the following command:
 ```
-go tool cover -html=test/coverage.out
+make cover
 ```
  NOTES:
 - The docker daemon needs to be up and running for executing the tests.
 
-## Run the application in a docker container
-```
-docker-compose up
-```
-Then open {address}:{port}/swagger/index.html in the browser, where {address} and {port} are the values specified in the corresponding config.{env}.json.
-<br />
-<br />
-NOTES:
-- The env and port values are specified in the [docker-compose.yml](https://github.com/sergicanet9/go-mongo-restapi/blob/main/docker-compose.yml). The port has to match with the one specified in the corresponding config.{env}.json.
-- For running the image in an Azure Web App, create a new config.{env}.json and then build the image specifing the new env and port values in the [docker-compose.yml](https://github.com/sergicanet9/go-mongo-restapi/blob/main/docker-compose.yml). Also it is needed to add an entry on the Web App´s application settings with the port´s value and name it "WEBSITES_PORT".
-
 ## (Re)Generate Swagger documentation
 ```
-swag init -g cmd/main.go
+make docs
 ```
+
+## Deploy a new environment
+The steps for creating and deploying a new cloud environment on Azure are the following:
+1. Create an Azure Web App on Azure Portal and name it go-mongo-restapi-{env}, where {env} is the name of the new environment.
+2. Add an entry on the Web App´s Configuration with name "WEBSITES_PORT" and value "443".
+3. On the Web App´s App Service Logs, select "File system" and configure the Quota (MB) and the Retention Period (Days) for enabling app logs.
+4. On the Web App´s Deployment Center, select Github Actions option. Authorize the Github account if required. Then select the repository name, the registry source (Azure Container Registry, Docker Hub, etc.) and type the image name in the following format: go-mongo-restapi_api.{env}. Make sure that the secrets for accessing to the registry source are provided on Github´s repository settings.
+5. Download the publish profile on Web App´s overview and add a secret entry on Github´s repository settings with its value and name it "AZUREAPPSERVICE_PUBLISHPROFILE_{ENV}".
+6. On Github´s repository settings, add a new environment named {env} and configure a manual approval protection rule.
+7. On the source code, create two files named docker-compose.{env}.yml and a config.{env}.json in the docker and config folders, respectively, and add the environment values in them. Make sure that the running port is "443" in both files.
+8. Modify the CI/CD Pipeline to include build-{env} and deploy-{env} jobs, using the proper environment names and secrets.
 
 ## Author
 Sergi Canet Vela

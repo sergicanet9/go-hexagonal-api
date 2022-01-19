@@ -3,9 +3,7 @@
     "info": {
         "description": "Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework",
         "title": "Go Mongo RestAPI",
-        "contact": {},
-        "license": {},
-        "version": "1.0"
+        "contact": {}
     },
     "paths": {
         "/api/claims": {
@@ -328,7 +326,6 @@
                     "type": "string"
                 },
                 "user": {
-                    "type": "object",
                     "$ref": "#/definitions/responses.User"
                 }
             }

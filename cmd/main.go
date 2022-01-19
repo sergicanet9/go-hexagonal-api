@@ -10,7 +10,6 @@ import (
 )
 
 // @title Go Mongo RestAPI
-// @version 1.0
 // @description Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework
 
 // @securityDefinitions.apikey Bearer
