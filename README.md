@@ -31,7 +31,7 @@ Then open {address}:{port}/swagger/index.html in the browser, where {address} an
 ```
 make up
 ```
-Then open {address}:{port}/swagger/index.html in the browser, where {address} and {port} are the values specified in config.local.json.
+Then open {address}:{port}/swagger/index.html in the browser, where {address} and {port} are the values specified in [config.local.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/config/config.local.json)
 <br />
 <br />
 NOTES:

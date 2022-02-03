@@ -1,12 +1,12 @@
 definitions:
-  requests.Login:
+  requests.LoginUser:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  requests.Update:
+  requests.UpdateUser:
     properties:
       claims:
         items:
@@ -43,7 +43,7 @@ definitions:
       insertedId:
         type: string
     type: object
-  responses.Login:
+  responses.LoginUser:
     properties:
       token:
         type: string
@@ -167,7 +167,7 @@ paths:
         name: User
         required: true
         schema:
-          $ref: '#/definitions/requests.Update'
+          $ref: '#/definitions/requests.UpdateUser'
       responses:
         "200":
           description: OK
@@ -215,12 +215,12 @@ paths:
         name: login
         required: true
         schema:
-          $ref: '#/definitions/requests.Login'
+          $ref: '#/definitions/requests.LoginUser'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.Login'
+            $ref: '#/definitions/responses.LoginUser'
       summary: Login user
       tags:
       - Users

@@ -28,12 +28,12 @@ func SetUserRoutes(cfg config.Config, r *mux.Router, s user.UserService) {
 // @Summary Login user
 // @Description Logs in an user
 // @Tags Users
-// @Param login body requests.Login true "Login request"
-// @Success 200 {object} responses.Login "OK"
+// @Param login body requests.LoginUser true "Login request"
+// @Success 200 {object} responses.LoginUser "OK"
 // @Router /api/users/login [post]
 func loginUser(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
-		var credentials requests.Login
+		var credentials requests.LoginUser
 		err := json.NewDecoder(r.Body).Decode(&credentials)
 		if err != nil {
 			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
@@ -133,13 +133,13 @@ func getUserByID(s user.UserService) http.Handler {
 // @Tags Users
 // @Security Bearer
 // @Param id path string true "ID"
-// @Param User body requests.Update true "User"
+// @Param User body requests.UpdateUser true "User"
 // @Success 200 "OK"
 // @Router /api/users/{id} [patch]
 func updateUser(s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		var params = mux.Vars(r)
-		var user requests.Update
+		var user requests.UpdateUser
 		err := json.NewDecoder(r.Body).Decode(&user)
 		if err != nil {
 			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())

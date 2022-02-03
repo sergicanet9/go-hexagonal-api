@@ -161,7 +161,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.Login"
+                            "$ref": "#/definitions/requests.LoginUser"
                         }
                     }
                 ],
@@ -169,7 +169,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.Login"
+                            "$ref": "#/definitions/responses.LoginUser"
                         }
                     }
                 }
@@ -256,7 +256,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.Update"
+                            "$ref": "#/definitions/requests.UpdateUser"
                         }
                     }
                 ],
@@ -269,7 +269,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "requests.Login": {
+        "requests.LoginUser": {
             "type": "object",
             "properties": {
                 "email": {
@@ -280,7 +280,7 @@ var doc = `{
                 }
             }
         },
-        "requests.Update": {
+        "requests.UpdateUser": {
             "type": "object",
             "properties": {
                 "claims": {
@@ -337,7 +337,7 @@ var doc = `{
                 }
             }
         },
-        "responses.Login": {
+        "responses.LoginUser": {
             "type": "object",
             "properties": {
                 "token": {

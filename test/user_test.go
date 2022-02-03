@@ -20,7 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Test_Login_Ok(t *testing.T) {
+func Test_LoginUser_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
@@ -60,7 +60,7 @@ func Test_Login_Ok(t *testing.T) {
 	if want, got := http.StatusOK, resp.StatusCode; want != got {
 		t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 	}
-	var response responses.Login
+	var response responses.LoginUser
 	if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 	}
@@ -68,7 +68,7 @@ func Test_Login_Ok(t *testing.T) {
 	assert.NotEmpty(t, response.Token)
 }
 
-func Test_Create_Created(t *testing.T) {
+func Test_CreateUser_Created(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
@@ -147,7 +147,7 @@ func Test_GetAllUsers_Ok(t *testing.T) {
 	assert.NotNil(t, response)
 }
 
-func Test_GetByEmail_Ok(t *testing.T) {
+func Test_GetUserByEmail_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
@@ -185,7 +185,7 @@ func Test_GetByEmail_Ok(t *testing.T) {
 	assert.Equal(t, testUser.Email, response.Email)
 }
 
-func Test_GetByID_Ok(t *testing.T) {
+func Test_GetUserByID_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
@@ -223,7 +223,7 @@ func Test_GetByID_Ok(t *testing.T) {
 	assert.Equal(t, testUser.ID, response.ID)
 }
 
-func Test_Update_Ok(t *testing.T) {
+func Test_UpdateUser_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
@@ -271,7 +271,7 @@ func Test_Update_Ok(t *testing.T) {
 	assert.Equal(t, testUser.Email, updatedUser.Email)
 }
 
-func Test_Delete_Ok(t *testing.T) {
+func Test_DeleteUser_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
@@ -312,7 +312,7 @@ func Test_Delete_Ok(t *testing.T) {
 	assert.Equal(t, mongo.ErrNoDocuments, err)
 }
 
-func Test_GetClaims_Ok(t *testing.T) {
+func Test_GetUserClaims_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 

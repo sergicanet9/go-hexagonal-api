@@ -18,13 +18,13 @@ type User struct {
 	UpdatedAt    time.Time          `json:"-"`
 }
 
-// Login request struct
-type Login struct {
+// LoginUser request struct
+type LoginUser struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type Update struct {
+type UpdateUser struct {
 	ID          *primitive.ObjectID `json:"-"`
 	Name        *string             `json:"name"`
 	Surnames    *string             `json:"surnames"`

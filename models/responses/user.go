@@ -18,13 +18,8 @@ type User struct {
 	UpdatedAt    time.Time          `json:"updatedAt"`
 }
 
-// Login response struct
-type Login struct {
+// LoginUser response struct
+type LoginUser struct {
 	User  User   `json:"user"`
 	Token string `json:"token"`
-}
-
-// Creation response struct
-type Creation struct {
-	InsertedID primitive.ObjectID `json:"insertedId"`
 }

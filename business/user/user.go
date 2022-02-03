@@ -29,12 +29,12 @@ type Service struct {
 
 // UserService interface represents a UserService
 type UserService interface {
-	Login(credentials requests.Login) (responses.Login, error)
+	Login(credentials requests.LoginUser) (responses.LoginUser, error)
 	Create(u requests.User) (responses.Creation, error)
 	GetAll() ([]responses.User, error)
 	GetByEmail(email string) (responses.User, error)
 	GetByID(ID string) (responses.User, error)
-	Update(ID string, u requests.Update) error
+	Update(ID string, u requests.UpdateUser) error
 	Delete(ID string) error
 	GetClaims() map[int]string
 	AtomicTransationProof() error
@@ -50,30 +50,30 @@ func NewUserService(cfg config.Config, db *mongo.Database) *Service {
 }
 
 // Login user
-func (s *Service) Login(credentials requests.Login) (responses.Login, error) {
+func (s *Service) Login(credentials requests.LoginUser) (responses.LoginUser, error) {
 	filter := bson.M{"email": credentials.Email}
 	result, err := s.repo.Get(context.Background(), filter)
 	if err != nil {
-		return responses.Login{}, err
+		return responses.LoginUser{}, err
 	}
 	if len(result) < 1 {
-		return responses.Login{}, fmt.Errorf("email not found")
+		return responses.LoginUser{}, fmt.Errorf("email not found")
 	}
 	user := responses.User(**result[0].(**entities.User))
 
 	if checkPasswordHash(credentials.Password, user.PasswordHash) {
 		token, err := createToken(user.ID.Hex(), s.config.JWTSecret, user.Claims)
 		if err != nil {
-			return responses.Login{}, err
+			return responses.LoginUser{}, err
 		}
 
-		result := responses.Login{
+		result := responses.LoginUser{
 			User:  user,
 			Token: token,
 		}
 		return result, nil
 	}
-	return responses.Login{}, fmt.Errorf("incorrect password")
+	return responses.LoginUser{}, fmt.Errorf("incorrect password")
 }
 
 //Create user
@@ -139,7 +139,7 @@ func (s *Service) GetByID(ID string) (responses.User, error) {
 }
 
 // Update user
-func (s *Service) Update(ID string, u requests.Update) error {
+func (s *Service) Update(ID string, u requests.UpdateUser) error {
 	result, err := s.repo.GetByID(context.Background(), ID)
 	if err != nil {
 		return err
