@@ -4,6 +4,10 @@ github.com/sergicanet9/go-mongo-restapi/models/entities/user.go:23.35,25.2 1 0
 github.com/sergicanet9/go-mongo-restapi/models/entities/user.go:27.33,29.45 2 1
 github.com/sergicanet9/go-mongo-restapi/models/entities/user.go:32.2,32.15 1 1
 github.com/sergicanet9/go-mongo-restapi/models/entities/user.go:29.45,31.3 1 1
+github.com/sergicanet9/go-mongo-restapi/api/api.go:24.45,35.16 6 1
+github.com/sergicanet9/go-mongo-restapi/api/api.go:39.2,40.57 2 1
+github.com/sergicanet9/go-mongo-restapi/api/api.go:35.16,37.3 1 0
+github.com/sergicanet9/go-mongo-restapi/api/api.go:44.21,49.2 4 1
 github.com/sergicanet9/go-mongo-restapi/business/user/user.go:44.69,50.2 1 1
 github.com/sergicanet9/go-mongo-restapi/business/user/user.go:53.86,56.16 3 1
 github.com/sergicanet9/go-mongo-restapi/business/user/user.go:59.2,59.21 1 1
@@ -151,7 +155,3 @@ github.com/sergicanet9/go-mongo-restapi/config/config.go:43.45,45.3 1 0
 github.com/sergicanet9/go-mongo-restapi/config/config.go:48.16,50.3 1 0
 github.com/sergicanet9/go-mongo-restapi/config/config.go:54.36,56.3 1 0
 github.com/sergicanet9/go-mongo-restapi/config/config.go:59.16,61.3 1 0
-github.com/sergicanet9/go-mongo-restapi/api/api.go:24.45,35.16 6 1
-github.com/sergicanet9/go-mongo-restapi/api/api.go:39.2,40.57 2 1
-github.com/sergicanet9/go-mongo-restapi/api/api.go:35.16,37.3 1 0
-github.com/sergicanet9/go-mongo-restapi/api/api.go:44.21,49.2 4 1

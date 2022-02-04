@@ -52,7 +52,7 @@ func NewUserService(cfg config.Config, db *mongo.Database) *Service {
 // Login user
 func (s *Service) Login(credentials requests.LoginUser) (responses.LoginUser, error) {
 	filter := bson.M{"email": credentials.Email}
-	result, err := s.repo.Get(context.Background(), filter)
+	result, err := s.repo.Get(context.Background(), filter, nil, nil)
 	if err != nil {
 		return responses.LoginUser{}, err
 	}
@@ -101,7 +101,7 @@ func (s *Service) Create(u requests.User) (responses.Creation, error) {
 
 // GetAll users
 func (s *Service) GetAll() ([]responses.User, error) {
-	result, err := s.repo.Get(context.Background(), bson.M{})
+	result, err := s.repo.Get(context.Background(), bson.M{}, nil, nil)
 	if err != nil {
 		return []responses.User{}, err
 	}
@@ -117,7 +117,7 @@ func (s *Service) GetAll() ([]responses.User, error) {
 //GetByEmail user
 func (s *Service) GetByEmail(email string) (responses.User, error) {
 	filter := bson.M{"email": email}
-	result, err := s.repo.Get(context.Background(), filter)
+	result, err := s.repo.Get(context.Background(), filter, nil, nil)
 	if err != nil {
 		return responses.User{}, err
 	}
