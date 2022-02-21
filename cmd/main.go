@@ -18,13 +18,14 @@ import (
 
 func main() {
 	defaultPath := "."
-	defaultEnv := "local"
-	envF := flag.String("env", defaultEnv, "environment")
+	defaultEnv, defaultV := "local", "debug"
+	environmentF := flag.String("env", defaultEnv, "environment")
+	versionF := flag.String("v", defaultV, "version")
 	flag.Parse()
 
-	cfg, err := config.ReadConfig(*envF, defaultPath)
+	cfg, err := config.ReadConfig(*environmentF, *versionF, defaultPath)
 	if err != nil {
-		log.Fatal(fmt.Errorf("cannot parse config file in path %s for env %s: %w", defaultPath, *envF, err))
+		log.Fatal(fmt.Errorf("cannot parse config file in path %s for env %s: %w", defaultPath, *environmentF, err))
 	}
 
 	a := api.API{}

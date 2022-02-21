@@ -98,7 +98,8 @@ func New(t *testing.T) config.Config {
 }
 
 func testConfig() (c config.Config, err error) {
-	c.Env = "Integration tests"
+	c.Environment = "Integration tests"
+	c.Version = "Integration tests"
 
 	port, err := freePort()
 	if err != nil {

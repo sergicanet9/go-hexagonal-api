@@ -46,6 +46,20 @@ var doc = `{
                 }
             }
         },
+        "/api/health": {
+            "get": {
+                "description": "Runs a Health Check",
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health Check",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/users": {
             "get": {
                 "security": [

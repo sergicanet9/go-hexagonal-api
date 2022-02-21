@@ -36,13 +36,15 @@ func (a *API) Initialize(cfg config.Config) {
 		log.Fatal(err)
 	}
 
+	handlers.SetHealthRoutes(a.config, a.router)
+
 	userService := user.NewUserService(a.config, db)
 	handlers.SetUserRoutes(a.config, a.router, userService)
 }
 
 // Run API
 func (a *API) Run() {
-	log.Printf("Environment: %s", a.config.Env)
+	log.Printf("Environment: %s", a.config.Environment)
 	log.Printf("Listening on port %d", a.config.Port)
 	log.Printf("Open %s:%d/swagger/index.html in the browser", a.config.Address, a.config.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), a.router))

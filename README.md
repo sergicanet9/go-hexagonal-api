@@ -13,7 +13,7 @@ Provides:
 
 ## Run and debug the application locally
 ```
-    go run cmd/main.go -env={env}
+    go run cmd/main.go -env={env} -v={version}
 ```
 or:
 ```
@@ -24,7 +24,7 @@ Then open {address}:{port}/swagger/index.html in the browser, where {address} an
 <br />
 <br />
  NOTES:
-- The env flag is optional. Default value: "local".
+- The env and v flags are optional. Default values, respectively: "local", "debug".
 - For debugging the application with Visual Studio Code´s build-in debugger, select Run and Debug on the Debug start view or press F5. The env flag can be changed in the debugging configuration provided in [launch.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/.vscode/launch.json).
 
 ## Run the application in a local docker container
@@ -35,7 +35,7 @@ Then open {address}:{port}/swagger/index.html in the browser, where {address} an
 <br />
 <br />
 NOTES:
-- When running this command, the docker image will be built using the value "local" for the env flag.
+- When running this command, the docker image will be built using the value "local" for the env flag and the current git branch name for the v flag.
 
 ### Stop and remove the running container
 ```

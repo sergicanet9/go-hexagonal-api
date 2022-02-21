@@ -87,6 +87,15 @@ paths:
       summary: Get claims
       tags:
       - Users
+  /api/health:
+    get:
+      description: Runs a Health Check
+      responses:
+        "200":
+          description: OK
+      summary: Health Check
+      tags:
+      - Health
   /api/users:
     get:
       description: Gets all the users

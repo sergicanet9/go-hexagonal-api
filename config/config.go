@@ -9,7 +9,8 @@ import (
 )
 
 type Config struct {
-	Env                string
+	Environment        string
+	Version            string
 	Address            string
 	Port               int
 	DBConnectionString string
@@ -20,9 +21,10 @@ type Config struct {
 // ReadConfig from the configPath passed as an argument. If the config is empty, will use config/config.json
 // if env is passed will load configuration file using the env as follows : config/config.{env}.json.
 // A default value can be specified in the configuration and override it in the environment configuration.
-func ReadConfig(env string, dir string) (Config, error) {
+func ReadConfig(env, version string, dir string) (Config, error) {
 	var c Config
-	c.Env = env
+	c.Environment = env
+	c.Version = version
 	configPath := path.Join(dir, "config")
 
 	err := c.loadJSON(path.Join(configPath, "config.json"))

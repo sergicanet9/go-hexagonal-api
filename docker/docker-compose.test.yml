@@ -4,5 +4,6 @@ services:
     build:
       args:
         environment: test
+        version: $TAG
     ports:
       - "443:443"
