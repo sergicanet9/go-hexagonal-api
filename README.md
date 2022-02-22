@@ -19,7 +19,7 @@ Provides:
 or:
 ```
 go build cmd/main.go
- ./main -env={env}
+ ./main -env={env} -v={version}
 ```
 Then open {address}:{port}/swagger/index.html in the browser, where {address} and {port} are the values specified in the corresponding config.{env}.json.
 <br />
