@@ -26,7 +26,7 @@ Then open {address}:{port}/swagger/index.html in the browser, where {address} an
 <br />
  NOTES:
 - The env and v flags are optional. Default values, respectively: "local", "debug".
-- For debugging the application with Visual Studio Code´s build-in debugger, select Run and Debug on the Debug start view or press F5. The env flag can be changed in the debugging configuration provided in [launch.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/.vscode/launch.json).
+- For debugging the application with Visual Studio Code´s build-in debugger, select Run and Debug on the Debug start view or press F5. The flags can be changed in the debugging configuration provided in [launch.json](https://github.com/sergicanet9/go-mongo-restapi/blob/main/.vscode/launch.json).
 
 ## Run the application in a local docker container
 ```
