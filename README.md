@@ -10,6 +10,7 @@ Provides:
 - Dockerized app
 - Integration tests
 - CI/CD with Github Actions
+- Async process for health checking
 
 ## Run and debug the application locally
 ```

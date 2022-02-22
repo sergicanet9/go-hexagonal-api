@@ -2,11 +2,18 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
+	"time"
 )
+
+type Async struct {
+	Run      bool
+	Interval Duration
+}
 
 type Config struct {
 	Environment        string
@@ -16,6 +23,7 @@ type Config struct {
 	DBConnectionString string
 	DBName             string
 	JWTSecret          string
+	Async              Async
 }
 
 // ReadConfig from the configPath passed as an argument. If the config is empty, will use config/config.json
@@ -62,5 +70,32 @@ func (c *Config) loadJSON(filePath string) error {
 		return fmt.Errorf("error unmarshaling file %v: %w", filePath, err)
 	}
 
+	return nil
+}
+
+// Duration allows to unmarshal time into time.Duration
+// https://github.com/golang/go/issues/10275
+type Duration struct {
+	time.Duration
+}
+
+func (d *Duration) UnmarshalJSON(b []byte) (err error) {
+	var v interface{}
+	if err = json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+
+	switch value := v.(type) {
+	case float64:
+		d.Duration = time.Duration(value)
+	case string:
+		d.Duration, err = time.ParseDuration(value)
+		if err != nil {
+			return err
+		}
+		return nil
+	default:
+		return errors.New("invalid duration")
+	}
 	return nil
 }
