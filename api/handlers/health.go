@@ -9,7 +9,7 @@ import (
 	infrastructure "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
 )
 
-// SetUserRoutes creates user routes
+// SetHealthRoutes creates health routes
 func SetHealthRoutes(cfg config.Config, r *mux.Router) {
 	r.Handle("/api/health", healthCheck(cfg)).Methods(http.MethodGet)
 }
