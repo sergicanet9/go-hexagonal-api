@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -10,8 +11,8 @@ import (
 )
 
 // SetHealthRoutes creates health routes
-func SetHealthRoutes(cfg config.Config, r *mux.Router) {
-	r.Handle("/api/health", healthCheck(cfg)).Methods(http.MethodGet)
+func SetHealthRoutes(ctx context.Context, cfg config.Config, r *mux.Router) {
+	r.Handle("/api/health", healthCheck(ctx, cfg)).Methods(http.MethodGet)
 }
 
 // @Summary Health Check
@@ -19,21 +20,26 @@ func SetHealthRoutes(cfg config.Config, r *mux.Router) {
 // @Tags Health
 // @Success 200 "OK"
 // @Router /api/health [get]
-func healthCheck(cfg config.Config) http.Handler {
+func healthCheck(ctx context.Context, cfg config.Config) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
-		if err := run(r, cfg); err != nil {
+		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
+		defer cancel()
+
+		if err := run(r, ctx, cfg); err != nil {
 			utils.ResponseError(w, r, http.StatusServiceUnavailable, err.Error())
+			return
 		}
 		utils.ResponseJSON(w, r, http.StatusOK, nil)
 	})
 }
 
-func run(r *http.Request, cfg config.Config) error {
+func run(r *http.Request, ctx context.Context, cfg config.Config) error {
 	r.Header.Add("Environment", cfg.Environment)
 	r.Header.Add("Version", cfg.Version)
 
-	if _, err := infrastructure.ConnectMongoDB(cfg.DBName, cfg.DBConnectionString); err != nil {
+	db, err := infrastructure.ConnectMongoDB(ctx, cfg.DBName, cfg.DBConnectionString)
+	if err != nil {
 		return err
 	}
-	return nil
+	return db.Client().Ping(ctx, nil)
 }

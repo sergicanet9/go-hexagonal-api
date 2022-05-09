@@ -7,14 +7,14 @@ import (
 	"net"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/pkg/errors"
 	"github.com/sergicanet9/go-mongo-restapi/api"
 	"github.com/sergicanet9/go-mongo-restapi/config"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	infrastructure "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
 )
 
 const (
@@ -57,12 +57,12 @@ func TestMain(m *testing.M) {
 	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	if err := pool.Retry(func() error {
 		var err error
-		client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectionString))
+		db, err := infrastructure.ConnectMongoDB(context.Background(), mongoDBName, connectionString)
 		if err != nil {
 			return err
 		}
 
-		return client.Ping(context.Background(), nil)
+		return db.Client().Ping(context.Background(), nil)
 	}); err != nil {
 		log.Fatalf("could not connect to docker: %s", err)
 	}
@@ -83,18 +83,18 @@ func TestMain(m *testing.M) {
 func New(t *testing.T) config.Config {
 	t.Helper()
 
-	c, err := testConfig()
+	cfg, err := testConfig()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	a := api.API{}
-	a.Initialize(c)
+	a.Initialize(context.Background(), cfg)
 	go func() {
 		a.Run()
 	}()
 
-	return c
+	return cfg
 }
 
 func testConfig() (c config.Config, err error) {
@@ -110,6 +110,7 @@ func testConfig() (c config.Config, err error) {
 	c.DBConnectionString = os.Getenv(mongoConnectionEnv)
 	c.DBName = mongoDBName
 	c.JWTSecret = jwtSecret
+	c.Timeout = config.Duration{Duration: 5 * time.Second}
 
 	return c, nil
 }

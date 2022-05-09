@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,7 +23,7 @@ type API struct {
 }
 
 // Initialize API
-func (a *API) Initialize(cfg config.Config) {
+func (a *API) Initialize(ctx context.Context, cfg config.Config) {
 	a.config = cfg
 
 	router := mux.NewRouter()
@@ -32,19 +33,19 @@ func (a *API) Initialize(cfg config.Config) {
 		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s:%d/swagger/doc.json", a.config.Address, a.config.Port))),
 	)
 
-	db, err := infrastructure.ConnectMongoDB(a.config.DBName, a.config.DBConnectionString)
+	db, err := infrastructure.ConnectMongoDB(ctx, a.config.DBName, a.config.DBConnectionString)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	handlers.SetHealthRoutes(a.config, a.router)
+	handlers.SetHealthRoutes(ctx, a.config, a.router)
 
 	userService := user.NewUserService(a.config, db)
-	handlers.SetUserRoutes(a.config, a.router, userService)
+	handlers.SetUserRoutes(ctx, a.config, a.router, userService)
 
 	if a.config.Async.Run {
 		async := async.NewAsync(a.config, db)
-		go async.Run()
+		go async.Run(ctx)
 	}
 }
 

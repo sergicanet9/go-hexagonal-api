@@ -356,7 +356,7 @@ func getNewTestUser() entities.User {
 }
 
 func insertUser(u *entities.User, dbname, connection string) error {
-	db, err := infrastructure.ConnectMongoDB(dbname, connection)
+	db, err := infrastructure.ConnectMongoDB(context.Background(), dbname, connection)
 	if err != nil {
 		return err
 	}
@@ -366,7 +366,7 @@ func insertUser(u *entities.User, dbname, connection string) error {
 }
 
 func findUser(ID primitive.ObjectID, dbname, connection string) (entities.User, error) {
-	db, err := infrastructure.ConnectMongoDB(dbname, connection)
+	db, err := infrastructure.ConnectMongoDB(context.Background(), dbname, connection)
 	if err != nil {
 		return entities.User{}, err
 	}

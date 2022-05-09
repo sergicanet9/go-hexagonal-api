@@ -29,15 +29,15 @@ type Service struct {
 
 // UserService interface represents a UserService
 type UserService interface {
-	Login(credentials requests.LoginUser) (responses.LoginUser, error)
-	Create(u requests.User) (responses.Creation, error)
-	GetAll() ([]responses.User, error)
-	GetByEmail(email string) (responses.User, error)
-	GetByID(ID string) (responses.User, error)
-	Update(ID string, u requests.UpdateUser) error
-	Delete(ID string) error
-	GetClaims() map[int]string
-	AtomicTransationProof() error
+	Login(ctx context.Context, credentials requests.LoginUser) (responses.LoginUser, error)
+	Create(ctx context.Context, u requests.User) (responses.Creation, error)
+	GetAll(ctx context.Context) ([]responses.User, error)
+	GetByEmail(ctx context.Context, email string) (responses.User, error)
+	GetByID(ctx context.Context, ID string) (responses.User, error)
+	Update(ctx context.Context, ID string, u requests.UpdateUser) error
+	Delete(ctx context.Context, ID string) error
+	GetClaims(ctx context.Context) (map[int]string, error)
+	AtomicTransationProof(ctx context.Context) error
 }
 
 // NewUserService creates a new user service
@@ -50,9 +50,9 @@ func NewUserService(cfg config.Config, db *mongo.Database) *Service {
 }
 
 // Login user
-func (s *Service) Login(credentials requests.LoginUser) (responses.LoginUser, error) {
+func (s *Service) Login(ctx context.Context, credentials requests.LoginUser) (responses.LoginUser, error) {
 	filter := bson.M{"email": credentials.Email}
-	result, err := s.repo.Get(context.Background(), filter, nil, nil)
+	result, err := s.repo.Get(ctx, filter, nil, nil)
 	if err != nil {
 		return responses.LoginUser{}, err
 	}
@@ -77,7 +77,7 @@ func (s *Service) Login(credentials requests.LoginUser) (responses.LoginUser, er
 }
 
 //Create user
-func (s *Service) Create(u requests.User) (responses.Creation, error) {
+func (s *Service) Create(ctx context.Context, u requests.User) (responses.Creation, error) {
 	err := hashPassword(&u.PasswordHash)
 	if err != nil {
 		return responses.Creation{}, err
@@ -92,7 +92,7 @@ func (s *Service) Create(u requests.User) (responses.Creation, error) {
 	u.ID = primitive.NewObjectID()
 	u.CreatedAt = now
 	u.UpdatedAt = now
-	insertedID, err := s.repo.Create(context.Background(), entities.User(u))
+	insertedID, err := s.repo.Create(ctx, entities.User(u))
 	if err != nil {
 		return responses.Creation{}, err
 	}
@@ -100,8 +100,8 @@ func (s *Service) Create(u requests.User) (responses.Creation, error) {
 }
 
 // GetAll users
-func (s *Service) GetAll() ([]responses.User, error) {
-	result, err := s.repo.Get(context.Background(), bson.M{}, nil, nil)
+func (s *Service) GetAll(ctx context.Context) ([]responses.User, error) {
+	result, err := s.repo.Get(ctx, bson.M{}, nil, nil)
 	if err != nil {
 		return []responses.User{}, err
 	}
@@ -115,9 +115,9 @@ func (s *Service) GetAll() ([]responses.User, error) {
 }
 
 //GetByEmail user
-func (s *Service) GetByEmail(email string) (responses.User, error) {
+func (s *Service) GetByEmail(ctx context.Context, email string) (responses.User, error) {
 	filter := bson.M{"email": email}
-	result, err := s.repo.Get(context.Background(), filter, nil, nil)
+	result, err := s.repo.Get(ctx, filter, nil, nil)
 	if err != nil {
 		return responses.User{}, err
 	}
@@ -130,8 +130,8 @@ func (s *Service) GetByEmail(email string) (responses.User, error) {
 }
 
 // GetByID user
-func (s *Service) GetByID(ID string) (responses.User, error) {
-	user, err := s.repo.GetByID(context.Background(), ID)
+func (s *Service) GetByID(ctx context.Context, ID string) (responses.User, error) {
+	user, err := s.repo.GetByID(ctx, ID)
 	if err != nil {
 		return responses.User{}, err
 	}
@@ -139,8 +139,8 @@ func (s *Service) GetByID(ID string) (responses.User, error) {
 }
 
 // Update user
-func (s *Service) Update(ID string, u requests.UpdateUser) error {
-	result, err := s.repo.GetByID(context.Background(), ID)
+func (s *Service) Update(ctx context.Context, ID string, u requests.UpdateUser) error {
+	result, err := s.repo.GetByID(ctx, ID)
 	if err != nil {
 		return err
 	}
@@ -175,27 +175,27 @@ func (s *Service) Update(ID string, u requests.UpdateUser) error {
 	}
 	user.UpdatedAt = time.Now().UTC()
 
-	if err := s.repo.Update(context.Background(), ID, user, false); err != nil {
+	if err := s.repo.Update(ctx, ID, user, false); err != nil {
 		return err
 	}
 	return nil
 }
 
 // Delete user
-func (s *Service) Delete(ID string) error {
-	if err := s.repo.Delete(context.Background(), ID); err != nil {
+func (s *Service) Delete(ctx context.Context, ID string) error {
+	if err := s.repo.Delete(ctx, ID); err != nil {
 		return err
 	}
 	return nil
 }
 
 // Get user claims
-func (s *Service) GetClaims() map[int]string {
-	return entities.GetClaims()
+func (s *Service) GetClaims(ctx context.Context) (map[int]string, error) {
+	return entities.GetClaims(), s.db.Client().Ping(ctx, nil)
 }
 
 // AtomicTransationProof creates two entities atomically, creating a sessionContext
-func (s *Service) AtomicTransationProof() error {
+func (s *Service) AtomicTransationProof(ctx context.Context) error {
 	wc := writeconcern.New(writeconcern.WMajority())
 	rc := readconcern.Snapshot()
 	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
@@ -204,7 +204,7 @@ func (s *Service) AtomicTransationProof() error {
 	if err != nil {
 		return err
 	}
-	defer session.EndSession(context.Background())
+	defer session.EndSession(ctx)
 
 	user1Hash := "Entity1"
 	err = hashPassword(&user1Hash)

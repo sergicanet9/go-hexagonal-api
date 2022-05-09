@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -17,6 +18,9 @@ import (
 // @name Authorization
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	defaultPath := "."
 	defaultEnv, defaultV := "local", "debug"
 	environmentF := flag.String("env", defaultEnv, "environment")
@@ -29,6 +33,6 @@ func main() {
 	}
 
 	a := api.API{}
-	a.Initialize(cfg)
+	a.Initialize(ctx, cfg)
 	a.Run()
 }

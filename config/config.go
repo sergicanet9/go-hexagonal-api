@@ -23,6 +23,7 @@ type Config struct {
 	DBConnectionString string
 	DBName             string
 	JWTSecret          string
+	Timeout            Duration
 	Async              Async
 }
 

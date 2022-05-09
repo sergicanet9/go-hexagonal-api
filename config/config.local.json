@@ -1,4 +1,9 @@
 {
     "Address": "http://localhost",
-    "Port": 8080
+    "Port": 8080,
+    "Timeout": "2m",
+    "Async": {
+        "Run": true,
+        "Interval": "2m"
+    }
 }
