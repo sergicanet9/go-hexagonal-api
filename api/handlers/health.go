@@ -19,6 +19,8 @@ func SetHealthRoutes(ctx context.Context, cfg config.Config, r *mux.Router) {
 // @Description Runs a Health Check
 // @Tags Health
 // @Success 200 "OK"
+// @Failure 500 {object} object
+// @Failure 503 {object} object
 // @Router /api/health [get]
 func healthCheck(ctx context.Context, cfg config.Config) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
@@ -26,10 +28,10 @@ func healthCheck(ctx context.Context, cfg config.Config) http.Handler {
 		defer cancel()
 
 		if err := run(r, ctx, cfg); err != nil {
-			utils.ResponseError(w, r, http.StatusServiceUnavailable, err.Error())
+			utils.ResponseError(w, r, nil, http.StatusServiceUnavailable, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, nil)
+		utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
 	})
 }
 

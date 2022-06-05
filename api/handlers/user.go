@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -31,25 +32,33 @@ func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s user
 // @Tags Users
 // @Param login body requests.LoginUser true "Login request"
 // @Success 200 {object} responses.LoginUser "OK"
+// @Failure 400 {object} object
+// @Failure 500 {object} object
 // @Router /api/users/login [post]
 func loginUser(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
-		var credentials requests.LoginUser
-		err := json.NewDecoder(r.Body).Decode(&credentials)
+		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		var credentials requests.LoginUser
+		err = json.Unmarshal(body, &credentials)
+		if err != nil {
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		response, err := s.Login(ctx, credentials)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, response)
+		utils.ResponseJSON(w, r, body, http.StatusOK, response)
 	})
 }
 
@@ -58,25 +67,33 @@ func loginUser(ctx context.Context, cfg config.Config, s user.UserService) http.
 // @Tags Users
 // @Param user body requests.User true "New user to be created"
 // @Success 201 {object} responses.Creation "OK"
+// @Failure 400 {object} object
+// @Failure 500 {object} object
 // @Router /api/users [post]
 func createUser(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
-		var user requests.User
-		err := json.NewDecoder(r.Body).Decode(&user)
+		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		var user requests.User
+		err = json.Unmarshal(body, &user)
+		if err != nil {
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		result, err := s.Create(ctx, user)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusCreated, result)
+		utils.ResponseJSON(w, r, body, http.StatusCreated, result)
 	})
 }
 
@@ -85,6 +102,9 @@ func createUser(ctx context.Context, cfg config.Config, s user.UserService) http
 // @Tags Users
 // @Security Bearer
 // @Success 200 {array} responses.User "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
 // @Router /api/users [get]
 func getAllUsers(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
@@ -93,10 +113,10 @@ func getAllUsers(ctx context.Context, cfg config.Config, s user.UserService) htt
 
 		users, err := s.GetAll(ctx)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, users)
+		utils.ResponseJSON(w, r, nil, http.StatusOK, users)
 	})
 }
 
@@ -106,6 +126,9 @@ func getAllUsers(ctx context.Context, cfg config.Config, s user.UserService) htt
 // @Security Bearer
 // @Param email path string true "Email"
 // @Success 200 {object} responses.User "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
 // @Router /api/users/email/{email} [get]
 func getUserByEmail(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
@@ -115,10 +138,10 @@ func getUserByEmail(ctx context.Context, cfg config.Config, s user.UserService) 
 		var params = mux.Vars(r)
 		user, err := s.GetByEmail(ctx, params["email"])
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, user)
+		utils.ResponseJSON(w, r, nil, http.StatusOK, user)
 	})
 }
 
@@ -128,6 +151,9 @@ func getUserByEmail(ctx context.Context, cfg config.Config, s user.UserService) 
 // @Security Bearer
 // @Param id path string true "ID"
 // @Success 200 {object} responses.User "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
 // @Router /api/users/{id} [get]
 func getUserByID(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
@@ -137,10 +163,10 @@ func getUserByID(ctx context.Context, cfg config.Config, s user.UserService) htt
 		var params = mux.Vars(r)
 		user, err := s.GetByID(ctx, params["id"])
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, user)
+		utils.ResponseJSON(w, r, nil, http.StatusOK, user)
 	})
 }
 
@@ -151,26 +177,35 @@ func getUserByID(ctx context.Context, cfg config.Config, s user.UserService) htt
 // @Param id path string true "ID"
 // @Param User body requests.UpdateUser true "User"
 // @Success 200 "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
 // @Router /api/users/{id} [patch]
 func updateUser(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
+			return
+		}
+
 		var params = mux.Vars(r)
 		var user requests.UpdateUser
-		err := json.NewDecoder(r.Body).Decode(&user)
+		err = json.Unmarshal(body, &user)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		err = s.Update(ctx, params["id"], user)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, nil)
+		utils.ResponseJSON(w, r, body, http.StatusOK, nil)
 	})
 }
 
@@ -180,6 +215,9 @@ func updateUser(ctx context.Context, cfg config.Config, s user.UserService) http
 // @Security Bearer
 // @Param id path string true "ID"
 // @Success 200 "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
 // @Router /api/users/{id} [delete]
 func deleteUser(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
@@ -189,10 +227,10 @@ func deleteUser(ctx context.Context, cfg config.Config, s user.UserService) http
 		var params = mux.Vars(r)
 		err := s.Delete(ctx, params["id"])
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, nil)
+		utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
 	})
 }
 
@@ -201,6 +239,9 @@ func deleteUser(ctx context.Context, cfg config.Config, s user.UserService) http
 // @Tags Users
 // @Security Bearer
 // @Success 200 {object} object "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
 // @Router /api/claims [get]
 func getUserClaims(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
@@ -209,10 +250,10 @@ func getUserClaims(ctx context.Context, cfg config.Config, s user.UserService) h
 
 		claims, err := s.GetClaims(ctx)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, claims)
+		utils.ResponseJSON(w, r, nil, http.StatusOK, claims)
 	})
 }
 
@@ -221,6 +262,9 @@ func getUserClaims(ctx context.Context, cfg config.Config, s user.UserService) h
 // @Tags Users
 // @Security Bearer
 // @Success 200 "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
 // @Router /api/users/atomic [post]
 func atomicTransactionProof(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
@@ -229,9 +273,9 @@ func atomicTransactionProof(ctx context.Context, cfg config.Config, s user.UserS
 
 		err := s.AtomicTransationProof(ctx)
 		if err != nil {
-			utils.ResponseError(w, r, http.StatusBadRequest, err.Error())
+			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
 			return
 		}
-		utils.ResponseJSON(w, r, http.StatusOK, nil)
+		utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
 	})
 }

@@ -82,6 +82,18 @@ paths:
           description: OK
           schema:
             type: object
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       security:
       - Bearer: []
       summary: Get claims
@@ -93,6 +105,14 @@ paths:
       responses:
         "200":
           description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            type: object
       summary: Health Check
       tags:
       - Health
@@ -106,6 +126,18 @@ paths:
             items:
               $ref: '#/definitions/responses.User'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       security:
       - Bearer: []
       summary: Get all users
@@ -125,6 +157,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.Creation'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       summary: Create user
       tags:
       - Users
@@ -140,6 +180,18 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       security:
       - Bearer: []
       summary: Delete user
@@ -158,6 +210,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       security:
       - Bearer: []
       summary: Get user by ID
@@ -180,6 +244,18 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       security:
       - Bearer: []
       summary: Update user
@@ -191,6 +267,18 @@ paths:
       responses:
         "200":
           description: OK
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       security:
       - Bearer: []
       summary: Atomic transaction proof
@@ -210,6 +298,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       security:
       - Bearer: []
       summary: Get user by email
@@ -230,6 +330,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.LoginUser'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
       summary: Login user
       tags:
       - Users

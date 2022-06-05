@@ -138,8 +138,10 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/seccomp/libseccomp-golang v0.9.1/go.mod h1:GbW5+tmTXfcxTToHLXlScSlAvWlF4P2Ca7zGrPiEpWo=
-github.com/sergicanet9/scv-go-framework/v2 v2.7.2 h1:Kz0jIE8Cjj3QQuLL97Cil96Kz9lo6ffUffMjRZ/lpiQ=
-github.com/sergicanet9/scv-go-framework/v2 v2.7.2/go.mod h1:hkMB9U4VNY038BuO3nRdbQ1DXGQ7MpNq3momran3LAA=
+github.com/sergicanet9/scv-go-framework/v2 v2.8.0 h1:4XC0cNWMvI1G6AsMXKSlllcx6d69r8kvJKmo+vmEHgs=
+github.com/sergicanet9/scv-go-framework/v2 v2.8.0/go.mod h1:hkMB9U4VNY038BuO3nRdbQ1DXGQ7MpNq3momran3LAA=
+github.com/sergicanet9/scv-go-framework/v2 v2.8.1 h1:EJE+YCtYdqm6apaEMqqIQTK6+e1ctfUeO0LgmRns1Gk=
+github.com/sergicanet9/scv-go-framework/v2 v2.8.1/go.mod h1:hkMB9U4VNY038BuO3nRdbQ1DXGQ7MpNq3momran3LAA=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/sirupsen/logrus v1.8.1 h1:dJKuHgqk1NNQlqoA6BTlM1Wf9DOH3NBjQyu0h9+AZZE=
