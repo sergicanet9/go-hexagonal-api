@@ -1,4 +1,4 @@
-package repositories
+package mongo
 
 import (
 	"context"
@@ -16,14 +16,6 @@ type MongoRepository struct {
 	target     interface{}
 }
 
-// NewMongoRepository creates a mongodb repository
-func NewMongoRepository(collection *mongo.Collection, target interface{}) *MongoRepository {
-	return &MongoRepository{
-		collection,
-		target,
-	}
-}
-
 // Create creates an entity in the repository's collection
 func (r *MongoRepository) Create(ctx context.Context, entity interface{}) (string, error) {
 	result, err := r.collection.InsertOne(ctx, entity)
@@ -34,17 +26,17 @@ func (r *MongoRepository) Create(ctx context.Context, entity interface{}) (strin
 }
 
 // Get gets the documents mathing the filter in the repository's collection
-func (r *MongoRepository) Get(ctx context.Context, filter map[string]interface{}, skip, limit *int) ([]interface{}, error) {
+func (r *MongoRepository) Get(ctx context.Context, filter map[string]interface{}, skip, take *int) ([]interface{}, error) {
 	var result []interface{}
 
-	var skip64, limit64 int64
+	var skip64, take64 int64
 	if skip != nil {
 		skip64 = int64(*skip)
 	}
-	if limit != nil {
-		limit64 = int64(*limit)
+	if take != nil {
+		take64 = int64(*take)
 	}
-	cur, err := r.collection.Find(ctx, filter, &options.FindOptions{Skip: &skip64, Limit: &limit64})
+	cur, err := r.collection.Find(ctx, filter, &options.FindOptions{Skip: &skip64, Limit: &take64})
 	if err != nil {
 		return nil, err
 	}

@@ -9,20 +9,17 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/sergicanet9/go-mongo-restapi/config"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const contentType = "application/json"
 
 type Async struct {
 	config config.Config
-	db     *mongo.Database
 }
 
-func NewAsync(cfg config.Config, db *mongo.Database) *Async {
+func NewAsync(cfg config.Config) *Async {
 	return &Async{
 		config: cfg,
-		db:     db,
 	}
 }
 

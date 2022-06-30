@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-mongo-restapi/adapters/handlers"
-	"github.com/sergicanet9/go-mongo-restapi/adapters/repositories"
+	"github.com/sergicanet9/go-mongo-restapi/adapters/repositories/mongo"
 	"github.com/sergicanet9/go-mongo-restapi/async"
 	"github.com/sergicanet9/go-mongo-restapi/config"
 	"github.com/sergicanet9/go-mongo-restapi/core/domain"
@@ -36,18 +36,21 @@ func (a *API) Initialize(ctx context.Context, cfg config.Config) {
 	)
 
 	db, err := infrastructure.ConnectMongoDB(ctx, a.config.DBName, a.config.DBConnectionString)
+	// db, err := infrastructure.ConnectPostgresDB(a.config.DBConnectionString)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	handlers.SetHealthRoutes(ctx, a.config, a.router)
 
-	userRepo := repositories.NewMongoRepository(db.Collection(domain.CollectionNameUser), &domain.User{})
+	userRepo := mongo.NewUserRepository(db.Collection(domain.CollectionNameUser), &domain.User{})
 	userService := user.NewUserService(a.config, userRepo)
+	// userRepo := postgres.NewUserRepository(db)
+	// userService := user.NewUserService(a.config, userRepo)
 	handlers.SetUserRoutes(ctx, a.config, a.router, userService)
 
 	if a.config.Async.Run {
-		async := async.NewAsync(a.config, db)
+		async := async.NewAsync(a.config)
 		go async.Run(ctx)
 	}
 }

@@ -17,11 +17,11 @@ import (
 //Service struct
 type Service struct {
 	config     config.Config
-	repository ports.Repository
+	repository ports.UserRepository
 }
 
 // NewUserService creates a new user service
-func NewUserService(cfg config.Config, repo ports.Repository) *Service {
+func NewUserService(cfg config.Config, repo ports.UserRepository) *Service {
 	return &Service{
 		config:     cfg,
 		repository: repo,
@@ -69,7 +69,6 @@ func (s *Service) Create(ctx context.Context, u requests.User) (responses.Creati
 	}
 
 	now := time.Now().UTC()
-	//u.ID = primitive.NewObjectID() // TODO: do it in mongo adapter
 	u.CreatedAt = now
 	u.UpdatedAt = now
 	insertedID, err := s.repository.Create(ctx, domain.User(u))
@@ -104,9 +103,7 @@ func (s *Service) GetByEmail(ctx context.Context, email string) (responses.User,
 	if len(result) < 1 {
 		return responses.User{}, fmt.Errorf("email not found")
 	}
-
-	user := responses.User(**(result[0].(**domain.User)))
-	return user, nil
+	return responses.User(**(result[0].(**domain.User))), nil
 }
 
 // GetByID user
