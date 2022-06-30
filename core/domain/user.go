@@ -36,8 +36,8 @@ type User struct {
 	Name         string    `bson:"name"`
 	Surnames     string    `bson:"surnames"`
 	Email        string    `bson:"email"`
-	PasswordHash string    `bson:"passwordHash"`
-	Claims       []int     `bson:"claims"`
-	CreatedAt    time.Time `bson:"createdAt"`
-	UpdatedAt    time.Time `bson:"updatedAt"`
+	PasswordHash string    `bson:"password_hash"`
+	Claims       []int64   `bson:"claims"`
+	CreatedAt    time.Time `bson:"created_at"`
+	UpdatedAt    time.Time `bson:"updated_at"`
 }

@@ -3,8 +3,9 @@ REST API making use of own [scv-go-framework](https://github.com/sergicanet9/scv
 
 Provides:
 - Ports & Adapters Hexagonal Architecure
+- MongoDB and PostgreSQL adapters for persistent storage
+- Database migrations with Goose for PostgreSQL implementation
 - CRUD functionalities for user management
-- MongoDB persistent storage
 - Multi-environment configs
 - JWT authentication and claim-based authorization
 - Swagger UI documentation

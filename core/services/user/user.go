@@ -227,7 +227,7 @@ func (s *Service) GetClaims(ctx context.Context) (map[int]string, error) {
 // 	return err
 // }
 
-func createToken(userid string, jwtSecret string, claims []int) (string, error) {
+func createToken(userid string, jwtSecret string, claims []int64) (string, error) {
 	var err error
 	addClaims := jwt.MapClaims{}
 	addClaims["authorized"] = true
@@ -250,7 +250,7 @@ func createToken(userid string, jwtSecret string, claims []int) (string, error) 
 	return token, nil
 }
 
-func validateClaims(claims []int) error {
+func validateClaims(claims []int64) error {
 	for _, claim := range claims {
 		if ok := domain.Claim(claim).IsValid(); !ok {
 			return fmt.Errorf("not valid claim detected: %d", claim)

@@ -16,15 +16,16 @@ type Async struct {
 }
 
 type Config struct {
-	Environment        string
-	Version            string
-	Address            string
-	Port               int
-	DBConnectionString string
-	DBName             string
-	JWTSecret          string
-	Timeout            Duration
-	Async              Async
+	Environment              string
+	Version                  string
+	Address                  string
+	Port                     int
+	MongoConnectionString    string
+	PostgresConnectionString string
+	DBName                   string
+	JWTSecret                string
+	Timeout                  Duration
+	Async                    Async
 }
 
 // ReadConfig from the configPath passed as an argument. If the config is empty, will use config/config.json

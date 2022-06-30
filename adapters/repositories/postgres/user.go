@@ -8,7 +8,6 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/sergicanet9/go-mongo-restapi/core/domain"
-	"github.com/sergicanet9/go-mongo-restapi/core/dto/requests"
 )
 
 // UserRepository struct of an user repository for postgres
@@ -33,15 +32,15 @@ func (r *UserRepository) Create(ctx context.Context, entity interface{}) (string
 	q := `
     INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING id, name, surnames, email, password_hash, claims, created_at, updated_at;
+        RETURNING id;
     `
 
-	u := domain.User(entity.(requests.User))
+	u := entity.(domain.User)
 	row := r.db.QueryRowContext(
 		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), time.Now().UTC(), time.Now().UTC(),
 	)
 
-	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
+	err := row.Scan(&u.ID)
 	if err != nil {
 		return "", err
 	}
@@ -96,17 +95,25 @@ func (r *UserRepository) GetByID(ctx context.Context, ID string) (interface{}, e
 func (r *UserRepository) Update(ctx context.Context, ID string, entity interface{}, upsert bool) error {
 	q := `
 	UPDATE users set name=$1, surnames=$2, email=$3, password_hash=$4, claims=$5, updated_at=$6
-	    WHERE id=$7
-		RETURNING id, name, surnames, email, password_hash, claims, created_at, updated_at;
+	    WHERE id=$7;
 	`
 
-	u := domain.User(entity.(requests.User))
-	row := r.db.QueryRowContext(
+	u := entity.(domain.User)
+	result, err := r.db.ExecContext(
 		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), time.Now().UTC(), ID,
 	)
+	if err != nil {
+		return err
+	}
 
-	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
-	return err
+	rows, err := result.RowsAffected()
+	if err != nil {
+		fmt.Println("RowsAffected Error", err)
+	}
+	if rows < 1 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (r *UserRepository) Delete(ctx context.Context, ID string) error {

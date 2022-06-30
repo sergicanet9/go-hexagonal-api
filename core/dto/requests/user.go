@@ -11,7 +11,7 @@ type User struct {
 	Surnames     string    `json:"surnames"`
 	Email        string    `json:"email"`
 	PasswordHash string    `json:"password"`
-	Claims       []int     `json:"claims"`
+	Claims       []int64   `json:"claims"`
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
 }
@@ -29,7 +29,7 @@ type UpdateUser struct {
 	Email       *string    `json:"email"`
 	OldPassword *string    `json:"old_password"`
 	NewPassword *string    `json:"new_password"`
-	Claims      *[]int     `json:"claims"`
+	Claims      *[]int64   `json:"claims"`
 	CreatedAt   *time.Time `json:"-"`
 	UpdatedAt   *time.Time `json:"-"`
 }

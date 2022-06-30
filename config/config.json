@@ -1,5 +1,6 @@
 {
-    "DbConnectionString": "mongodb+srv://admin:admin@cluster0.qy8ev.mongodb.net/go-mongo-restapi?retryWrites=true&w=majority",
+    "MongoConnectionString": "mongodb+srv://admin:admin@cluster0.qy8ev.mongodb.net/go-mongo-restapi?retryWrites=true&w=majority",
+    "PostgresConnectionString": "host=scv-postgres.postgres.database.azure.com port=5432 dbname=postgresrestapi2 user=postgres password=Password2021 sslmode=require",
     "DbName": "go-mongo-restapi",
     "JWTSecret": "CTeemck6Gg",
     "Timeout": "5s",

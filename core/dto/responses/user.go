@@ -11,9 +11,9 @@ type User struct {
 	Surnames     string    `json:"surnames"`
 	Email        string    `json:"email"`
 	PasswordHash string    `json:"-"`
-	Claims       []int     `json:"claims"`
-	CreatedAt    time.Time `json:"createdAt"`
-	UpdatedAt    time.Time `json:"updatedAt"`
+	Claims       []int64   `json:"claims"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // LoginUser response struct
