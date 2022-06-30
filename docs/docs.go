@@ -171,43 +171,6 @@ var doc = `{
                 }
             }
         },
-        "/api/users/atomic": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Inserts two users atomically",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Atomic transaction proof",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                }
-            }
-        },
         "/api/users/email/{email}": {
             "get": {
                 "security": [

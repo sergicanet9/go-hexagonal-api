@@ -261,29 +261,6 @@ paths:
       summary: Update user
       tags:
       - Users
-  /api/users/atomic:
-    post:
-      description: Inserts two users atomically
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-          schema:
-            type: object
-        "401":
-          description: Unauthorized
-          schema:
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            type: object
-      security:
-      - Bearer: []
-      summary: Atomic transaction proof
-      tags:
-      - Users
   /api/users/email/{email}:
     get:
       description: Gets a user by email

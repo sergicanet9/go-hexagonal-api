@@ -7,62 +7,42 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sergicanet9/go-mongo-restapi/config"
-	"github.com/sergicanet9/go-mongo-restapi/models/entities"
-	"github.com/sergicanet9/go-mongo-restapi/models/requests"
-	"github.com/sergicanet9/go-mongo-restapi/models/responses"
-	infrastructure "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readconcern"
-	"go.mongodb.org/mongo-driver/mongo/writeconcern"
+	"github.com/sergicanet9/go-mongo-restapi/core/domain"
+	"github.com/sergicanet9/go-mongo-restapi/core/dto/requests"
+	"github.com/sergicanet9/go-mongo-restapi/core/dto/responses"
+	"github.com/sergicanet9/go-mongo-restapi/core/ports"
 	"golang.org/x/crypto/bcrypt"
 )
 
 //Service struct
 type Service struct {
-	config config.Config
-	db     *mongo.Database
-	repo   infrastructure.MongoRepository
-}
-
-// UserService interface represents a UserService
-type UserService interface {
-	Login(ctx context.Context, credentials requests.LoginUser) (responses.LoginUser, error)
-	Create(ctx context.Context, u requests.User) (responses.Creation, error)
-	GetAll(ctx context.Context) ([]responses.User, error)
-	GetByEmail(ctx context.Context, email string) (responses.User, error)
-	GetByID(ctx context.Context, ID string) (responses.User, error)
-	Update(ctx context.Context, ID string, u requests.UpdateUser) error
-	Delete(ctx context.Context, ID string) error
-	GetClaims(ctx context.Context) (map[int]string, error)
-	AtomicTransationProof(ctx context.Context) error
+	config     config.Config
+	repository ports.Repository
 }
 
 // NewUserService creates a new user service
-func NewUserService(cfg config.Config, db *mongo.Database) *Service {
+func NewUserService(cfg config.Config, repo ports.Repository) *Service {
 	return &Service{
-		config: cfg,
-		db:     db,
-		repo:   *infrastructure.NewMongoRepository(db.Collection(entities.CollectionNameUser), &entities.User{}),
+		config:     cfg,
+		repository: repo,
 	}
 }
 
 // Login user
 func (s *Service) Login(ctx context.Context, credentials requests.LoginUser) (responses.LoginUser, error) {
-	filter := bson.M{"email": credentials.Email}
-	result, err := s.repo.Get(ctx, filter, nil, nil)
+	filter := map[string]interface{}{"email": credentials.Email}
+	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
 		return responses.LoginUser{}, err
 	}
 	if len(result) < 1 {
 		return responses.LoginUser{}, fmt.Errorf("email not found")
 	}
-	user := responses.User(**result[0].(**entities.User))
+
+	user := responses.User(**result[0].(**domain.User))
 
 	if checkPasswordHash(credentials.Password, user.PasswordHash) {
-		token, err := createToken(user.ID.Hex(), s.config.JWTSecret, user.Claims)
+		token, err := createToken(user.ID, s.config.JWTSecret, user.Claims)
 		if err != nil {
 			return responses.LoginUser{}, err
 		}
@@ -89,10 +69,10 @@ func (s *Service) Create(ctx context.Context, u requests.User) (responses.Creati
 	}
 
 	now := time.Now().UTC()
-	u.ID = primitive.NewObjectID()
+	//u.ID = primitive.NewObjectID() // TODO: do it in mongo adapter
 	u.CreatedAt = now
 	u.UpdatedAt = now
-	insertedID, err := s.repo.Create(ctx, entities.User(u))
+	insertedID, err := s.repository.Create(ctx, domain.User(u))
 	if err != nil {
 		return responses.Creation{}, err
 	}
@@ -101,14 +81,14 @@ func (s *Service) Create(ctx context.Context, u requests.User) (responses.Creati
 
 // GetAll users
 func (s *Service) GetAll(ctx context.Context) ([]responses.User, error) {
-	result, err := s.repo.Get(ctx, bson.M{}, nil, nil)
+	result, err := s.repository.Get(ctx, map[string]interface{}{}, nil, nil)
 	if err != nil {
 		return []responses.User{}, err
 	}
 
 	users := make([]responses.User, len(result))
 	for i, v := range result {
-		users[i] = responses.User(**(v.(**entities.User)))
+		users[i] = responses.User(**(v.(**domain.User)))
 	}
 
 	return users, nil
@@ -116,8 +96,8 @@ func (s *Service) GetAll(ctx context.Context) ([]responses.User, error) {
 
 //GetByEmail user
 func (s *Service) GetByEmail(ctx context.Context, email string) (responses.User, error) {
-	filter := bson.M{"email": email}
-	result, err := s.repo.Get(ctx, filter, nil, nil)
+	filter := map[string]interface{}{"email": email}
+	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
 		return responses.User{}, err
 	}
@@ -125,26 +105,26 @@ func (s *Service) GetByEmail(ctx context.Context, email string) (responses.User,
 		return responses.User{}, fmt.Errorf("email not found")
 	}
 
-	user := responses.User(**(result[0].(**entities.User)))
+	user := responses.User(**(result[0].(**domain.User)))
 	return user, nil
 }
 
 // GetByID user
 func (s *Service) GetByID(ctx context.Context, ID string) (responses.User, error) {
-	user, err := s.repo.GetByID(ctx, ID)
+	user, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
 		return responses.User{}, err
 	}
-	return responses.User(*user.(*entities.User)), nil
+	return responses.User(*user.(*domain.User)), nil
 }
 
 // Update user
 func (s *Service) Update(ctx context.Context, ID string, u requests.UpdateUser) error {
-	result, err := s.repo.GetByID(ctx, ID)
+	result, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
 		return err
 	}
-	user := *result.(*entities.User)
+	user := *result.(*domain.User)
 	if u.Name != nil {
 		user.Name = *u.Name
 	}
@@ -173,9 +153,10 @@ func (s *Service) Update(ctx context.Context, ID string, u requests.UpdateUser) 
 		}
 		user.Claims = *u.Claims
 	}
+	user.ID = ""
 	user.UpdatedAt = time.Now().UTC()
 
-	if err := s.repo.Update(ctx, ID, user, false); err != nil {
+	if err := s.repository.Update(ctx, ID, user, false); err != nil {
 		return err
 	}
 	return nil
@@ -183,73 +164,71 @@ func (s *Service) Update(ctx context.Context, ID string, u requests.UpdateUser) 
 
 // Delete user
 func (s *Service) Delete(ctx context.Context, ID string) error {
-	if err := s.repo.Delete(ctx, ID); err != nil {
-		return err
-	}
-	return nil
+	err := s.repository.Delete(ctx, ID)
+	return err
 }
 
 // Get user claims
 func (s *Service) GetClaims(ctx context.Context) (map[int]string, error) {
-	return entities.GetClaims(), s.db.Client().Ping(ctx, nil)
+	return domain.GetClaims(), nil
 }
 
-// AtomicTransationProof creates two entities atomically, creating a sessionContext
-func (s *Service) AtomicTransationProof(ctx context.Context) error {
-	wc := writeconcern.New(writeconcern.WMajority())
-	rc := readconcern.Snapshot()
-	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
+// // AtomicTransationProof creates two entities atomically, creating a sessionContext
+// func (s *Service) AtomicTransationProof(ctx context.Context) error { //TODO!!!
+// 	wc := writeconcern.New(writeconcern.WMajority())
+// 	rc := readconcern.Snapshot()
+// 	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
 
-	session, err := s.db.Client().StartSession()
-	if err != nil {
-		return err
-	}
-	defer session.EndSession(ctx)
+// 	session, err := s.db.Client().StartSession()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer session.EndSession(ctx)
 
-	user1Hash := "Entity1"
-	err = hashPassword(&user1Hash)
-	if err != nil {
-		return err
-	}
-	user2Hash := "Entity2"
-	err = hashPassword(&user2Hash)
-	if err != nil {
-		return err
-	}
+// 	user1Hash := "Entity1"
+// 	err = hashPassword(&user1Hash)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	user2Hash := "Entity2"
+// 	err = hashPassword(&user2Hash)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	callback := func(sessionContext mongo.SessionContext) (interface{}, error) {
-		_, err = s.repo.Create(sessionContext,
-			entities.User{
-				ID:           primitive.NewObjectID(),
-				Name:         "Entity1",
-				Surnames:     "Entity1",
-				Email:        "Entity1",
-				PasswordHash: user1Hash,
-				Claims:       nil,
-			})
-		if err != nil {
-			return nil, err
-		}
+// 	callback := func(sessionContext mongo.SessionContext) (interface{}, error) {
+// 		_, err = s.repository.Create(sessionContext,
+// 			domain.User{
+// 				ID:           primitive.NewObjectID().String(),
+// 				Name:         "Entity1",
+// 				Surnames:     "Entity1",
+// 				Email:        "Entity1",
+// 				PasswordHash: user1Hash,
+// 				Claims:       nil,
+// 			})
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		_, err = s.repo.Create(sessionContext,
-			entities.User{
-				ID:           primitive.NewObjectID(),
-				Name:         "Entity2",
-				Surnames:     "Entity2",
-				Email:        "Entity2",
-				PasswordHash: user2Hash,
-				Claims:       nil,
-			})
-		if err != nil {
-			return nil, err
-		}
+// 		_, err = s.repository.Create(sessionContext,
+// 			domain.User{
+// 				ID:           primitive.NewObjectID(),
+// 				Name:         "Entity2",
+// 				Surnames:     "Entity2",
+// 				Email:        "Entity2",
+// 				PasswordHash: user2Hash,
+// 				Claims:       nil,
+// 			})
+// 		if err != nil {
+// 			return nil, err
+// 		}
 
-		return nil, nil
-	}
+// 		return nil, nil
+// 	}
 
-	_, err = session.WithTransaction(context.Background(), callback, txnOpts)
-	return err
-}
+// 	_, err = session.WithTransaction(context.Background(), callback, txnOpts)
+// 	return err
+// }
 
 func createToken(userid string, jwtSecret string, claims []int) (string, error) {
 	var err error
@@ -263,7 +242,7 @@ func createToken(userid string, jwtSecret string, claims []int) (string, error) 
 		return "", err
 	}
 	for _, claim := range claims {
-		addClaims[entities.Claim(claim).String()] = true
+		addClaims[domain.Claim(claim).String()] = true
 	}
 
 	add := jwt.NewWithClaims(jwt.SigningMethodHS256, addClaims)
@@ -276,7 +255,7 @@ func createToken(userid string, jwtSecret string, claims []int) (string, error) 
 
 func validateClaims(claims []int) error {
 	for _, claim := range claims {
-		if ok := entities.Claim(claim).IsValid(); !ok {
+		if ok := domain.Claim(claim).IsValid(); !ok {
 			return fmt.Errorf("not valid claim detected: %d", claim)
 		}
 	}

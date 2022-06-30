@@ -1,9 +1,7 @@
-package entities
+package domain
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CollectionNameUser contains the name of the mongodb collection for the entity
@@ -34,12 +32,12 @@ func GetClaims() map[int]string {
 
 // User struct
 type User struct {
-	ID           primitive.ObjectID `bson:"_id"`
-	Name         string             `bson:"name"`
-	Surnames     string             `bson:"surnames"`
-	Email        string             `bson:"email"`
-	PasswordHash string             `bson:"passwordHash"`
-	Claims       []int              `bson:"claims"`
-	CreatedAt    time.Time          `bson:"createdAt"`
-	UpdatedAt    time.Time          `bson:"updatedAt"`
+	ID           string    `bson:"_id,omitempty"`
+	Name         string    `bson:"name"`
+	Surnames     string    `bson:"surnames"`
+	Email        string    `bson:"email"`
+	PasswordHash string    `bson:"passwordHash"`
+	Claims       []int     `bson:"claims"`
+	CreatedAt    time.Time `bson:"createdAt"`
+	UpdatedAt    time.Time `bson:"updatedAt"`
 }

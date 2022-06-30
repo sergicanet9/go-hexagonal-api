@@ -2,6 +2,7 @@
 REST API making use of own [scv-go-framework](https://github.com/sergicanet9/scv-go-framework) package.
 
 Provides:
+- Ports & Adapters Hexagonal Architecure
 - CRUD functionalities for user management
 - MongoDB persistent storage
 - Multi-environment configs
