@@ -1,4 +1,4 @@
-module github.com/sergicanet9/go-mongo-restapi
+module github.com/sergicanet9/go-hexagonal-api
 
 go 1.18
 

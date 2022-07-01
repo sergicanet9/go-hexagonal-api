@@ -12,8 +12,8 @@ import (
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/pkg/errors"
-	"github.com/sergicanet9/go-mongo-restapi/api"
-	"github.com/sergicanet9/go-mongo-restapi/config"
+	"github.com/sergicanet9/go-hexagonal-api/api"
+	"github.com/sergicanet9/go-hexagonal-api/config"
 	infrastructure "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
 )
 

@@ -578,7 +578,7 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "Go Mongo RestAPI",
+	Title:       "Go Hexagonal API",
 	Description: "Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework",
 }
 

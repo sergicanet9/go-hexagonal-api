@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/sergicanet9/go-mongo-restapi/api"
-	"github.com/sergicanet9/go-mongo-restapi/config"
+	"github.com/sergicanet9/go-hexagonal-api/api"
+	"github.com/sergicanet9/go-hexagonal-api/config"
 )
 
-// @title Go Mongo RestAPI
+// @title Go Hexagonal API
 // @description Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework
 
 // @securityDefinitions.apikey Bearer

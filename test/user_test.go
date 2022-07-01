@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/sergicanet9/go-mongo-restapi/models/entities"
-	"github.com/sergicanet9/go-mongo-restapi/models/requests"
-	"github.com/sergicanet9/go-mongo-restapi/models/responses"
+	"github.com/sergicanet9/go-hexagonal-api/models/entities"
+	"github.com/sergicanet9/go-hexagonal-api/models/requests"
+	"github.com/sergicanet9/go-hexagonal-api/models/responses"
 	infrastructure "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"

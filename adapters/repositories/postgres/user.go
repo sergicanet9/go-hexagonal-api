@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/sergicanet9/go-mongo-restapi/core/domain"
+	"github.com/sergicanet9/go-hexagonal-api/core/domain"
 )
 
 // UserRepository struct of an user repository for postgres

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/sergicanet9/go-mongo-restapi/config"
+	"github.com/sergicanet9/go-hexagonal-api/config"
 )
 
 const contentType = "application/json"

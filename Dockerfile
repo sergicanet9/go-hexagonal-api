@@ -15,7 +15,7 @@ ARG database
 ENV db $database
 
 # Set the Current Working Directory inside the container
-WORKDIR /app/go-mongo-restapi
+WORKDIR /app/go-hexagonal-api
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -27,7 +27,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o ./opt/go-mongo-restapi cmd/main.go
+RUN go build -o ./opt/go-hexagonal-api cmd/main.go
 
 # Command to run the executable
-CMD ["sh", "-c", "./opt/go-mongo-restapi -v $v -env $env -p $p -db $db"]
+CMD ["sh", "-c", "./opt/go-hexagonal-api -v $v -env $env -p $p -db $db"]

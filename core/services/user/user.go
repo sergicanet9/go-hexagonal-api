@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/sergicanet9/go-mongo-restapi/config"
-	"github.com/sergicanet9/go-mongo-restapi/core/domain"
-	"github.com/sergicanet9/go-mongo-restapi/core/dto/requests"
-	"github.com/sergicanet9/go-mongo-restapi/core/dto/responses"
-	"github.com/sergicanet9/go-mongo-restapi/core/ports"
+	"github.com/sergicanet9/go-hexagonal-api/config"
+	"github.com/sergicanet9/go-hexagonal-api/core/domain"
+	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
+	"github.com/sergicanet9/go-hexagonal-api/core/dto/responses"
+	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -3,8 +3,8 @@ package ports
 import (
 	"context"
 
-	"github.com/sergicanet9/go-mongo-restapi/core/dto/requests"
-	"github.com/sergicanet9/go-mongo-restapi/core/dto/responses"
+	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
+	"github.com/sergicanet9/go-hexagonal-api/core/dto/responses"
 )
 
 type UserService interface {

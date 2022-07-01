@@ -72,7 +72,7 @@ definitions:
 info:
   contact: {}
   description: Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework
-  title: Go Mongo RestAPI
+  title: Go Hexagonal API
 paths:
   /api/claims:
     get:

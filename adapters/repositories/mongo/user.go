@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 
-	"github.com/sergicanet9/go-mongo-restapi/core/domain"
+	"github.com/sergicanet9/go-hexagonal-api/core/domain"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readconcern"
