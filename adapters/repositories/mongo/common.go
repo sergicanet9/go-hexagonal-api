@@ -12,6 +12,7 @@ import (
 
 // MongoRepository struct of a mongo repository
 type MongoRepository struct {
+	db         *mongo.Database
 	collection *mongo.Collection
 	target     interface{}
 }

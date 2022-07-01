@@ -21,8 +21,8 @@ type Config struct {
 	Address                  string
 	Port                     int
 	MongoConnectionString    string
+	MongoDBName              string
 	PostgresConnectionString string
-	DBName                   string
 	JWTSecret                string
 	Timeout                  Duration
 	Async                    Async

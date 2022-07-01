@@ -39,7 +39,7 @@ func run(r *http.Request, ctx context.Context, cfg config.Config) error {
 	r.Header.Add("Environment", cfg.Environment)
 	r.Header.Add("Version", cfg.Version)
 
-	db, err := infrastructure.ConnectMongoDB(ctx, cfg.DBName, cfg.MongoConnectionString)
+	db, err := infrastructure.ConnectMongoDB(ctx, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		return err
 	}
