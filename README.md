@@ -1,8 +1,7 @@
 # go-hexagonal-api
-REST API with an hexagonal (ports & adapters) architecture making use of own [scv-go-framework](https://github.com/sergicanet9/scv-go-framework) package.
+REST API implementing Hexagonal Architecture (Ports & Adapters) making use of own [scv-go-framework](https://github.com/sergicanet9/scv-go-framework) package.
 
 Provides:
-- Ports & Adapters Hexagonal Architecure
 - MongoDB and PostgreSQL adapters for persistent storage decoupled from the business logic
 - Database migrations with Goose for PostgreSQL implementation
 - CRUD functionalities for user management
