@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   api:
-    image: go-hexagonal-restapi-$DB.$ENV:$VERSION
+    image: go-hexagonal-api-$DB.$ENV:$VERSION
     build:
       args:
         version: $VERSION
