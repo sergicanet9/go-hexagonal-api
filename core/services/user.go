@@ -1,4 +1,4 @@
-package user
+package services
 
 import (
 	"context"
@@ -14,22 +14,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//Service struct
-type Service struct {
+//UserService struct
+type UserService struct {
 	config     config.Config
 	repository ports.UserRepository
 }
 
 // NewUserService creates a new user service
-func NewUserService(cfg config.Config, repo ports.UserRepository) *Service {
-	return &Service{
+func NewUserService(cfg config.Config, repo ports.UserRepository) *UserService {
+	return &UserService{
 		config:     cfg,
 		repository: repo,
 	}
 }
 
 // Login user
-func (s *Service) Login(ctx context.Context, credentials requests.LoginUser) (responses.LoginUser, error) {
+func (s *UserService) Login(ctx context.Context, credentials requests.LoginUser) (responses.LoginUser, error) {
 	filter := map[string]interface{}{"email": credentials.Email}
 	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *Service) Login(ctx context.Context, credentials requests.LoginUser) (re
 }
 
 //Create user
-func (s *Service) Create(ctx context.Context, u requests.User) (responses.Creation, error) {
+func (s *UserService) Create(ctx context.Context, u requests.User) (responses.Creation, error) {
 	err := hashPassword(&u.PasswordHash)
 	if err != nil {
 		return responses.Creation{}, err
@@ -79,7 +79,7 @@ func (s *Service) Create(ctx context.Context, u requests.User) (responses.Creati
 }
 
 // GetAll users
-func (s *Service) GetAll(ctx context.Context) ([]responses.User, error) {
+func (s *UserService) GetAll(ctx context.Context) ([]responses.User, error) {
 	result, err := s.repository.Get(ctx, map[string]interface{}{}, nil, nil)
 	if err != nil {
 		return []responses.User{}, err
@@ -94,7 +94,7 @@ func (s *Service) GetAll(ctx context.Context) ([]responses.User, error) {
 }
 
 //GetByEmail user
-func (s *Service) GetByEmail(ctx context.Context, email string) (responses.User, error) {
+func (s *UserService) GetByEmail(ctx context.Context, email string) (responses.User, error) {
 	filter := map[string]interface{}{"email": email}
 	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
@@ -107,7 +107,7 @@ func (s *Service) GetByEmail(ctx context.Context, email string) (responses.User,
 }
 
 // GetByID user
-func (s *Service) GetByID(ctx context.Context, ID string) (responses.User, error) {
+func (s *UserService) GetByID(ctx context.Context, ID string) (responses.User, error) {
 	user, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
 		return responses.User{}, err
@@ -116,7 +116,7 @@ func (s *Service) GetByID(ctx context.Context, ID string) (responses.User, error
 }
 
 // Update user
-func (s *Service) Update(ctx context.Context, ID string, u requests.UpdateUser) error {
+func (s *UserService) Update(ctx context.Context, ID string, u requests.UpdateUser) error {
 	result, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
 		return err
@@ -158,18 +158,18 @@ func (s *Service) Update(ctx context.Context, ID string, u requests.UpdateUser) 
 }
 
 // Delete user
-func (s *Service) Delete(ctx context.Context, ID string) error {
+func (s *UserService) Delete(ctx context.Context, ID string) error {
 	err := s.repository.Delete(ctx, ID)
 	return err
 }
 
 // Get user claims
-func (s *Service) GetClaims(ctx context.Context) (map[int]string, error) {
+func (s *UserService) GetClaims(ctx context.Context) (map[int]string, error) {
 	return domain.GetClaims(), nil
 }
 
 // AtomicTransationProof creates two users atomically
-func (s *Service) AtomicTransationProof(ctx context.Context) error {
+func (s *UserService) AtomicTransationProof(ctx context.Context) error {
 	user1Hash := "Entity1"
 	err := hashPassword(&user1Hash)
 	if err != nil {
