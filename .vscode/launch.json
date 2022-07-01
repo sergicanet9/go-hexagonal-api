@@ -5,17 +5,39 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Launch with Mongo",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceRoot}/cmd",
             "cwd": "${workspaceRoot}",
             "args": [
+                "-v",
+                "debug",
                 "-env",
                 "local",
+                "-p",
+                "8080",
+                "-db",
+                "mongo"
+            ]
+        },
+        {
+            "name": "Launch with Postgres",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceRoot}/cmd",
+            "cwd": "${workspaceRoot}",
+            "args": [
                 "-v",
-                "debug"
+                "debug",
+                "-env",
+                "local",
+                "-p",
+                "8080",
+                "-db",
+                "postgres"
             ]
         }
     ]

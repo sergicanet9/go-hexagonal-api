@@ -1,4 +1,3 @@
 {
-    "Address": "https://go-mongo-restapi-dev.azurewebsites.net",
-    "Port": 443
+    "Address": "https://go-mongo-restapi-dev.azurewebsites.net"
 }

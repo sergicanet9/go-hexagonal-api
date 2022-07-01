@@ -5,10 +5,14 @@ RUN GOCACHE=OFF
 
 RUN apk add git
 
-ARG environment
-ENV env $environment
 ARG version
 ENV v $version
+ARG environment
+ENV env $environment
+ARG port
+ENV p $port
+ARG database
+ENV db $database
 
 # Set the Current Working Directory inside the container
 WORKDIR /app/go-mongo-restapi
@@ -26,4 +30,4 @@ COPY . .
 RUN go build -o ./opt/go-mongo-restapi cmd/main.go
 
 # Command to run the executable
-CMD ["sh", "-c", "./opt/go-mongo-restapi -env $env -v $v"]
+CMD ["sh", "-c", "./opt/go-mongo-restapi -v $v -env $env -p $p -db $db"]

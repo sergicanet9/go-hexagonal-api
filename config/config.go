@@ -16,10 +16,14 @@ type Async struct {
 }
 
 type Config struct {
-	Environment              string
-	Version                  string
+	// set by flags
+	Version     string
+	Environment string
+	Port        int
+	Database    string
+
+	// set in config files
 	Address                  string
-	Port                     int
 	MongoConnectionString    string
 	MongoDBName              string
 	PostgresConnectionString string
@@ -31,10 +35,12 @@ type Config struct {
 // ReadConfig from the configPath passed as an argument. If the config is empty, will use config/config.json
 // if env is passed will load configuration file using the env as follows : config/config.{env}.json.
 // A default value can be specified in the configuration and override it in the environment configuration.
-func ReadConfig(env, version string, dir string) (Config, error) {
+func ReadConfig(version, env string, port int, database string, dir string) (Config, error) {
 	var c Config
-	c.Environment = env
 	c.Version = version
+	c.Environment = env
+	c.Port = port
+	c.Database = database
 	configPath := path.Join(dir, "config")
 
 	err := c.loadJSON(path.Join(configPath, "config.json"))

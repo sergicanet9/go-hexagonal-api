@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  api:
+    image: go-hexagonal-restapi-$DB.$ENV:$VERSION
+    build:
+      args:
+        version: $VERSION
+        environment: $ENV
+        port: $PORT
+        database: $DB
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - $PORT:$PORT

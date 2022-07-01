@@ -1,9 +1,11 @@
 .PHONY: test docs
 
-up:
-	export TAG=$(shell git branch --show-current | xargs basename) && docker-compose -f docker/docker-compose.yml -f docker/docker-compose.local.yml up -d --build
+mongo-up:
+	export VERSION=$(shell git branch --show-current | xargs basename) && export ENV=local && export PORT=8080 && export DB=mongo && docker-compose up -d --build
+postgres-up:
+	export VERSION=$(shell git branch --show-current | xargs basename) && export ENV=local && export PORT=8080 && export DB=postgres && docker-compose up -d --build
 down:
-	docker-compose -f docker/docker-compose.yml down
+	export VERSION= && export ENV= && export PORT=0 && export DB= && docker-compose down
 test:
 	go test ./test -coverpkg=./... -coverprofile=test/coverage.out
 cover:

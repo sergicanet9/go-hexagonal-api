@@ -1,9 +1,0 @@
-services:
-  api:
-    image: scvregistry.azurecr.io/go-mongo-restapi_api.test:$TAG
-    build:
-      args:
-        environment: test
-        version: $TAG
-    ports:
-      - "443:443"

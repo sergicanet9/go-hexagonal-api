@@ -1,9 +1,0 @@
-services:
-  api:
-    image: go-mongo-restapi_api.local:$TAG
-    build:
-      args:
-        environment: local
-        version: $TAG
-    ports:
-      - "8080:8080"
