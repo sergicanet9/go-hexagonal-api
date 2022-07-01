@@ -3,7 +3,7 @@ REST API making use of own [scv-go-framework](https://github.com/sergicanet9/scv
 
 Provides:
 - Ports & Adapters Hexagonal Architecure
-- MongoDB and PostgreSQL adapters for persistent storage
+- MongoDB and PostgreSQL adapters for persistent storage decoupled from the business logic
 - Database migrations with Goose for PostgreSQL implementation
 - CRUD functionalities for user management
 - Multi-environment configs
@@ -12,7 +12,7 @@ Provides:
 - Dockerized app
 - Integration tests
 - CI/CD with Github Actions
-- Async process for health checking
+- Async process for periodical health checking
 
 ## Run and debug the application locally
 ```

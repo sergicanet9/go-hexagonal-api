@@ -16,5 +16,5 @@ type UserService interface {
 	Update(ctx context.Context, ID string, u requests.UpdateUser) error
 	Delete(ctx context.Context, ID string) error
 	GetClaims(ctx context.Context) (map[int]string, error)
-	// AtomicTransationProof(ctx context.Context) error
+	AtomicTransationProof(ctx context.Context) error
 }

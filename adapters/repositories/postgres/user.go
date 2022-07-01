@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/lib/pq"
 	"github.com/sergicanet9/go-mongo-restapi/core/domain"
@@ -24,10 +23,6 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Test(ctx context.Context) error {
-	return nil
-}
-
 func (r *UserRepository) Create(ctx context.Context, entity interface{}) (string, error) {
 	q := `
     INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
@@ -37,7 +32,7 @@ func (r *UserRepository) Create(ctx context.Context, entity interface{}) (string
 
 	u := entity.(domain.User)
 	row := r.db.QueryRowContext(
-		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), time.Now().UTC(), time.Now().UTC(),
+		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt,
 	)
 
 	err := row.Scan(&u.ID)
@@ -115,7 +110,7 @@ func (r *UserRepository) Update(ctx context.Context, ID string, entity interface
 
 	u := entity.(domain.User)
 	result, err := r.db.ExecContext(
-		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), time.Now().UTC(), ID,
+		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.UpdatedAt, ID,
 	)
 	if err != nil {
 		return err
@@ -145,6 +140,33 @@ func (r *UserRepository) Delete(ctx context.Context, ID string) error {
 	}
 	if rows < 1 {
 		return sql.ErrNoRows
+	}
+	return nil
+}
+
+func (r *UserRepository) InsertMany(ctx context.Context, entities []interface{}) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	// `tx` is an instance of `*sql.Tx` through which we can execute our queries
+
+	for _, entity := range entities {
+		u := entity.(domain.User)
+
+		// Here, the query is executed on the transaction instance, and not applied to the database yet
+		_, err = tx.ExecContext(ctx, "INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)", u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt)
+		if err != nil {
+			// Incase we find any error in the query execution, rollback the transaction
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Finally, if no errors are recieved from the queries, commit the transaction
+	// this applies the above changes to our database
+	if err := tx.Commit(); err != nil {
+		return err
 	}
 	return nil
 }

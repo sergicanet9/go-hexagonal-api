@@ -171,6 +171,43 @@ var doc = `{
                 }
             }
         },
+        "/api/users/atomic": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates two users atomically",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Atomic transaction proof",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/email/{email}": {
             "get": {
                 "security": [
@@ -471,7 +508,7 @@ var doc = `{
         "responses.Creation": {
             "type": "object",
             "properties": {
-                "insertedId": {
+                "inserted_id": {
                     "type": "string"
                 }
             }
@@ -496,7 +533,7 @@ var doc = `{
                         "type": "integer"
                     }
                 },
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "email": {
@@ -511,7 +548,7 @@ var doc = `{
                 "surnames": {
                     "type": "string"
                 },
-                "updatedAt": {
+                "updated_at": {
                     "type": "string"
                 }
             }

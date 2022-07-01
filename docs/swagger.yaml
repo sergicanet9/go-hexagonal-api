@@ -40,7 +40,7 @@ definitions:
     type: object
   responses.Creation:
     properties:
-      insertedId:
+      inserted_id:
         type: string
     type: object
   responses.LoginUser:
@@ -56,7 +56,7 @@ definitions:
         items:
           type: integer
         type: array
-      createdAt:
+      created_at:
         type: string
       email:
         type: string
@@ -66,7 +66,7 @@ definitions:
         type: string
       surnames:
         type: string
-      updatedAt:
+      updated_at:
         type: string
     type: object
 info:
@@ -259,6 +259,29 @@ paths:
       security:
       - Bearer: []
       summary: Update user
+      tags:
+      - Users
+  /api/users/atomic:
+    post:
+      description: Creates two users atomically
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      security:
+      - Bearer: []
+      summary: Atomic transaction proof
       tags:
       - Users
   /api/users/email/{email}:

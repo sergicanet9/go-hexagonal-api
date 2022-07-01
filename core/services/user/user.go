@@ -168,62 +168,45 @@ func (s *Service) GetClaims(ctx context.Context) (map[int]string, error) {
 	return domain.GetClaims(), nil
 }
 
-// // AtomicTransationProof creates two entities atomically, creating a sessionContext
-// func (s *Service) AtomicTransationProof(ctx context.Context) error { //TODO!!!
-// 	wc := writeconcern.New(writeconcern.WMajority())
-// 	rc := readconcern.Snapshot()
-// 	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
+// AtomicTransationProof creates two users atomically
+func (s *Service) AtomicTransationProof(ctx context.Context) error {
+	user1Hash := "Entity1"
+	err := hashPassword(&user1Hash)
+	if err != nil {
+		return err
+	}
+	user2Hash := "Entity2"
+	err = hashPassword(&user2Hash)
+	if err != nil {
+		return err
+	}
+	now := time.Now().UTC()
 
-// 	session, err := s.db.Client().StartSession()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer session.EndSession(ctx)
+	var users = []interface{}{
+		domain.User{
+			Name:         "Entity1",
+			Surnames:     "Entity1",
+			Email:        "Entity1",
+			PasswordHash: user1Hash,
+			Claims:       nil,
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+		domain.User{
+			Name:         "Entity2",
+			Surnames:     "Entity2",
+			Email:        "Entity2",
+			PasswordHash: user2Hash,
+			Claims:       nil,
+			CreatedAt:    now,
+			UpdatedAt:    now,
+		},
+	}
 
-// 	user1Hash := "Entity1"
-// 	err = hashPassword(&user1Hash)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	user2Hash := "Entity2"
-// 	err = hashPassword(&user2Hash)
-// 	if err != nil {
-// 		return err
-// 	}
+	err = s.repository.InsertMany(ctx, users)
+	return err
 
-// 	callback := func(sessionContext mongo.SessionContext) (interface{}, error) {
-// 		_, err = s.repository.Create(sessionContext,
-// 			domain.User{
-// 				ID:           primitive.NewObjectID().String(),
-// 				Name:         "Entity1",
-// 				Surnames:     "Entity1",
-// 				Email:        "Entity1",
-// 				PasswordHash: user1Hash,
-// 				Claims:       nil,
-// 			})
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		_, err = s.repository.Create(sessionContext,
-// 			domain.User{
-// 				ID:           primitive.NewObjectID(),
-// 				Name:         "Entity2",
-// 				Surnames:     "Entity2",
-// 				Email:        "Entity2",
-// 				PasswordHash: user2Hash,
-// 				Claims:       nil,
-// 			})
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		return nil, nil
-// 	}
-
-// 	_, err = session.WithTransaction(context.Background(), callback, txnOpts)
-// 	return err
-// }
+}
 
 func createToken(userid string, jwtSecret string, claims []int64) (string, error) {
 	var err error

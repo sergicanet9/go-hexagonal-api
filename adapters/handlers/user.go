@@ -24,7 +24,7 @@ func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s port
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
 	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
 	r.Handle("/api/claims", utils.JWTMiddleware(getUserClaims(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	// r.Handle("/api/users/atomic", utils.JWTMiddleware(atomicTransactionProof(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
+	r.Handle("/api/users/atomic", utils.JWTMiddleware(atomicTransactionProof(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
 }
 
 // @Summary Login user
@@ -257,25 +257,25 @@ func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) 
 	})
 }
 
-// // @Summary Atomic transaction proof
-// // @Description Inserts two users atomically
-// // @Tags Users
-// // @Security Bearer
-// // @Success 200 "OK"
-// // @Failure 400 {object} object
-// // @Failure 401 {object} object
-// // @Failure 500 {object} object
-// // @Router /api/users/atomic [post]
-// func atomicTransactionProof(ctx context.Context, cfg config.Config, s user.UserService) http.Handler {
-// 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
-// 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
-// 		defer cancel()
+// @Summary Atomic transaction proof
+// @Description Creates two users atomically
+// @Tags Users
+// @Security Bearer
+// @Success 200 "OK"
+// @Failure 400 {object} object
+// @Failure 401 {object} object
+// @Failure 500 {object} object
+// @Router /api/users/atomic [post]
+func atomicTransactionProof(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
+		defer cancel()
 
-// 		err := s.AtomicTransationProof(ctx)
-// 		if err != nil {
-// 			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-// 		utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
-// 	})
-// }
+		err := s.AtomicTransationProof(ctx)
+		if err != nil {
+			utils.ResponseError(w, r, nil, http.StatusBadRequest, err.Error())
+			return
+		}
+		utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
+	})
+}

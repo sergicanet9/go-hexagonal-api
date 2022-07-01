@@ -14,5 +14,5 @@ type Repository interface {
 
 type UserRepository interface {
 	Repository
-	Test(ctx context.Context) error
+	InsertMany(ctx context.Context, entities []interface{}) error
 }
