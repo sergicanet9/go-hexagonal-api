@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-// CollectionNameUser contains the name of the mongodb collection for the entity
-const CollectionNameUser = "users"
+// EntityNameUser contains the name of the entity
+const EntityNameUser = "users"
 
 // Claim type
 type Claim int

@@ -39,7 +39,7 @@ func (s *Service) Login(ctx context.Context, credentials requests.LoginUser) (re
 		return responses.LoginUser{}, fmt.Errorf("email not found")
 	}
 
-	user := responses.User(**result[0].(**domain.User))
+	user := responses.User(*result[0].(*domain.User))
 
 	if checkPasswordHash(credentials.Password, user.PasswordHash) {
 		token, err := createToken(user.ID, s.config.JWTSecret, user.Claims)
@@ -87,7 +87,7 @@ func (s *Service) GetAll(ctx context.Context) ([]responses.User, error) {
 
 	users := make([]responses.User, len(result))
 	for i, v := range result {
-		users[i] = responses.User(**(v.(**domain.User)))
+		users[i] = responses.User(*(v.(*domain.User)))
 	}
 
 	return users, nil
@@ -103,7 +103,7 @@ func (s *Service) GetByEmail(ctx context.Context, email string) (responses.User,
 	if len(result) < 1 {
 		return responses.User{}, fmt.Errorf("email not found")
 	}
-	return responses.User(**(result[0].(**domain.User))), nil
+	return responses.User(*(result[0].(*domain.User))), nil
 }
 
 // GetByID user
@@ -153,10 +153,8 @@ func (s *Service) Update(ctx context.Context, ID string, u requests.UpdateUser) 
 	user.ID = ""
 	user.UpdatedAt = time.Now().UTC()
 
-	if err := s.repository.Update(ctx, ID, user, false); err != nil {
-		return err
-	}
-	return nil
+	err = s.repository.Update(ctx, ID, user)
+	return err
 }
 
 // Delete user

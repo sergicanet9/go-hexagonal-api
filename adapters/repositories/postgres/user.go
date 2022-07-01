@@ -49,15 +49,30 @@ func (r *UserRepository) Create(ctx context.Context, entity interface{}) (string
 }
 
 func (r *UserRepository) Get(ctx context.Context, filter map[string]interface{}, skip, take *int) ([]interface{}, error) {
-	// q := fmt.Sprintf(`
-	// SELECT id, name, surnames, email, password_hash, claims, created_at, updated_at
-	//     FROM users WHERE %s;
-	// `, where)
-	q := ""
+	var where string
+	for k, v := range filter {
+		if where == "" {
+			where = "WHERE"
+		} else {
+			where = fmt.Sprintf("%s AND", where)
+		}
+		where = fmt.Sprintf("%s %s = '%v'", where, k, v)
+	}
+	if skip != nil {
+		where = fmt.Sprintf("%s OFFSET %d", where, *skip)
+	}
+	if take != nil {
+		where = fmt.Sprintf("%s LIMIT %d", where, *take)
+	}
+
+	q := fmt.Sprintf(`
+	SELECT id, name, surnames, email, password_hash, claims, created_at, updated_at
+	    FROM users %s;
+	`, where)
 
 	rows, err := r.db.QueryContext(ctx, q)
 	if err != nil {
-		return []interface{}{}, err
+		return nil, err
 	}
 
 	defer rows.Close()
@@ -67,9 +82,9 @@ func (r *UserRepository) Get(ctx context.Context, filter map[string]interface{},
 		var u domain.User
 		err = rows.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
 		if err != nil {
-			return []interface{}{}, err
+			return nil, err
 		}
-		users = append(users, u)
+		users = append(users, &u)
 	}
 
 	return users, nil
@@ -86,13 +101,13 @@ func (r *UserRepository) GetByID(ctx context.Context, ID string) (interface{}, e
 	var u domain.User
 	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
-		return domain.User{}, err
+		return nil, err
 	}
 
-	return u, nil
+	return &u, nil
 }
 
-func (r *UserRepository) Update(ctx context.Context, ID string, entity interface{}, upsert bool) error {
+func (r *UserRepository) Update(ctx context.Context, ID string, entity interface{}) error {
 	q := `
 	UPDATE users set name=$1, surnames=$2, email=$3, password_hash=$4, claims=$5, updated_at=$6
 	    WHERE id=$7;

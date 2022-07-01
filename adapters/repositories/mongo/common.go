@@ -54,7 +54,7 @@ func (r *MongoRepository) Get(ctx context.Context, filter map[string]interface{}
 
 // GetByID get the document with the specified ID in the repository's collection
 func (r *MongoRepository) GetByID(ctx context.Context, ID string) (interface{}, error) {
-	result := r.target
+	result := reflect.New(reflect.TypeOf(r.target)).Interface()
 
 	_id, err := primitive.ObjectIDFromHex(ID)
 	if err != nil {
@@ -71,7 +71,7 @@ func (r *MongoRepository) GetByID(ctx context.Context, ID string) (interface{}, 
 }
 
 // Update updates the document with the specified ID in the repository's collection
-func (r *MongoRepository) Update(ctx context.Context, ID string, entity interface{}, upsert bool) error {
+func (r *MongoRepository) Update(ctx context.Context, ID string, entity interface{}) error {
 	_id, err := primitive.ObjectIDFromHex(ID)
 	if err != nil {
 		return err
@@ -79,8 +79,7 @@ func (r *MongoRepository) Update(ctx context.Context, ID string, entity interfac
 
 	filter := bson.M{"_id": _id}
 	update := bson.M{"$set": entity}
-	opts := options.Update().SetUpsert(upsert)
-	result, err := r.collection.UpdateOne(ctx, filter, update, opts)
+	result, err := r.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}

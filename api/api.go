@@ -42,7 +42,7 @@ func (a *API) Initialize(ctx context.Context, cfg config.Config) {
 
 	handlers.SetHealthRoutes(ctx, a.config, a.router)
 
-	// userRepo := mongo.NewUserRepository(db.Collection(domain.CollectionNameUser), &domain.User{})
+	// userRepo := mongo.NewUserRepository(db.Collection(domain.EntityNameUser))
 	// userService := user.NewUserService(a.config, userRepo)
 	userRepo := postgres.NewUserRepository(db)
 	userService := user.NewUserService(a.config, userRepo)

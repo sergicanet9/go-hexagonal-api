@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 
+	"github.com/sergicanet9/go-mongo-restapi/core/domain"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -12,11 +13,11 @@ type UserRepository struct {
 }
 
 // NewUserRepository creates a user repository for mongo
-func NewUserRepository(collection *mongo.Collection, target interface{}) *UserRepository {
+func NewUserRepository(collection *mongo.Collection) *UserRepository {
 	return &UserRepository{
 		MongoRepository{
 			collection,
-			target,
+			domain.User{},
 		},
 	}
 }
