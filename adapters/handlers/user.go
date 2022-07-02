@@ -11,7 +11,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
-	"github.com/sergicanet9/scv-go-framework/v2/api/utils"
+	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
 )
 
 // SetUserRoutes creates user routes

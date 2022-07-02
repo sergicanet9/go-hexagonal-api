@@ -7,18 +7,19 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/sergicanet9/go-hexagonal-api/core/domain"
+	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 )
 
 // UserRepository struct of an user repository for postgres
 type UserRepository struct {
-	PostgresRepository
+	infrastructure.PostgresRepository
 }
 
 // NewUserRepository creates a user repository for postgres
 func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{
-		PostgresRepository{
-			db,
+		infrastructure.PostgresRepository{
+			DB: db,
 		},
 	}
 }
@@ -31,7 +32,7 @@ func (r *UserRepository) Create(ctx context.Context, entity interface{}) (string
     `
 
 	u := entity.(domain.User)
-	row := r.db.QueryRowContext(
+	row := r.DB.QueryRowContext(
 		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt,
 	)
 
@@ -65,7 +66,7 @@ func (r *UserRepository) Get(ctx context.Context, filter map[string]interface{},
 	    FROM users %s;
 	`, where)
 
-	rows, err := r.db.QueryContext(ctx, q)
+	rows, err := r.DB.QueryContext(ctx, q)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +92,7 @@ func (r *UserRepository) GetByID(ctx context.Context, ID string) (interface{}, e
         FROM users WHERE id = $1;
     `
 
-	row := r.db.QueryRowContext(ctx, q, ID)
+	row := r.DB.QueryRowContext(ctx, q, ID)
 
 	var u domain.User
 	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
@@ -109,7 +110,7 @@ func (r *UserRepository) Update(ctx context.Context, ID string, entity interface
 	`
 
 	u := entity.(domain.User)
-	result, err := r.db.ExecContext(
+	result, err := r.DB.ExecContext(
 		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.UpdatedAt, ID,
 	)
 	if err != nil {
@@ -129,7 +130,7 @@ func (r *UserRepository) Update(ctx context.Context, ID string, entity interface
 func (r *UserRepository) Delete(ctx context.Context, ID string) error {
 	q := `DELETE FROM users WHERE id=$1;`
 
-	result, err := r.db.ExecContext(ctx, q, ID)
+	result, err := r.DB.ExecContext(ctx, q, ID)
 	if err != nil {
 		return err
 	}
@@ -145,7 +146,7 @@ func (r *UserRepository) Delete(ctx context.Context, ID string) error {
 }
 
 func (r *UserRepository) InsertMany(ctx context.Context, entities []interface{}) error {
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := r.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}

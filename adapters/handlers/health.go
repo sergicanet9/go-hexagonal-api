@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	"github.com/sergicanet9/scv-go-framework/v2/api/utils"
+	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
 )
 
 // SetHealthRoutes creates health routes

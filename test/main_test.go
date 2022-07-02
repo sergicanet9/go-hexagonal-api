@@ -17,8 +17,7 @@ import (
 	"github.com/pressly/goose/v3"
 	"github.com/sergicanet9/go-hexagonal-api/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	infraMongo "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
-	infraPostgres "github.com/sergicanet9/scv-go-framework/v2/infrastructure/postgres"
+	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 )
 
 const (
@@ -120,7 +119,7 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	if err := pool.Retry(func() error {
 		var err error
-		db, err := infraMongo.ConnectMongoDB(context.Background(), mongoDBName, connectionString)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), mongoDBName, connectionString)
 		if err != nil {
 			return err
 		}
@@ -160,7 +159,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	var db *sql.DB
 	if err := pool.Retry(func() error {
-		db, err = infraPostgres.ConnectPostgresDB(connectionString)
+		db, err = infrastructure.ConnectPostgresDB(connectionString)
 		if err != nil {
 			return err
 		}

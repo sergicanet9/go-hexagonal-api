@@ -16,8 +16,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/core/domain"
 	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
 	"github.com/sergicanet9/go-hexagonal-api/core/dto/responses"
-	infraMongo "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
-	infraPostgres "github.com/sergicanet9/scv-go-framework/v2/infrastructure/postgres"
+	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -378,7 +377,7 @@ func getNewTestUser() domain.User {
 func insertUser(u *domain.User, cfg config.Config) error {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infraMongo.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
 		if err != nil {
 			return err
 		}
@@ -388,7 +387,7 @@ func insertUser(u *domain.User, cfg config.Config) error {
 		return err
 
 	case "postgres":
-		db, err := infraPostgres.ConnectPostgresDB(cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(cfg.PostgresConnectionString)
 		if err != nil {
 			return err
 		}
@@ -414,7 +413,7 @@ func insertUser(u *domain.User, cfg config.Config) error {
 func findUser(ID string, cfg config.Config) (domain.User, error) {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infraMongo.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
 		if err != nil {
 			return domain.User{}, err
 		}
@@ -429,7 +428,7 @@ func findUser(ID string, cfg config.Config) (domain.User, error) {
 		return u, err
 
 	case "postgres":
-		db, err := infraPostgres.ConnectPostgresDB(cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(cfg.PostgresConnectionString)
 		if err != nil {
 			return domain.User{}, err
 		}
