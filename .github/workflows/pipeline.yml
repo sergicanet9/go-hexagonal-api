@@ -61,7 +61,7 @@ jobs:
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'go-hexagonal-api-mongo-dev'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Dev }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Mongo_Dev }}
         images: 'scvregistry.azurecr.io/go-hexagonal-api-mongo.dev:${{ steps.vars.outputs.tag }}'
 
   deploy-postgres-dev:
@@ -74,5 +74,5 @@ jobs:
     - uses: azure/webapps-deploy@v2
       with:
         app-name: 'go-hexagonal-api-postgres-dev'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Test }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Postgres_Dev }}
         images: 'scvregistry.azurecr.io/go-hexagonal-api-postgres.dev:${{ steps.vars.outputs.tag }}'
