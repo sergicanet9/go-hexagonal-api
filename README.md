@@ -62,14 +62,14 @@ make docs
 
 ## Deploy a new environment
 The steps for creating and deploying a new cloud environment on Azure are the following:
-1. Create an Azure Web App on Azure Portal and name it go-hexagonal-api-{env}, where {env} is the name of the new environment.
+1. Create an Azure Web App on Azure Portal and name it go-hexagonal-api-{db}-{env}, where {db} and {env} are the database used and the name of the new environment, respectively.
 2. Add an entry on the Web App´s Configuration with name "WEBSITES_PORT" and value "443".
 3. On the Web App´s App Service Logs, select "File system" and configure the Quota (MB) and the Retention Period (Days) for enabling app logs.
-4. On the Web App´s Deployment Center, select Github Actions option. Authorize the Github account if required. Then select the repository name, the registry source (Azure Container Registry, Docker Hub, etc.) and type the image name in the following format: go-hexagonal-api_api.{env}. Make sure that the secrets for accessing to the registry source are provided on Github´s repository settings.
-5. Download the publish profile on Web App´s overview and add a secret entry on Github´s repository settings with its value and name it "AZUREAPPSERVICE_PUBLISHPROFILE_{ENV}".
-6. On Github´s repository settings, add a new environment named {env} and configure a manual approval protection rule.
-7. On the source code, create two files named docker-compose.{env}.yml and a config.{env}.json in the docker and config folders, respectively, and add the environment values in them. Make sure that the running port is "443" in both files.
-8. Modify the CI/CD Pipeline to include build-{env} and deploy-{env} jobs, using the proper environment names and secrets.
+4. On the Web App´s Deployment Center, select Github Actions option. Authorize the Github account if required. Then select the repository name, the registry source (Azure Container Registry, Docker Hub, etc.) and type the image name in the following format: go-hexagonal-api-{db}.{env}. Make sure that the secrets for accessing to the registry source are provided on Github´s repository settings.
+5. Download the publish profile on Web App´s overview and add a secret entry on Github´s repository settings with its value and name it "AZUREAPPSERVICE_PUBLISHPROFILE_{DB}_{ENV}".
+6. On Github´s repository settings, add a new environment named {db}-{env} and configure a manual approval protection rule.
+7. On the source code, create a file named config.{env}.json in the config folder and add the environment values in it.
+8. Edit the CI/CD Pipeline file to include build-{db}-{env} and deploy-{db}-{env} jobs, using the proper environment names and secrets. Make sure that the running port specified in the file is "443".
 
 ## Author
 Sergi Canet Vela
