@@ -33,6 +33,7 @@ jobs:
         password: ${{ secrets.AzureContainerRegistry_Password }}
     - run: |
         export VERSION=${{ steps.vars.outputs.tag }} && export ENV=dev && export PORT=443 && export DB=mongo && docker-compose build --no-cache
+        docker tag go-hexagonal-api-mongo.dev:${{ steps.vars.outputs.tag }}
         docker push scvregistry.azurecr.io/go-hexagonal-api-mongo.dev:${{ steps.vars.outputs.tag }}
   
   build-postgres-dev:
@@ -49,6 +50,7 @@ jobs:
         password: ${{ secrets.AzureContainerRegistry_Password }}
     - run: |
         export VERSION=${{ steps.vars.outputs.tag }} && export ENV=dev && export PORT=443 && export DB=postgres && docker-compose build --no-cache
+        docker tag go-hexagonal-api-postgres.dev:${{ steps.vars.outputs.tag }}
         docker push scvregistry.azurecr.io/go-hexagonal-api-postgres.dev:${{ steps.vars.outputs.tag }}
 
   deploy-mongo-dev:
