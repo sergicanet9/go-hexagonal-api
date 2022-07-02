@@ -10,6 +10,7 @@ require (
 	github.com/lib/pq v1.10.5
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/pkg/errors v0.9.1
+	github.com/pressly/goose/v3 v3.5.0
 	github.com/sergicanet9/scv-go-framework/v2 v2.8.1
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/http-swagger v1.1.1
@@ -19,14 +20,14 @@ require (
 )
 
 require (
-	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
+	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
-	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
+	github.com/containerd/continuity v0.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/cli v20.10.11+incompatible // indirect
 	github.com/docker/docker v20.10.7+incompatible // indirect
@@ -48,7 +49,7 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/moby/term v0.0.0-20201216013528-df9cb8a40635 // indirect
-	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
+	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -63,7 +64,7 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
+	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.0.0-20210106214847-113979e3529a // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
