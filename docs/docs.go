@@ -579,7 +579,7 @@ var SwaggerInfo = swaggerInfo{
 	BasePath:    "",
 	Schemes:     []string{},
 	Title:       "Go Hexagonal API",
-	Description: "Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework",
+	Description: "Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools",
 }
 
 type s struct{}

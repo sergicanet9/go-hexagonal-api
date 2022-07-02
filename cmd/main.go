@@ -11,7 +11,7 @@ import (
 )
 
 // @title Go Hexagonal API
-// @description Powered by scv-go-framework - https://github.com/sergicanet9/scv-go-framework
+// @description Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools
 
 // @securityDefinitions.apikey Bearer
 // @in header
