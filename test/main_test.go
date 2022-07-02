@@ -193,7 +193,8 @@ func testConfig(database string) (c config.Config, err error) {
 	c.Port = port
 	c.Database = database
 
-	c.Address = "http://localhost"
+	c.MongoAddress = "http://localhost"
+	c.PostgresAddress = "http://localhost"
 	c.MongoConnectionString = os.Getenv(mongoConnectionEnv)
 	c.MongoDBName = mongoDBName
 	c.PostgresConnectionString = os.Getenv(postgresConnectionEnv)
@@ -216,4 +217,13 @@ func freePort() (int, error) {
 	defer l.Close()
 
 	return l.Addr().(*net.TCPAddr).Port, nil
+}
+
+func getAddress(cfg config.Config) (string, error) {
+	addresses := map[string]string{"mongo": cfg.MongoAddress, "postgres": cfg.PostgresAddress}
+	if value, ok := addresses[cfg.Database]; ok {
+		return value, nil
+	} else {
+		return "", fmt.Errorf("database flag %s not valid", cfg.Database)
+	}
 }

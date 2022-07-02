@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"testing"
@@ -27,9 +26,13 @@ func Test_LoginUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testUser := getNewTestUser()
 		testUser.Email = "testlogin@test.com"
-		err := insertUser(&testUser, cfg)
+		err = insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -41,10 +44,10 @@ func Test_LoginUser_Ok(t *testing.T) {
 		}
 		b, err := json.Marshal(body)
 		if err != nil {
-			log.Fatal(err)
+			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users/login", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("%s:%d/api/users/login", address, cfg.Port)
 
 		req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
 		if err != nil {
@@ -77,16 +80,20 @@ func Test_CreateUser_Created(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testUser := getNewTestUser()
 
 		// Act
 		body := requests.User(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
-			log.Fatal(err)
+			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("%s:%d/api/users", address, cfg.Port)
 
 		req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
 		if err != nil {
@@ -125,9 +132,13 @@ func Test_GetAllUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/users", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("%s:%d/api/users", address, cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -160,14 +171,18 @@ func Test_GetUserByEmail_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testUser := getNewTestUser()
-		err := insertUser(&testUser, cfg)
+		err = insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/users/email/%s", cfg.Address, cfg.Port, testUser.Email)
+		url := fmt.Sprintf("%s:%d/api/users/email/%s", address, cfg.Port, testUser.Email)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -200,14 +215,18 @@ func Test_GetUserByID_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testUser := getNewTestUser()
-		err := insertUser(&testUser, cfg)
+		err = insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("%s:%d/api/users/%s", address, cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -240,8 +259,12 @@ func Test_UpdateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testUser := getNewTestUser()
-		err := insertUser(&testUser, cfg)
+		err = insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -252,10 +275,10 @@ func Test_UpdateUser_Ok(t *testing.T) {
 		body := requests.User(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
-			log.Fatal(err)
+			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("%s:%d/api/users/%s", address, cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(b))
 		if err != nil {
@@ -291,8 +314,12 @@ func Test_DeleteUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 		testUser := getNewTestUser()
-		err := insertUser(&testUser, cfg)
+		err = insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -301,10 +328,10 @@ func Test_DeleteUser_Ok(t *testing.T) {
 		body := requests.User(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
-			log.Fatal(err)
+			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("%s:%d/api/users/%s", address, cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(b))
 		if err != nil {
@@ -334,9 +361,13 @@ func Test_GetUserClaims_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		address, err := getAddress(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/claims", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("%s:%d/api/claims", address, cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
