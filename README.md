@@ -15,29 +15,33 @@ Provides:
 
 ## Run and debug the application locally
 ```
-    go run cmd/main.go -env={env} -v={version}
+    go run cmd/main.go -v={version} -env={env} -p={port} -db={database}
 ```
 or:
 ```
 go build cmd/main.go
- ./main -env={env} -v={version}
+ ./main -env={env} --v={version} -env={env} -p={port} -db={database}
 ```
-Then open {address}:{port}/swagger/index.html in the browser, where {address} and {port} are the values specified in the corresponding config.{env}.json.
+Then open {address}:{port}/swagger/index.html in the browser, where {address} is the value specified in the corresponding config.{env}.json, corresponding to "MongoAddress" or "PostgresAddress", depending on the database choosed.
 <br />
 <br />
  NOTES:
-- The env and v flags are optional. Default values, respectively: "local", "debug".
-- For debugging the application with Visual Studio Code´s build-in debugger, select Run and Debug on the Debug start view or press F5. The flags can be changed in the debugging configuration provided in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json).
+- The v, env, p and db flags are optional. Default values, respectively: "debug", "local", "8080", "mongo".
+- For debugging the application with Visual Studio Code´s build-in debugger, select the desired database configuration in the Run and Debug menu and click on Start Debugging button or press F5. All flags can be changed in the debugging configurations provided in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json).
 
 ## Run the application in a local docker container
 ```
-make up
+make mongo-up
 ```
-Then open {address}:{port}/swagger/index.html in the browser, where {address} and {port} are the values specified in [config.local.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/config/config.local.json)
+or:
+```
+make mongo-up
+```
+Then open {address}:{port}/swagger/index.html in the browser, where {address} is the value specified in [config.local.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/config/config.local.json), corresponding to "MongoAddress" or "PostgresAddress", depending on the command run.
 <br />
 <br />
 NOTES:
-- When running this command, the docker image will be built using the value "local" for the env flag and the current git branch name for the v flag.
+- When running this commands, the docker images will be built using the current git branch name for the v flag, "local" for the env flag and "8080" for the port flag.
 
 ### Stop and remove the running container
 ```
@@ -60,7 +64,37 @@ make cover
 make docs
 ```
 
-## Deploy a new environment
+## Database commands for Postgres
+### Create a new migration
+```
+make goose-create
+```
+Write the file name without ".sql" suffix and press enter.
+Then edit the newly created file to define the behavior of the migration.
+
+### Apply all the migrations on the remote database
+```
+make goose-up
+```
+Write the connection string in the followig format: "host=XX port=XX dbname=XX user=XX password=XX sslmode=XX" and press enter.
+
+### Connect to the remote database
+```
+psql -h {host} -U {username} {db_name}
+```
+
+### Dump the remote database
+```
+pg_dump -h {host} -U {username} {db_name} --schema-only > dump.sql
+```
+
+### Drop the remote database
+```
+az login
+az postgres flexible-server db delete -g {resource_group} -s {resource_name} --database-name {db_name}
+```
+
+## Deploy a new environment in Azure
 The steps for creating and deploying a new cloud environment on Azure are the following:
 1. Create an Azure Web App on Azure Portal and name it go-hexagonal-api-{db}-{env}, where {db} and {env} are the database used and the name of the new environment, respectively.
 2. Add an entry on the Web App´s Configuration with name "WEBSITES_PORT" and value "443".
