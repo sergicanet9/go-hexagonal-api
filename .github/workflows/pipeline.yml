@@ -54,7 +54,7 @@ jobs:
   deploy-mongo-dev:
     runs-on: ubuntu-latest
     needs: build-mongo-dev
-    environment: dev
+    environment: mongo-dev
     steps:
     - id: vars
       run: echo ::set-output name=tag::$(echo ${{ github.ref_name }} | xargs basename)
@@ -66,8 +66,8 @@ jobs:
 
   deploy-postgres-dev:
     runs-on: ubuntu-latest
-    needs: build-postgres-test
-    environment: test
+    needs: build-postgres-dev
+    environment: postgres-dev
     steps:
     - id: vars
       run: echo ::set-output name=tag::$(echo ${{ github.ref_name }} | xargs basename)
