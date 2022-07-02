@@ -10,10 +10,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/sergicanet9/go-hexagonal-api/models/entities"
-	"github.com/sergicanet9/go-hexagonal-api/models/requests"
-	"github.com/sergicanet9/go-hexagonal-api/models/responses"
-	infrastructure "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
+	"github.com/sergicanet9/go-hexagonal-api/core/domain"
+	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
+	"github.com/sergicanet9/go-hexagonal-api/core/dto/responses"
+	infraMongo "github.com/sergicanet9/scv-go-framework/v2/infrastructure/mongo"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -25,7 +25,7 @@ func Test_LoginUser_Ok(t *testing.T) {
 	cfg := New(t)
 	testUser := getNewTestUser()
 	testUser.Email = "testlogin@test.com"
-	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func Test_CreateUser_Created(t *testing.T) {
 		t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 	}
 	assert.NotEmpty(t, response.InsertedID)
-	createdUser, err := findUser(response.InsertedID, cfg.DBName, cfg.DBConnectionString)
+	createdUser, err := findUser(response.InsertedID, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		t.Fatalf("unexpected error while finding the created user: %s", err)
 	}
@@ -151,7 +151,7 @@ func Test_GetUserByEmail_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,13 +189,13 @@ func Test_GetUserByID_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Act
-	url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID.Hex())
+	url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID)
 
 	req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 	if err != nil {
@@ -227,7 +227,7 @@ func Test_UpdateUser_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -241,7 +241,7 @@ func Test_UpdateUser_Ok(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID.Hex())
+	url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID)
 
 	req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(b))
 	if err != nil {
@@ -262,7 +262,7 @@ func Test_UpdateUser_Ok(t *testing.T) {
 	if want, got := http.StatusOK, resp.StatusCode; want != got {
 		t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 	}
-	updatedUser, err := findUser(testUser.ID, cfg.DBName, cfg.DBConnectionString)
+	updatedUser, err := findUser(testUser.ID, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		t.Fatalf("unexpected error while finding the created user: %s", err)
 	}
@@ -275,7 +275,7 @@ func Test_DeleteUser_Ok(t *testing.T) {
 	// Arrange
 	cfg := New(t)
 	testUser := getNewTestUser()
-	err := insertUser(&testUser, cfg.DBName, cfg.DBConnectionString)
+	err := insertUser(&testUser, cfg.MongoDBName, cfg.MongoConnectionString)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -287,7 +287,7 @@ func Test_DeleteUser_Ok(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID.Hex())
+	url := fmt.Sprintf("%s:%d/api/users/%s", cfg.Address, cfg.Port, testUser.ID)
 
 	req, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(b))
 	if err != nil {
@@ -308,7 +308,7 @@ func Test_DeleteUser_Ok(t *testing.T) {
 	if want, got := http.StatusOK, resp.StatusCode; want != got {
 		t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 	}
-	_, err = findUser(testUser.ID, cfg.DBName, cfg.DBConnectionString)
+	_, err = findUser(testUser.ID, cfg.MongoDBName, cfg.MongoConnectionString)
 	assert.Equal(t, mongo.ErrNoDocuments, err)
 }
 
@@ -345,9 +345,8 @@ func Test_GetUserClaims_Ok(t *testing.T) {
 	assert.NotEmpty(t, response)
 }
 
-func getNewTestUser() entities.User {
-	return entities.User{
-		ID:           primitive.NewObjectID(),
+func getNewTestUser() domain.User {
+	return domain.User{
 		Name:         "test",
 		Surnames:     "test",
 		Email:        fmt.Sprintf("test%d@test.com", rand.Int()),
@@ -355,23 +354,29 @@ func getNewTestUser() entities.User {
 	}
 }
 
-func insertUser(u *entities.User, dbname, connection string) error {
-	db, err := infrastructure.ConnectMongoDB(context.Background(), dbname, connection)
+func insertUser(u *domain.User, dbname, connection string) error {
+	db, err := infraMongo.ConnectMongoDB(context.Background(), dbname, connection)
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Collection(entities.CollectionNameUser).InsertOne(context.Background(), u)
+	result, err := db.Collection(domain.EntityNameUser).InsertOne(context.Background(), u)
+	u.ID = result.InsertedID.(primitive.ObjectID).Hex()
 	return err
 }
 
-func findUser(ID primitive.ObjectID, dbname, connection string) (entities.User, error) {
-	db, err := infrastructure.ConnectMongoDB(context.Background(), dbname, connection)
+func findUser(ID string, dbname, connection string) (domain.User, error) {
+	db, err := infraMongo.ConnectMongoDB(context.Background(), dbname, connection)
 	if err != nil {
-		return entities.User{}, err
+		return domain.User{}, err
 	}
 
-	var u entities.User
-	err = db.Collection(entities.CollectionNameUser).FindOne(context.Background(), bson.M{"_id": ID}).Decode(&u)
+	objectID, err := primitive.ObjectIDFromHex(ID)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	var u domain.User
+	err = db.Collection(domain.EntityNameUser).FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&u)
 	return u, err
 }

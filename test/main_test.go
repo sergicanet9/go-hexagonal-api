@@ -18,12 +18,17 @@ import (
 )
 
 const (
-	contentType        = "application/json"
-	mongoInternalPort  = "27017/tcp"
-	mongoDBName        = "test-db"
-	mongoConnectionEnv = "mongoConnection"
-	jwtSecret          = "eaeBbXUxks"
-	nonExpiryToken     = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiYXV0aG9yaXplZCI6dHJ1ZX0.cCKM32os5ROKxeE3IiDWoOyRew9T8puzPUKurPhrDug"
+	contentType           = "application/json"
+	mongoInternalPort     = "27017/tcp"
+	mongoDBName           = "test-db"
+	mongoConnectionEnv    = "mongoConnection"
+	postgresUser          = "postgres"
+	postgresPassword      = "test"
+	postgresDBName        = "test-db"
+	postgresInternalPort  = "5432/tcp"
+	postgresConnectionEnv = "postgresConnection"
+	jwtSecret             = "eaeBbXUxks"
+	nonExpiryToken        = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiYXV0aG9yaXplZCI6dHJ1ZX0.cCKM32os5ROKxeE3IiDWoOyRew9T8puzPUKurPhrDug"
 )
 
 // TestMain does the setup before running the tests and the teardown afterwards
@@ -98,17 +103,19 @@ func New(t *testing.T) config.Config {
 }
 
 func testConfig() (c config.Config, err error) {
-	c.Environment = "Integration tests"
 	c.Version = "Integration tests"
-
+	c.Environment = "Integration tests"
 	port, err := freePort()
 	if err != nil {
 		return c, err
 	}
 	c.Port = port
+	c.Database = "mongo"
+
 	c.Address = "http://localhost"
-	c.DBConnectionString = os.Getenv(mongoConnectionEnv)
-	c.DBName = mongoDBName
+	c.MongoConnectionString = os.Getenv(mongoConnectionEnv)
+	c.MongoDBName = mongoDBName
+	c.PostgresConnectionString = os.Getenv(postgresConnectionEnv)
 	c.JWTSecret = jwtSecret
 	c.Timeout = config.Duration{Duration: 5 * time.Second}
 
