@@ -14,18 +14,20 @@ import (
 const contentType = "application/json"
 
 type Async struct {
-	config config.Config
+	config  config.Config
+	address string
 }
 
-func NewAsync(cfg config.Config) *Async {
+func NewAsync(cfg config.Config, address string) *Async {
 	return &Async{
-		config: cfg,
+		config:  cfg,
+		address: address,
 	}
 }
 
 func (a Async) Run(ctx context.Context) {
 	var g multierror.Group
-	g.Go(healthCheck(ctx, a.config.Address, a.config.Port, a.config.Async.Interval.Duration))
+	g.Go(healthCheck(ctx, a.address, a.config.Port, a.config.Async.Interval.Duration))
 
 	if err := g.Wait().ErrorOrNil(); err != nil {
 		log.Printf("async process stopped, error: %s", err)

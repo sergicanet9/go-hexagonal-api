@@ -21,8 +21,9 @@ import (
 
 // API struct
 type API struct {
-	config config.Config
-	router *mux.Router
+	config  config.Config
+	address string
+	router  *mux.Router
 }
 
 // Initialize API
@@ -40,12 +41,14 @@ func (a *API) Initialize(ctx context.Context, cfg config.Config) {
 			log.Fatal(err)
 		}
 		userRepo = mongo.NewUserRepository(db)
+		a.address = a.config.MongoAddress
 	case "postgres":
 		db, err := infrastructure.ConnectPostgresDB(a.config.PostgresConnectionString)
 		if err != nil {
 			log.Fatal(err)
 		}
 		userRepo = postgres.NewUserRepository(db)
+		a.address = a.config.PostgresAddress
 	default:
 		log.Fatalf("database flag %s not valid", a.config.Database)
 	}
@@ -56,11 +59,11 @@ func (a *API) Initialize(ctx context.Context, cfg config.Config) {
 	handlers.SetUserRoutes(ctx, a.config, a.router, userService)
 
 	a.router.PathPrefix("/swagger").Handler(
-		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s:%d/swagger/doc.json", a.config.Address, a.config.Port))),
+		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s:%d/swagger/doc.json", a.address, a.config.Port))),
 	)
 
 	if a.config.Async.Run {
-		async := async.NewAsync(a.config)
+		async := async.NewAsync(a.config, a.address)
 		go async.Run(ctx)
 	}
 }
@@ -71,6 +74,6 @@ func (a *API) Run() {
 	log.Printf("Environment: %s", a.config.Environment)
 	log.Printf("Database: %s", a.config.Database)
 	log.Printf("Listening on port %d", a.config.Port)
-	log.Printf("Open %s:%d/swagger/index.html in the browser", a.config.Address, a.config.Port)
+	log.Printf("Open %s:%d/swagger/index.html in the browser", a.address, a.config.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), a.router))
 }

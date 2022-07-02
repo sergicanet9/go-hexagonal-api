@@ -1,3 +1,4 @@
 {
-    "Address": "https://go-hexagonal-api-dev.azurewebsites.net"
+    "MongoAddress": "https://go-hexagonal-api-mongo-dev.azurewebsites.net",
+    "PostgresAddress": "https://go-hexagonal-api-postgres-dev.azurewebsites.net"
 }

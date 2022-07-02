@@ -23,7 +23,8 @@ type Config struct {
 	Database    string
 
 	// set in config files
-	Address                  string
+	MongoAddress             string
+	PostgresAddress          string
 	MongoConnectionString    string
 	MongoDBName              string
 	PostgresConnectionString string
