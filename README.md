@@ -20,7 +20,7 @@ Provides:
 or:
 ```
 go build cmd/main.go
- ./main -env={env} --v={version} -env={env} -p={port} -db={database}
+ ./main -env={env} -v={version} -env={env} -p={port} -db={database}
 ```
 Then open {address}:{port}/swagger/index.html in the browser, where {address} is the value specified in the corresponding config.{env}.json, corresponding to "MongoAddress" or "PostgresAddress", depending on the database choosed.
 <br />
