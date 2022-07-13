@@ -88,7 +88,7 @@ psql -h {host} -U {username} {db_name}
 pg_dump -h {host} -U {username} {db_name} --schema-only > dump.sql
 ```
 
-### Drop the remote database
+### Drop the remote database (Azure Postgres Flexible Server)
 ```
 az login
 az postgres flexible-server db delete -g {resource_group} -s {resource_name} --database-name {db_name}
