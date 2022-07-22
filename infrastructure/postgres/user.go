@@ -10,7 +10,7 @@ import (
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 )
 
-// UserRepository struct of an user repository for postgres
+// UserRepository adapter of an user repository for postgres
 type UserRepository struct {
 	infrastructure.PostgresRepository
 }

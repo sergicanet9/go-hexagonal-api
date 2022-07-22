@@ -1,4 +1,4 @@
-.PHONY: test docs
+.PHONY: test
 
 mongo-up:
 	export VERSION=$(shell git branch --show-current | xargs basename) && export ENV=local && export PORT=8080 && export DB=mongo && docker-compose up -d --build

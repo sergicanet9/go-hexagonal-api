@@ -15,7 +15,7 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/pkg/errors"
 	"github.com/pressly/goose/v3"
-	"github.com/sergicanet9/go-hexagonal-api/api"
+	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 )

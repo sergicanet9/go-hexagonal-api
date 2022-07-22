@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/sergicanet9/go-hexagonal-api/api"
+	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 )
 

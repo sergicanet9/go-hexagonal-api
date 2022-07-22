@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
-// UserRepository struct of an user repository for mongo
+// UserRepository adapter of an user repository for mongo.
 type UserRepository struct {
 	infrastructure.MongoRepository
 }
