@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ steps.go-version.outputs.minimal }}
-      - name: Run Integration Tests
+      - name: Run Tests
         run: go test ./test
 
   build-mongo-dev:
