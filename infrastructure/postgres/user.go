@@ -137,7 +137,7 @@ func (r *UserRepository) Delete(ctx context.Context, ID string) error {
 
 	rows, err := result.RowsAffected()
 	if err != nil {
-		fmt.Println("RowsAffected Error", err)
+		return err
 	}
 	if rows < 1 {
 		return sql.ErrNoRows
