@@ -3,19 +3,19 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
-	"github.com/sergicanet9/go-hexagonal-api/core/ports"
+	"github.com/sergicanet9/go-hexagonal-api/core/services"
 	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
 )
 
 // SetUserRoutes creates user routes
-func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s ports.UserService) {
+func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s services.UserService) {
 	r.Handle("/api/users/login", loginUser(ctx, cfg, s)).Methods(http.MethodPost)
 	r.Handle("/api/users", createUser(ctx, cfg, s)).Methods(http.MethodPost)
 	r.Handle("/api/users", utils.JWTMiddleware(getAllUsers(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
@@ -35,12 +35,12 @@ func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s port
 // @Failure 400 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/login [post]
-func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func loginUser(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
@@ -70,12 +70,12 @@ func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http
 // @Failure 400 {object} object
 // @Failure 500 {object} object
 // @Router /api/users [post]
-func createUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func createUser(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
@@ -106,7 +106,7 @@ func createUser(ctx context.Context, cfg config.Config, s ports.UserService) htt
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users [get]
-func getAllUsers(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func getAllUsers(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -130,7 +130,7 @@ func getAllUsers(ctx context.Context, cfg config.Config, s ports.UserService) ht
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/email/{email} [get]
-func getUserByEmail(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func getUserByEmail(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -155,7 +155,7 @@ func getUserByEmail(ctx context.Context, cfg config.Config, s ports.UserService)
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/{id} [get]
-func getUserByID[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func getUserByID[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -181,12 +181,12 @@ func getUserByID[T string](ctx context.Context, cfg config.Config, s ports.UserS
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/{id} [patch]
-func updateUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func updateUser[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
 			return
@@ -219,7 +219,7 @@ func updateUser[T string](ctx context.Context, cfg config.Config, s ports.UserSe
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/{id} [delete]
-func deleteUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func deleteUser[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -243,7 +243,7 @@ func deleteUser[T string](ctx context.Context, cfg config.Config, s ports.UserSe
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/claims [get]
-func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func getUserClaims(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -266,7 +266,7 @@ func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) 
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/atomic [post]
-func atomicTransactionProof(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+func atomicTransactionProof(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
 	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()

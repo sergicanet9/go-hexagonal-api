@@ -7,24 +7,25 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/sergicanet9/go-hexagonal-api/core/domain"
+	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 )
 
-// UserRepository adapter of an user repository for postgres
-type UserRepository struct {
+// userRepository adapter of an user repository for postgres
+type userRepository struct {
 	infrastructure.PostgresRepository
 }
 
 // NewUserRepository creates a user repository for postgres
-func NewUserRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{
+func NewUserRepository(db *sql.DB) ports.UserRepository {
+	return &userRepository{
 		infrastructure.PostgresRepository{
 			DB: db,
 		},
 	}
 }
 
-func (r *UserRepository) Create(ctx context.Context, entity interface{}) (string, error) {
+func (r *userRepository) Create(ctx context.Context, entity interface{}) (string, error) {
 	q := `
     INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -44,7 +45,7 @@ func (r *UserRepository) Create(ctx context.Context, entity interface{}) (string
 	return u.ID, nil
 }
 
-func (r *UserRepository) Get(ctx context.Context, filter map[string]interface{}, skip, take *int) ([]interface{}, error) {
+func (r *userRepository) Get(ctx context.Context, filter map[string]interface{}, skip, take *int) ([]interface{}, error) {
 	var where string
 	for k, v := range filter {
 		if where == "" {
@@ -86,7 +87,7 @@ func (r *UserRepository) Get(ctx context.Context, filter map[string]interface{},
 	return users, nil
 }
 
-func (r *UserRepository) GetByID(ctx context.Context, ID string) (interface{}, error) {
+func (r *userRepository) GetByID(ctx context.Context, ID string) (interface{}, error) {
 	q := `
     SELECT id, name, surnames, email, password_hash, claims, created_at, updated_at
         FROM users WHERE id = $1;
@@ -103,7 +104,7 @@ func (r *UserRepository) GetByID(ctx context.Context, ID string) (interface{}, e
 	return &u, nil
 }
 
-func (r *UserRepository) Update(ctx context.Context, ID string, entity interface{}) error {
+func (r *userRepository) Update(ctx context.Context, ID string, entity interface{}) error {
 	q := `
 	UPDATE users set name=$1, surnames=$2, email=$3, password_hash=$4, claims=$5, updated_at=$6
 	    WHERE id=$7;
@@ -127,7 +128,7 @@ func (r *UserRepository) Update(ctx context.Context, ID string, entity interface
 	return nil
 }
 
-func (r *UserRepository) Delete(ctx context.Context, ID string) error {
+func (r *userRepository) Delete(ctx context.Context, ID string) error {
 	q := `DELETE FROM users WHERE id=$1;`
 
 	result, err := r.DB.ExecContext(ctx, q, ID)
@@ -145,7 +146,7 @@ func (r *UserRepository) Delete(ctx context.Context, ID string) error {
 	return nil
 }
 
-func (r *UserRepository) InsertMany(ctx context.Context, entities []interface{}) error {
+func (r *userRepository) InsertMany(ctx context.Context, entities []interface{}) error {
 	tx, err := r.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err

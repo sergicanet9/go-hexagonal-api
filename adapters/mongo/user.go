@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/sergicanet9/go-hexagonal-api/core/domain"
+	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -11,14 +12,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
-// UserRepository adapter of an user repository for mongo.
-type UserRepository struct {
+// userRepository adapter of an user repository for mongo.
+type userRepository struct {
 	infrastructure.MongoRepository
 }
 
 // NewUserRepository creates a user repository for mongo
-func NewUserRepository(db *mongo.Database) *UserRepository {
-	return &UserRepository{
+func NewUserRepository(db *mongo.Database) ports.UserRepository {
+	return &userRepository{
 		infrastructure.MongoRepository{
 			DB:         db,
 			Collection: db.Collection(domain.EntityNameUser),
@@ -27,7 +28,7 @@ func NewUserRepository(db *mongo.Database) *UserRepository {
 	}
 }
 
-func (r *UserRepository) InsertMany(ctx context.Context, entities []interface{}) error {
+func (r *userRepository) InsertMany(ctx context.Context, entities []interface{}) error {
 	wc := writeconcern.New(writeconcern.WMajority())
 	rc := readconcern.Snapshot()
 	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
