@@ -7,9 +7,9 @@ postgres-up:
 down:
 	export VERSION= && export ENV= && export PORT=0 && export DB= && docker-compose down
 test:
-	go test -race ./test -coverpkg=./... -coverprofile=test/coverage.out
+	go test -race ./... -coverpkg=./... -coverprofile=coverage.out
 cover:
-	go tool cover -html=test/coverage.out
+	go tool cover -html=coverage.out
 docs:
 	go install github.com/swaggo/swag/cmd/swag@v1.7.0
 	swag init -g cmd/main.go -o app/docs
