@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Test_LoginUser_Ok(t *testing.T) {
+func TestLoginUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
@@ -76,7 +76,7 @@ func Test_LoginUser_Ok(t *testing.T) {
 	})
 }
 
-func Test_CreateUser_Created(t *testing.T) {
+func TestCreateUser_Created(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
@@ -128,7 +128,7 @@ func Test_CreateUser_Created(t *testing.T) {
 	})
 }
 
-func Test_GetAllUsers_Ok(t *testing.T) {
+func TestGetAllUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
@@ -167,7 +167,7 @@ func Test_GetAllUsers_Ok(t *testing.T) {
 	})
 }
 
-func Test_GetUserByEmail_Ok(t *testing.T) {
+func TestGetUserByEmail_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
@@ -211,7 +211,7 @@ func Test_GetUserByEmail_Ok(t *testing.T) {
 	})
 }
 
-func Test_GetUserByID_Ok(t *testing.T) {
+func TestGetUserByID_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
@@ -255,7 +255,7 @@ func Test_GetUserByID_Ok(t *testing.T) {
 	})
 }
 
-func Test_UpdateUser_Ok(t *testing.T) {
+func TestUpdateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
@@ -309,7 +309,7 @@ func Test_UpdateUser_Ok(t *testing.T) {
 	})
 }
 
-func Test_DeleteUser_Ok(t *testing.T) {
+func TestDeleteUser_Ok(t *testing.T) {
 	notFoundError := map[string]error{"mongo": mongo.ErrNoDocuments, "postgres": sql.ErrNoRows}
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
@@ -357,7 +357,7 @@ func Test_DeleteUser_Ok(t *testing.T) {
 	})
 }
 
-func Test_GetUserClaims_Ok(t *testing.T) {
+func TestGetUserClaims_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)

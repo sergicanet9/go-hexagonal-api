@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func Test_HealthCheck_Ok(t *testing.T) {
+func TestHealthCheck_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
