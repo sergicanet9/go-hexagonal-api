@@ -94,6 +94,7 @@ func New(t *testing.T, database string) config.Config {
 		a.Run(ctx)
 	}()
 
+	<-time.After(100 * time.Millisecond) // waiting time for letting the API start completely
 	return cfg
 }
 

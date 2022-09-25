@@ -7,7 +7,7 @@ postgres-up:
 down:
 	export VERSION= && export ENV= && export PORT=0 && export DB= && docker-compose down
 test:
-	go test ./test -coverpkg=./... -coverprofile=test/coverage.out
+	go test -race ./test -coverpkg=./... -coverprofile=test/coverage.out
 cover:
 	go tool cover -html=test/coverage.out
 docs:
