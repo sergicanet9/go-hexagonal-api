@@ -17,9 +17,6 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	defaultPath := "."
 	defaultPort := 8080
 	defaultV, defaultEnv, defaultDB := "debug", "local", "mongo"
@@ -34,7 +31,8 @@ func main() {
 		log.Fatal(fmt.Errorf("cannot parse config file in path %s for env %s: %w", defaultPath, *environmentF, err))
 	}
 
-	a := api.API{}
-	a.Initialize(ctx, cfg)
-	a.Run()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	a := api.NewAPI(ctx, cfg)
+	a.Run(ctx)
 }

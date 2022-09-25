@@ -19,19 +19,20 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// API struct
-type API struct {
-	config  config.Config
-	address string
-	router  *mux.Router
+// api struct
+type api struct {
+	config   config.Config
+	address  string
+	services svs
 }
 
-// Initialize API
-func (a *API) Initialize(ctx context.Context, cfg config.Config) {
-	a.config = cfg
+type svs struct {
+	userService services.UserService
+}
 
-	router := mux.NewRouter()
-	a.router = router
+// NewAPI creates a new API
+func NewAPI(ctx context.Context, cfg config.Config) (a api) {
+	a.config = cfg
 
 	var userRepo ports.UserRepository
 	switch a.config.Database {
@@ -53,12 +54,18 @@ func (a *API) Initialize(ctx context.Context, cfg config.Config) {
 		log.Fatalf("database flag %s not valid", a.config.Database)
 	}
 
-	userService := services.NewUserService(a.config, userRepo)
+	a.services.userService = services.NewUserService(a.config, userRepo)
+	return a
+}
 
-	handlers.SetHealthRoutes(ctx, a.config, a.router)
-	handlers.SetUserRoutes(ctx, a.config, a.router, userService)
+// Run API
+func (a *api) Run(ctx context.Context) {
+	router := mux.NewRouter()
 
-	a.router.PathPrefix("/swagger").Handler(
+	handlers.SetHealthRoutes(ctx, a.config, router)
+	handlers.SetUserRoutes(ctx, a.config, router, a.services.userService)
+
+	router.PathPrefix("/swagger").Handler(
 		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s:%d/swagger/doc.json", a.address, a.config.Port))),
 	)
 
@@ -66,14 +73,11 @@ func (a *API) Initialize(ctx context.Context, cfg config.Config) {
 		async := async.NewAsync(a.config, a.address)
 		go async.Run(ctx)
 	}
-}
 
-// Run API
-func (a *API) Run() {
 	log.Printf("Version: %s", a.config.Version)
 	log.Printf("Environment: %s", a.config.Environment)
 	log.Printf("Database: %s", a.config.Database)
 	log.Printf("Listening on port %d", a.config.Port)
 	log.Printf("Open %s:%d/swagger/index.html in the browser", a.address, a.config.Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), a.router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), router))
 }
