@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
+	"github.com/sergicanet9/scv-go-tools/v3/api/middlewares"
 	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
 )
 
@@ -22,7 +23,7 @@ func SetHealthRoutes(ctx context.Context, cfg config.Config, r *mux.Router) {
 // @Failure 503 {object} object
 // @Router /api/health [get]
 func healthCheck(ctx context.Context, cfg config.Config) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Environment", cfg.Environment)
 		r.Header.Add("Database", cfg.Database)
 		r.Header.Add("Version", cfg.Version)

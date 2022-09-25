@@ -227,8 +227,8 @@ github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0/go.mod h1:qq
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/seccomp/libseccomp-golang v0.9.1/go.mod h1:GbW5+tmTXfcxTToHLXlScSlAvWlF4P2Ca7zGrPiEpWo=
-github.com/sergicanet9/scv-go-tools/v3 v3.1.2 h1:+2Istpwk692Y9nAAZTSNPQnwCvqVyVpBvZFKJBitspk=
-github.com/sergicanet9/scv-go-tools/v3 v3.1.2/go.mod h1:LIpe7GYzbpZp4RcWpBf96wq8basoypVUzrmxbs70tlo=
+github.com/sergicanet9/scv-go-tools/v3 v3.2.0 h1:2BLBMhG/uNXM8Rq8pcdfzEkHgiMz1+JMloxXu8aDWoI=
+github.com/sergicanet9/scv-go-tools/v3 v3.2.0/go.mod h1:ISPrIpeKxTdCGI59y5mzYUKLukdEDWqbFDjVXQLp3js=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=

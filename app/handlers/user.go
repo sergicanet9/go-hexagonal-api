@@ -11,6 +11,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
 	"github.com/sergicanet9/go-hexagonal-api/core/services"
+	"github.com/sergicanet9/scv-go-tools/v3/api/middlewares"
 	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
 )
 
@@ -18,13 +19,13 @@ import (
 func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s services.UserService) {
 	r.Handle("/api/users/login", loginUser(ctx, cfg, s)).Methods(http.MethodPost)
 	r.Handle("/api/users", createUser(ctx, cfg, s)).Methods(http.MethodPost)
-	r.Handle("/api/users", utils.JWTMiddleware(getAllUsers(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/email/{email}", utils.JWTMiddleware(getUserByEmail(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(getUserByID(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(updateUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
-	r.Handle("/api/users/{id}", utils.JWTMiddleware(deleteUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
-	r.Handle("/api/claims", utils.JWTMiddleware(getUserClaims(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/atomic", utils.JWTMiddleware(atomicTransactionProof(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
+	r.Handle("/api/users", middlewares.JWT(getAllUsers(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/api/users/email/{email}", middlewares.JWT(getUserByEmail(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/api/users/{id}", middlewares.JWT(getUserByID(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/api/users/{id}", middlewares.JWT(updateUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
+	r.Handle("/api/users/{id}", middlewares.JWT(deleteUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
+	r.Handle("/api/claims", middlewares.JWT(getUserClaims(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/api/users/atomic", middlewares.JWT(atomicTransactionProof(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
 }
 
 // @Summary Login user
@@ -36,7 +37,7 @@ func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s serv
 // @Failure 500 {object} object
 // @Router /api/users/login [post]
 func loginUser(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -71,7 +72,7 @@ func loginUser(ctx context.Context, cfg config.Config, s services.UserService) h
 // @Failure 500 {object} object
 // @Router /api/users [post]
 func createUser(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -107,7 +108,7 @@ func createUser(ctx context.Context, cfg config.Config, s services.UserService) 
 // @Failure 500 {object} object
 // @Router /api/users [get]
 func getAllUsers(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -131,7 +132,7 @@ func getAllUsers(ctx context.Context, cfg config.Config, s services.UserService)
 // @Failure 500 {object} object
 // @Router /api/users/email/{email} [get]
 func getUserByEmail(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -156,7 +157,7 @@ func getUserByEmail(ctx context.Context, cfg config.Config, s services.UserServi
 // @Failure 500 {object} object
 // @Router /api/users/{id} [get]
 func getUserByID[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -182,7 +183,7 @@ func getUserByID[T string](ctx context.Context, cfg config.Config, s services.Us
 // @Failure 500 {object} object
 // @Router /api/users/{id} [patch]
 func updateUser[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -220,7 +221,7 @@ func updateUser[T string](ctx context.Context, cfg config.Config, s services.Use
 // @Failure 500 {object} object
 // @Router /api/users/{id} [delete]
 func deleteUser[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -244,7 +245,7 @@ func deleteUser[T string](ctx context.Context, cfg config.Config, s services.Use
 // @Failure 500 {object} object
 // @Router /api/claims [get]
 func getUserClaims(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -267,7 +268,7 @@ func getUserClaims(ctx context.Context, cfg config.Config, s services.UserServic
 // @Failure 500 {object} object
 // @Router /api/users/atomic [post]
 func atomicTransactionProof(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
-	return utils.HandlerFuncErrorHandling(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
