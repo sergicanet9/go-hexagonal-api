@@ -13,19 +13,19 @@ import (
 
 const contentType = "application/json"
 
-type Async struct {
+type async struct {
 	config  config.Config
 	address string
 }
 
-func NewAsync(cfg config.Config, address string) *Async {
-	return &Async{
+func NewAsync(cfg config.Config, address string) *async {
+	return &async{
 		config:  cfg,
 		address: address,
 	}
 }
 
-func (a Async) Run(ctx context.Context) {
+func (a async) Run(ctx context.Context) {
 	var g multierror.Group
 	g.Go(healthCheck(ctx, a.address, a.config.Port, a.config.Async.Interval.Duration))
 
