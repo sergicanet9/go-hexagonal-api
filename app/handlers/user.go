@@ -9,14 +9,14 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
-	"github.com/sergicanet9/go-hexagonal-api/core/services"
+	"github.com/sergicanet9/go-hexagonal-api/core/models"
+	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/scv-go-tools/v3/api/middlewares"
 	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
 )
 
 // SetUserRoutes creates user routes
-func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s services.UserService) {
+func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s ports.UserService) {
 	r.Handle("/api/users/login", loginUser(ctx, cfg, s)).Methods(http.MethodPost)
 	r.Handle("/api/users", createUser(ctx, cfg, s)).Methods(http.MethodPost)
 	r.Handle("/api/users", middlewares.JWT(getAllUsers(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
@@ -31,12 +31,12 @@ func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s serv
 // @Summary Login user
 // @Description Logs in an user
 // @Tags Users
-// @Param login body requests.LoginUser true "Login request"
-// @Success 200 {object} responses.LoginUser "OK"
+// @Param login body models.LoginUserReq true "Login request"
+// @Success 200 {object} models.LoginUserResp "OK"
 // @Failure 400 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/login [post]
-func loginUser(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -47,7 +47,7 @@ func loginUser(ctx context.Context, cfg config.Config, s services.UserService) h
 			return
 		}
 
-		var credentials requests.LoginUser
+		var credentials models.LoginUserReq
 		err = json.Unmarshal(body, &credentials)
 		if err != nil {
 			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
@@ -66,12 +66,12 @@ func loginUser(ctx context.Context, cfg config.Config, s services.UserService) h
 // @Summary Create user
 // @Description Creates a new user
 // @Tags Users
-// @Param user body requests.User true "New user to be created"
-// @Success 201 {object} responses.Creation "OK"
+// @Param user body models.UserReq true "New user to be created"
+// @Success 201 {object} models.CreationResp "OK"
 // @Failure 400 {object} object
 // @Failure 500 {object} object
 // @Router /api/users [post]
-func createUser(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func createUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -82,7 +82,7 @@ func createUser(ctx context.Context, cfg config.Config, s services.UserService) 
 			return
 		}
 
-		var user requests.User
+		var user models.UserReq
 		err = json.Unmarshal(body, &user)
 		if err != nil {
 			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
@@ -102,12 +102,12 @@ func createUser(ctx context.Context, cfg config.Config, s services.UserService) 
 // @Description Gets all the users
 // @Tags Users
 // @Security Bearer
-// @Success 200 {array} responses.User "OK"
+// @Success 200 {array} models.UserResp "OK"
 // @Failure 400 {object} object
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users [get]
-func getAllUsers(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func getAllUsers(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -126,12 +126,12 @@ func getAllUsers(ctx context.Context, cfg config.Config, s services.UserService)
 // @Tags Users
 // @Security Bearer
 // @Param email path string true "Email"
-// @Success 200 {object} responses.User "OK"
+// @Success 200 {object} models.UserResp "OK"
 // @Failure 400 {object} object
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/email/{email} [get]
-func getUserByEmail(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func getUserByEmail(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -151,12 +151,12 @@ func getUserByEmail(ctx context.Context, cfg config.Config, s services.UserServi
 // @Tags Users
 // @Security Bearer
 // @Param id path string true "ID"
-// @Success 200 {object} responses.User "OK"
+// @Success 200 {object} models.UserResp "OK"
 // @Failure 400 {object} object
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/{id} [get]
-func getUserByID[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func getUserByID[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -176,13 +176,13 @@ func getUserByID[T string](ctx context.Context, cfg config.Config, s services.Us
 // @Tags Users
 // @Security Bearer
 // @Param id path string true "ID"
-// @Param User body requests.UpdateUser true "User"
+// @Param User body models.UpdateUserReq true "User"
 // @Success 200 "OK"
 // @Failure 400 {object} object
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/{id} [patch]
-func updateUser[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func updateUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -194,7 +194,7 @@ func updateUser[T string](ctx context.Context, cfg config.Config, s services.Use
 		}
 
 		var params = mux.Vars(r)
-		var user requests.UpdateUser
+		var user models.UpdateUserReq
 		err = json.Unmarshal(body, &user)
 		if err != nil {
 			utils.ResponseError(w, r, body, http.StatusBadRequest, err.Error())
@@ -220,7 +220,7 @@ func updateUser[T string](ctx context.Context, cfg config.Config, s services.Use
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/{id} [delete]
-func deleteUser[T string](ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func deleteUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -244,7 +244,7 @@ func deleteUser[T string](ctx context.Context, cfg config.Config, s services.Use
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/claims [get]
-func getUserClaims(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -267,7 +267,7 @@ func getUserClaims(ctx context.Context, cfg config.Config, s services.UserServic
 // @Failure 401 {object} object
 // @Failure 500 {object} object
 // @Router /api/users/atomic [post]
-func atomicTransactionProof(ctx context.Context, cfg config.Config, s services.UserService) http.Handler {
+func atomicTransactionProof(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()

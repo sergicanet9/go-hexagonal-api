@@ -2,7 +2,7 @@
 REST API implementing Hexagonal Architecture (Ports & Adapters) making use of own [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) package.
 
 Provides:
-- MongoDB and PostgreSQL adapters for persistent storage decoupled from the business logic
+- MongoDB and PostgreSQL repository adapters for persistent storage decoupled from the business logic
 - Database migrations with Goose for PostgreSQL implementation
 - CRUD functionalities for user management
 - Multi-environment configs

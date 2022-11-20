@@ -1,11 +1,11 @@
-package requests
+package models
 
 import (
 	"time"
 )
 
-// User request struct
-type User struct {
+// UserReq user request struct
+type UserReq struct {
 	ID           string    `json:"-"`
 	Name         string    `json:"name"`
 	Surnames     string    `json:"surnames"`
@@ -16,13 +16,32 @@ type User struct {
 	UpdatedAt    time.Time `json:"-"`
 }
 
-// LoginUser request struct
-type LoginUser struct {
+// UserResp user response struct
+type UserResp struct {
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	Surnames     string    `json:"surnames"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"-"`
+	Claims       []int64   `json:"claims"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+// LoginUserReq login user request struct
+type LoginUserReq struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type UpdateUser struct {
+// LoginUserResp login user response struct
+type LoginUserResp struct {
+	User  UserResp `json:"user"`
+	Token string   `json:"token"`
+}
+
+// UpdateUserReq update user request struct
+type UpdateUserReq struct {
 	ID          string     `json:"-"`
 	Name        *string    `json:"name"`
 	Surnames    *string    `json:"surnames"`

@@ -1,12 +1,24 @@
 definitions:
-  requests.LoginUser:
+  models.CreationResp:
+    properties:
+      inserted_id:
+        type: string
+    type: object
+  models.LoginUserReq:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  requests.UpdateUser:
+  models.LoginUserResp:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/models.UserResp'
+    type: object
+  models.UpdateUserReq:
     properties:
       claims:
         items:
@@ -23,7 +35,7 @@ definitions:
       surnames:
         type: string
     type: object
-  requests.User:
+  models.UserReq:
     properties:
       claims:
         items:
@@ -38,19 +50,7 @@ definitions:
       surnames:
         type: string
     type: object
-  responses.Creation:
-    properties:
-      inserted_id:
-        type: string
-    type: object
-  responses.LoginUser:
-    properties:
-      token:
-        type: string
-      user:
-        $ref: '#/definitions/responses.User'
-    type: object
-  responses.User:
+  models.UserResp:
     properties:
       claims:
         items:
@@ -124,7 +124,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.User'
+              $ref: '#/definitions/models.UserResp'
             type: array
         "400":
           description: Bad Request
@@ -151,12 +151,12 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/requests.User'
+          $ref: '#/definitions/models.UserReq'
       responses:
         "201":
           description: OK
           schema:
-            $ref: '#/definitions/responses.Creation'
+            $ref: '#/definitions/models.CreationResp'
         "400":
           description: Bad Request
           schema:
@@ -209,7 +209,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.User'
+            $ref: '#/definitions/models.UserResp'
         "400":
           description: Bad Request
           schema:
@@ -240,7 +240,7 @@ paths:
         name: User
         required: true
         schema:
-          $ref: '#/definitions/requests.UpdateUser'
+          $ref: '#/definitions/models.UpdateUserReq'
       responses:
         "200":
           description: OK
@@ -297,7 +297,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.User'
+            $ref: '#/definitions/models.UserResp'
         "400":
           description: Bad Request
           schema:
@@ -324,12 +324,12 @@ paths:
         name: login
         required: true
         schema:
-          $ref: '#/definitions/requests.LoginUser'
+          $ref: '#/definitions/models.LoginUserReq'
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.LoginUser'
+            $ref: '#/definitions/models.LoginUserResp'
         "400":
           description: Bad Request
           schema:

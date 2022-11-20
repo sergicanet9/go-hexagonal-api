@@ -16,8 +16,8 @@ docs:
 goose-create:
 	go install github.com/pressly/goose/v3/cmd/goose@v3.5.0
 	@read -p "Name for the change (e.g. add_column): " name; \
-	goose -dir adapters/postgres/migrations/ create $${name:-<name>} sql
+	goose -dir db/postgres/migrations/ create $${name:-<name>} sql
 goose-up:
 	go install github.com/pressly/goose/v3/cmd/goose@v3.5.0
 	@read -p "Connection string (format: host=XX port=XX dbname=XX user=XX password=XX sslmode=XX): " connection_string; \
-	goose -dir adapters/postgres/migrations/ -table "public.goose_db_version" postgres "$${connection_string:-<connection_string>} " up
+	goose -dir db/postgres/migrations/ -table "public.goose_db_version" postgres "$${connection_string:-<connection_string>} " up

@@ -90,7 +90,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.User"
+                                "$ref": "#/definitions/models.UserResp"
                             }
                         }
                     },
@@ -127,7 +127,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.User"
+                            "$ref": "#/definitions/models.UserReq"
                         }
                     }
                 ],
@@ -135,7 +135,7 @@
                     "201": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.Creation"
+                            "$ref": "#/definitions/models.CreationResp"
                         }
                     },
                     "400": {
@@ -215,7 +215,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.User"
+                            "$ref": "#/definitions/models.UserResp"
                         }
                     },
                     "400": {
@@ -253,7 +253,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.LoginUser"
+                            "$ref": "#/definitions/models.LoginUserReq"
                         }
                     }
                 ],
@@ -261,7 +261,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.LoginUser"
+                            "$ref": "#/definitions/models.LoginUserResp"
                         }
                     },
                     "400": {
@@ -304,7 +304,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.User"
+                            "$ref": "#/definitions/models.UserResp"
                         }
                     },
                     "400": {
@@ -396,7 +396,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.UpdateUser"
+                            "$ref": "#/definitions/models.UpdateUserReq"
                         }
                     }
                 ],
@@ -427,7 +427,15 @@
         }
     },
     "definitions": {
-        "requests.LoginUser": {
+        "models.CreationResp": {
+            "type": "object",
+            "properties": {
+                "inserted_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginUserReq": {
             "type": "object",
             "properties": {
                 "email": {
@@ -438,7 +446,18 @@
                 }
             }
         },
-        "requests.UpdateUser": {
+        "models.LoginUserResp": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.UserResp"
+                }
+            }
+        },
+        "models.UpdateUserReq": {
             "type": "object",
             "properties": {
                 "claims": {
@@ -464,7 +483,7 @@
                 }
             }
         },
-        "requests.User": {
+        "models.UserReq": {
             "type": "object",
             "properties": {
                 "claims": {
@@ -487,26 +506,7 @@
                 }
             }
         },
-        "responses.Creation": {
-            "type": "object",
-            "properties": {
-                "inserted_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "responses.LoginUser": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/responses.User"
-                }
-            }
-        },
-        "responses.User": {
+        "models.UserResp": {
             "type": "object",
             "properties": {
                 "claims": {

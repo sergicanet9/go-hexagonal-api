@@ -12,9 +12,8 @@ import (
 	"time"
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	"github.com/sergicanet9/go-hexagonal-api/core/domain"
-	"github.com/sergicanet9/go-hexagonal-api/core/dto/requests"
-	"github.com/sergicanet9/go-hexagonal-api/core/dto/responses"
+	"github.com/sergicanet9/go-hexagonal-api/core/entities"
+	"github.com/sergicanet9/go-hexagonal-api/core/models"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
@@ -38,7 +37,7 @@ func TestLoginUser_Ok(t *testing.T) {
 		}
 
 		// Act
-		body := requests.User{
+		body := models.UserReq{
 			Email:        "testlogin@test.com",
 			PasswordHash: "test",
 		}
@@ -67,7 +66,7 @@ func TestLoginUser_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response responses.LoginUser
+		var response models.LoginUserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
@@ -87,7 +86,7 @@ func TestCreateUser_Created(t *testing.T) {
 		testUser := getNewTestUser()
 
 		// Act
-		body := requests.User(testUser)
+		body := models.UserReq(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -113,7 +112,7 @@ func TestCreateUser_Created(t *testing.T) {
 		if want, got := http.StatusCreated, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response responses.Creation
+		var response models.CreationResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
@@ -159,7 +158,7 @@ func TestGetAllUsers_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response []responses.User
+		var response []models.UserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
@@ -203,7 +202,7 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response responses.User
+		var response models.UserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
@@ -247,7 +246,7 @@ func TestGetUserByID_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response responses.User
+		var response models.UserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
@@ -272,7 +271,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 		// Act
 		testUser.Name = "modified"
 		testUser.Surnames = "modified"
-		body := requests.User(testUser)
+		body := models.UserReq(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -325,7 +324,7 @@ func TestDeleteUser_Ok(t *testing.T) {
 		}
 
 		// Act
-		body := requests.User(testUser)
+		body := models.UserReq(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -396,8 +395,8 @@ func TestGetUserClaims_Ok(t *testing.T) {
 	})
 }
 
-func getNewTestUser() domain.User {
-	return domain.User{
+func getNewTestUser() entities.User {
+	return entities.User{
 		Name:         "test",
 		Surnames:     "test",
 		Email:        fmt.Sprintf("test%d@test.com", rand.Int()),
@@ -405,7 +404,7 @@ func getNewTestUser() domain.User {
 	}
 }
 
-func insertUser(u *domain.User, cfg config.Config) error {
+func insertUser(u *entities.User, cfg config.Config) error {
 	switch cfg.Database {
 	case "mongo":
 		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
@@ -413,7 +412,7 @@ func insertUser(u *domain.User, cfg config.Config) error {
 			return err
 		}
 
-		result, err := db.Collection(domain.EntityNameUser).InsertOne(context.Background(), u)
+		result, err := db.Collection(entities.EntityNameUser).InsertOne(context.Background(), u)
 		u.ID = result.InsertedID.(primitive.ObjectID).Hex()
 		return err
 
@@ -441,27 +440,27 @@ func insertUser(u *domain.User, cfg config.Config) error {
 	}
 }
 
-func findUser(ID string, cfg config.Config) (domain.User, error) {
+func findUser(ID string, cfg config.Config) (entities.User, error) {
 	switch cfg.Database {
 	case "mongo":
 		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
 		if err != nil {
-			return domain.User{}, err
+			return entities.User{}, err
 		}
 
 		objectID, err := primitive.ObjectIDFromHex(ID)
 		if err != nil {
-			return domain.User{}, err
+			return entities.User{}, err
 		}
 
-		var u domain.User
-		err = db.Collection(domain.EntityNameUser).FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&u)
+		var u entities.User
+		err = db.Collection(entities.EntityNameUser).FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&u)
 		return u, err
 
 	case "postgres":
 		db, err := infrastructure.ConnectPostgresDB(cfg.PostgresConnectionString)
 		if err != nil {
-			return domain.User{}, err
+			return entities.User{}, err
 		}
 
 		q := `
@@ -471,11 +470,11 @@ func findUser(ID string, cfg config.Config) (domain.User, error) {
 
 		row := db.QueryRowContext(context.Background(), q, ID)
 
-		var u domain.User
+		var u entities.User
 		err = row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt)
 		return u, err
 
 	default:
-		return domain.User{}, fmt.Errorf("database flag %s not valid", cfg.Database)
+		return entities.User{}, fmt.Errorf("database flag %s not valid", cfg.Database)
 	}
 }

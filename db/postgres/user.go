@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/lib/pq"
-	"github.com/sergicanet9/go-hexagonal-api/core/domain"
+	"github.com/sergicanet9/go-hexagonal-api/core/entities"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 )
@@ -25,14 +25,14 @@ func NewUserRepository(db *sql.DB) ports.UserRepository {
 	}
 }
 
-func (r *userRepository) Create(ctx context.Context, entity interface{}) (string, error) {
+func (r *userRepository) Create(ctx context.Context, user interface{}) (string, error) {
 	q := `
     INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id;
     `
 
-	u := entity.(domain.User)
+	u := user.(entities.User)
 	row := r.DB.QueryRowContext(
 		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt,
 	)
@@ -76,7 +76,7 @@ func (r *userRepository) Get(ctx context.Context, filter map[string]interface{},
 
 	var users []interface{}
 	for rows.Next() {
-		var u domain.User
+		var u entities.User
 		err = rows.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
 		if err != nil {
 			return nil, err
@@ -95,7 +95,7 @@ func (r *userRepository) GetByID(ctx context.Context, ID string) (interface{}, e
 
 	row := r.DB.QueryRowContext(ctx, q, ID)
 
-	var u domain.User
+	var u entities.User
 	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
 		return nil, err
@@ -104,13 +104,13 @@ func (r *userRepository) GetByID(ctx context.Context, ID string) (interface{}, e
 	return &u, nil
 }
 
-func (r *userRepository) Update(ctx context.Context, ID string, entity interface{}) error {
+func (r *userRepository) Update(ctx context.Context, ID string, user interface{}) error {
 	q := `
 	UPDATE users set name=$1, surnames=$2, email=$3, password_hash=$4, claims=$5, updated_at=$6
 	    WHERE id=$7;
 	`
 
-	u := entity.(domain.User)
+	u := user.(entities.User)
 	result, err := r.DB.ExecContext(
 		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.UpdatedAt, ID,
 	)
@@ -146,15 +146,15 @@ func (r *userRepository) Delete(ctx context.Context, ID string) error {
 	return nil
 }
 
-func (r *userRepository) InsertMany(ctx context.Context, entities []interface{}) error {
+func (r *userRepository) InsertMany(ctx context.Context, users []interface{}) error {
 	tx, err := r.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	// `tx` is an instance of `*sql.Tx` through which we can execute our queries
 
-	for _, entity := range entities {
-		u := entity.(domain.User)
+	for _, entity := range users {
+		u := entity.(entities.User)
 
 		// Here, the query is executed on the transaction instance, and not applied to the database yet
 		_, err = tx.ExecContext(ctx, "INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)", u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt)

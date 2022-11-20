@@ -176,7 +176,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	if err != nil {
 		fmt.Println(err)
 	}
-	migrationsDirectory := filepath.Join(filepath.Dir(workingDirectory), "adapters/postgres/migrations")
+	migrationsDirectory := filepath.Join(filepath.Dir(workingDirectory), "db/postgres/migrations")
 
 	goose.SetTableName("public.goose_db_version")
 	if err := goose.Up(db, migrationsDirectory); err != nil {
