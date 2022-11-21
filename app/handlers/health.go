@@ -23,7 +23,7 @@ func SetHealthRoutes(ctx context.Context, cfg config.Config, r *mux.Router) {
 // @Failure 503 {object} object
 // @Router /api/health [get]
 func healthCheck(ctx context.Context, cfg config.Config) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Environment", cfg.Environment)
 		r.Header.Add("Database", cfg.Database)
 		r.Header.Add("Version", cfg.Version)

@@ -37,7 +37,7 @@ func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s port
 // @Failure 500 {object} object
 // @Router /api/users/login [post]
 func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -72,7 +72,7 @@ func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http
 // @Failure 500 {object} object
 // @Router /api/users [post]
 func createUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -108,7 +108,7 @@ func createUser(ctx context.Context, cfg config.Config, s ports.UserService) htt
 // @Failure 500 {object} object
 // @Router /api/users [get]
 func getAllUsers(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -132,7 +132,7 @@ func getAllUsers(ctx context.Context, cfg config.Config, s ports.UserService) ht
 // @Failure 500 {object} object
 // @Router /api/users/email/{email} [get]
 func getUserByEmail(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -157,7 +157,7 @@ func getUserByEmail(ctx context.Context, cfg config.Config, s ports.UserService)
 // @Failure 500 {object} object
 // @Router /api/users/{id} [get]
 func getUserByID[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -183,7 +183,7 @@ func getUserByID[T string](ctx context.Context, cfg config.Config, s ports.UserS
 // @Failure 500 {object} object
 // @Router /api/users/{id} [patch]
 func updateUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -221,7 +221,7 @@ func updateUser[T string](ctx context.Context, cfg config.Config, s ports.UserSe
 // @Failure 500 {object} object
 // @Router /api/users/{id} [delete]
 func deleteUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -245,7 +245,7 @@ func deleteUser[T string](ctx context.Context, cfg config.Config, s ports.UserSe
 // @Failure 500 {object} object
 // @Router /api/claims [get]
 func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
@@ -268,7 +268,7 @@ func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) 
 // @Failure 500 {object} object
 // @Router /api/users/atomic [post]
 func atomicTransactionProof(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.PanicRecover(func(w http.ResponseWriter, r *http.Request) {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 

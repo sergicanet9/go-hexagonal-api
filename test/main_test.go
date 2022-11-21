@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"net"
@@ -119,19 +118,6 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	connectionString := fmt.Sprintf("mongodb://localhost:%s", resource.GetPort(mongoInternalPort))
 	os.Setenv(mongoConnectionEnv, connectionString)
 
-	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
-	if err := pool.Retry(func() error {
-		var err error
-		db, err := infrastructure.ConnectMongoDB(context.Background(), mongoDBName, connectionString)
-		if err != nil {
-			return err
-		}
-
-		return db.Client().Ping(context.Background(), nil)
-	}); err != nil {
-		log.Fatalf("could not connect to docker: %s", err)
-	}
-
 	return resource
 }
 
@@ -159,19 +145,12 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	connectionString := fmt.Sprintf("host=localhost port=%s dbname=%s user=%s password=%s sslmode=disable", resource.GetPort(postgresInternalPort), postgresDBName, postgresUser, postgresPassword)
 	os.Setenv(postgresConnectionEnv, connectionString)
 
-	// Exponential backoff-retry, because the application in the container might not be ready to accept connections yet
-	var db *sql.DB
-	if err := pool.Retry(func() error {
-		db, err = infrastructure.ConnectPostgresDB(connectionString)
-		if err != nil {
-			return err
-		}
-		return db.Ping()
-	}); err != nil {
-		log.Fatalf("could not connect to docker: %s", err)
+	// Migrates the database
+	db, err := infrastructure.ConnectPostgresDB(connectionString)
+	if err != nil {
+		log.Fatalf("could not connect to the db: %s", err)
 	}
 
-	// Migrates the database
 	workingDirectory, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
