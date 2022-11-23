@@ -29,8 +29,8 @@ type svs struct {
 	userService ports.UserService
 }
 
-// NewAPI creates a new API
-func NewAPI(ctx context.Context, cfg config.Config) (a api) {
+// New creates a new API
+func New(ctx context.Context, cfg config.Config) (a api) {
 	a.config = cfg
 
 	var userRepo ports.UserRepository
@@ -69,7 +69,7 @@ func (a *api) Run(ctx context.Context) {
 	)
 
 	if a.config.Async.Run {
-		async := async.NewAsync(a.config, a.address)
+		async := async.New(a.config, a.address)
 		go async.Run(ctx)
 	}
 

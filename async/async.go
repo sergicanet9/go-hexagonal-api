@@ -18,7 +18,7 @@ type async struct {
 	address string
 }
 
-func NewAsync(cfg config.Config, address string) *async {
+func New(cfg config.Config, address string) *async {
 	return &async{
 		config:  cfg,
 		address: address,

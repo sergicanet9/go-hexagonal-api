@@ -33,6 +33,6 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	a := api.NewAPI(ctx, cfg)
+	a := api.New(ctx, cfg)
 	a.Run(ctx)
 }
