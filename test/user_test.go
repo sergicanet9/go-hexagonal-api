@@ -25,7 +25,7 @@ func TestLoginUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -79,7 +79,7 @@ func TestCreateUser_Created(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -131,7 +131,7 @@ func TestGetAllUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -170,7 +170,7 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -214,7 +214,7 @@ func TestGetUserByID_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -258,7 +258,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -313,7 +313,7 @@ func TestDeleteUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -360,7 +360,7 @@ func TestGetUserClaims_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -394,6 +394,8 @@ func TestGetUserClaims_Ok(t *testing.T) {
 		assert.NotEmpty(t, response)
 	})
 }
+
+// HELP FUNCTIONS
 
 func getNewTestUser() entities.User {
 	return entities.User{

@@ -61,42 +61,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func Databases(t *testing.T, f func(*testing.T, string), databases ...string) {
-	t.Helper()
-
-	// if no databases specified, test is going to run on both
-	if len(databases) == 0 {
-		databases = []string{"mongo", "postgres"}
-	}
-
-	for _, db := range databases {
-		t.Run(db, func(t *testing.T) {
-			f(t, db)
-		})
-	}
-}
-
-// New starts a testing instance of the API and returns its config
-func New(t *testing.T, database string) config.Config {
-	t.Helper()
-
-	cfg, err := testConfig(database)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	t.Cleanup(cancel)
-
-	a, _ := api.New(ctx, cfg)
-	go func() {
-		a.Run(ctx)
-	}()
-
-	<-time.After(100 * time.Millisecond) // waiting time for letting the API start completely
-	return cfg
-}
-
 func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	// Pulls an image, creates a container based on it and runs it
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
@@ -165,6 +129,42 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	return resource
 }
 
+func Databases(t *testing.T, f func(*testing.T, string), databases ...string) {
+	t.Helper()
+
+	// if no databases specified, test is going to run on both
+	if len(databases) == 0 {
+		databases = []string{"mongo", "postgres"}
+	}
+
+	for _, db := range databases {
+		t.Run(db, func(t *testing.T) {
+			f(t, db)
+		})
+	}
+}
+
+// New starts a testing instance of the API and returns its config
+func New(t *testing.T, database string) config.Config {
+	t.Helper()
+
+	cfg, err := testConfig(database)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+
+	a, _ := api.New(ctx, cfg)
+	go func() {
+		a.Run(ctx)
+	}()
+
+	<-time.After(100 * time.Millisecond) // waiting time for letting the API start completely
+	return cfg
+}
+
 func testConfig(database string) (c config.Config, err error) {
 	c.Version = "Integration tests"
 	c.Environment = "Integration tests"
@@ -201,7 +201,8 @@ func freePort() (int, error) {
 	return l.Addr().(*net.TCPAddr).Port, nil
 }
 
-func getAddress(cfg config.Config) (string, error) {
+// GetAddress returns the address of the api, based on the database set on the config
+func GetAddress(cfg config.Config) (string, error) {
 	addresses := map[string]string{"mongo": cfg.MongoAddress, "postgres": cfg.PostgresAddress}
 	if value, ok := addresses[cfg.Database]; ok {
 		return value, nil

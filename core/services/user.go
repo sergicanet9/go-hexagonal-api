@@ -55,6 +55,34 @@ func (s *userService) Login(ctx context.Context, credentials models.LoginUserReq
 	return models.LoginUserResp{}, fmt.Errorf("incorrect password")
 }
 
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func createToken(userid string, jwtSecret string, claims []int64) (string, error) {
+	var err error
+	addClaims := jwt.MapClaims{}
+	addClaims["authorized"] = true
+	addClaims["user_id"] = userid
+	addClaims["exp"] = time.Now().UTC().Add(time.Hour * 168).Unix()
+
+	err = validateClaims(claims)
+	if err != nil {
+		return "", err
+	}
+	for _, claim := range claims {
+		addClaims[entities.Claim(claim).String()] = true
+	}
+
+	add := jwt.NewWithClaims(jwt.SigningMethodHS256, addClaims)
+	token, err := add.SignedString([]byte(jwtSecret))
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
 // Create user
 func (s *userService) Create(ctx context.Context, u models.UserReq) (models.CreationResp, error) {
 	err := hashPassword(&u.PasswordHash)
@@ -75,6 +103,24 @@ func (s *userService) Create(ctx context.Context, u models.UserReq) (models.Crea
 		return models.CreationResp{}, err
 	}
 	return models.CreationResp{InsertedID: insertedID}, nil
+}
+
+func hashPassword(password *string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	*password = string(bytes)
+	return nil
+}
+
+func validateClaims(claims []int64) error {
+	for _, claim := range claims {
+		if ok := entities.Claim(claim).IsValid(); !ok {
+			return fmt.Errorf("not valid claim detected: %d", claim)
+		}
+	}
+	return nil
 }
 
 // GetAll users
@@ -205,50 +251,4 @@ func (s *userService) AtomicTransationProof(ctx context.Context) error {
 	err = s.repository.InsertMany(ctx, users)
 	return err
 
-}
-
-func createToken(userid string, jwtSecret string, claims []int64) (string, error) {
-	var err error
-	addClaims := jwt.MapClaims{}
-	addClaims["authorized"] = true
-	addClaims["user_id"] = userid
-	addClaims["exp"] = time.Now().UTC().Add(time.Hour * 168).Unix()
-
-	err = validateClaims(claims)
-	if err != nil {
-		return "", err
-	}
-	for _, claim := range claims {
-		addClaims[entities.Claim(claim).String()] = true
-	}
-
-	add := jwt.NewWithClaims(jwt.SigningMethodHS256, addClaims)
-	token, err := add.SignedString([]byte(jwtSecret))
-	if err != nil {
-		return "", err
-	}
-	return token, nil
-}
-
-func validateClaims(claims []int64) error {
-	for _, claim := range claims {
-		if ok := entities.Claim(claim).IsValid(); !ok {
-			return fmt.Errorf("not valid claim detected: %d", claim)
-		}
-	}
-	return nil
-}
-
-func hashPassword(password *string) error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	*password = string(bytes)
-	return nil
-}
-
-func checkPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }

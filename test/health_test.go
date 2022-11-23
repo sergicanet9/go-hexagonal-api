@@ -10,7 +10,7 @@ func TestHealthCheck_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := getAddress(cfg)
+		address, err := GetAddress(cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
