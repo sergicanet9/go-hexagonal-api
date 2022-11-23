@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
+	"github.com/sergicanet9/go-hexagonal-api/async"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 )
 
@@ -33,6 +34,12 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	a := api.New(ctx, cfg)
+
+	a, addr := api.New(ctx, cfg)
+	if cfg.Async.Run {
+		async := async.New(cfg, addr)
+		go async.Run(ctx)
+	}
+
 	a.Run(ctx)
 }

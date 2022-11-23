@@ -88,7 +88,7 @@ func New(t *testing.T, database string) config.Config {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
-	a := api.New(ctx, cfg)
+	a, _ := api.New(ctx, cfg)
 	go func() {
 		a.Run(ctx)
 	}()
