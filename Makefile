@@ -10,7 +10,7 @@ test:
 	go test -race ./... -coverpkg=./... -coverprofile=coverage.out
 cover:
 	go tool cover -html=coverage.out
-docs:
+swagger:
 	go install github.com/swaggo/swag/cmd/swag@v1.7.0
 	swag init -g cmd/main.go -o app/docs
 goose-create:

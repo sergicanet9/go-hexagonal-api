@@ -61,7 +61,7 @@ make cover
 
 ## (Re)Generate Swagger documentation
 ```
-make docs
+make swagger
 ```
 
 ## Database commands for Postgres
