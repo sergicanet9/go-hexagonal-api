@@ -16,12 +16,12 @@ type UserRepository interface {
 // UserService interface
 type UserService interface {
 	Login(ctx context.Context, credentials models.LoginUserReq) (models.LoginUserResp, error)
-	Create(ctx context.Context, u models.UserReq) (models.CreationResp, error)
+	Create(ctx context.Context, u models.CreateUserReq) (models.CreationResp, error)
 	GetAll(ctx context.Context) ([]models.UserResp, error)
 	GetByEmail(ctx context.Context, email string) (models.UserResp, error)
 	GetByID(ctx context.Context, ID string) (models.UserResp, error)
 	Update(ctx context.Context, ID string, u models.UpdateUserReq) error
 	Delete(ctx context.Context, ID string) error
-	GetClaims(ctx context.Context) (map[int]string, error)
+	GetClaims(ctx context.Context) map[int]string
 	AtomicTransationProof(ctx context.Context) error
 }

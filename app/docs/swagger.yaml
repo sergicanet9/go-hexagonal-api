@@ -1,4 +1,19 @@
 definitions:
+  models.CreateUserReq:
+    properties:
+      claims:
+        items:
+          type: integer
+        type: array
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      surnames:
+        type: string
+    type: object
   models.CreationResp:
     properties:
       inserted_id:
@@ -31,21 +46,6 @@ definitions:
       new_password:
         type: string
       old_password:
-        type: string
-      surnames:
-        type: string
-    type: object
-  models.UserReq:
-    properties:
-      claims:
-        items:
-          type: integer
-        type: array
-      email:
-        type: string
-      name:
-        type: string
-      password:
         type: string
       surnames:
         type: string
@@ -159,7 +159,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.UserReq'
+          $ref: '#/definitions/models.CreateUserReq'
       responses:
         "201":
           description: OK

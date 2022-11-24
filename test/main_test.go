@@ -110,7 +110,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	os.Setenv(postgresConnectionEnv, connectionString)
 
 	// Migrates the database
-	db, err := infrastructure.ConnectPostgresDB(connectionString)
+	db, err := infrastructure.ConnectPostgresDB(context.Background(), connectionString)
 	if err != nil {
 		log.Fatalf("could not connect to the db: %s", err)
 	}

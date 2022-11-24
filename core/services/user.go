@@ -10,6 +10,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/core/entities"
 	"github.com/sergicanet9/go-hexagonal-api/core/models"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
+	"github.com/sergicanet9/scv-go-tools/v3/wrappers"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,36 +29,48 @@ func NewUserService(cfg config.Config, repo ports.UserRepository) ports.UserServ
 }
 
 // Login user
-func (s *userService) Login(ctx context.Context, credentials models.LoginUserReq) (models.LoginUserResp, error) {
+func (s *userService) Login(ctx context.Context, credentials models.LoginUserReq) (resp models.LoginUserResp, err error) {
+	user, err := s.validateLogin(ctx, credentials)
+	if err != nil {
+		return
+	}
+
+	token, err := createToken(user.ID, s.config.JWTSecret, user.Claims)
+	if err != nil {
+		return
+	}
+
+	resp = models.LoginUserResp{
+		User:  user,
+		Token: token,
+	}
+
+	return
+}
+
+func (s *userService) validateLogin(ctx context.Context, credentials models.LoginUserReq) (models.UserResp, error) {
+	if err := credentials.Validate(); err != nil {
+		return models.UserResp{}, err
+	}
+
 	filter := map[string]interface{}{"email": credentials.Email}
 	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
-		return models.LoginUserResp{}, err
-	}
-	if len(result) < 1 {
-		return models.LoginUserResp{}, fmt.Errorf("email not found")
+		return models.UserResp{}, err
 	}
 
 	user := models.UserResp(*result[0].(*entities.User))
-
-	if checkPasswordHash(credentials.Password, user.PasswordHash) {
-		token, err := createToken(user.ID, s.config.JWTSecret, user.Claims)
-		if err != nil {
-			return models.LoginUserResp{}, err
-		}
-
-		result := models.LoginUserResp{
-			User:  user,
-			Token: token,
-		}
-		return result, nil
+	err = validatePassword(credentials.Password, user.PasswordHash)
+	if err != nil {
+		return models.UserResp{}, err
 	}
-	return models.LoginUserResp{}, fmt.Errorf("incorrect password")
+
+	return user, nil
 }
 
-func checkPasswordHash(password, hash string) bool {
+func validatePassword(password, hash string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	return wrappers.NewValidationErr(err)
 }
 
 func createToken(userid string, jwtSecret string, claims []int64) (string, error) {
@@ -83,16 +96,29 @@ func createToken(userid string, jwtSecret string, claims []int64) (string, error
 	return token, nil
 }
 
+func validateClaims(claims []int64) error {
+	for _, claim := range claims {
+		if ok := entities.Claim(claim).IsValid(); !ok {
+			return wrappers.NewValidationErr(fmt.Errorf("claim %d is not valid", claim))
+		}
+	}
+	return nil
+}
+
 // Create user
-func (s *userService) Create(ctx context.Context, u models.UserReq) (models.CreationResp, error) {
-	err := hashPassword(&u.PasswordHash)
+func (s *userService) Create(ctx context.Context, u models.CreateUserReq) (resp models.CreationResp, err error) {
+	if err := u.Validate(); err != nil {
+		return resp, err
+	}
+
+	err = hashPassword(&u.PasswordHash)
 	if err != nil {
-		return models.CreationResp{}, err
+		return
 	}
 
 	err = validateClaims(u.Claims)
 	if err != nil {
-		return models.CreationResp{}, err
+		return
 	}
 
 	now := time.Now().UTC()
@@ -100,9 +126,14 @@ func (s *userService) Create(ctx context.Context, u models.UserReq) (models.Crea
 	u.UpdatedAt = now
 	insertedID, err := s.repository.Create(ctx, entities.User(u))
 	if err != nil {
-		return models.CreationResp{}, err
+		return
 	}
-	return models.CreationResp{InsertedID: insertedID}, nil
+
+	resp = models.CreationResp{
+		InsertedID: insertedID,
+	}
+
+	return
 }
 
 func hashPassword(password *string) error {
@@ -114,57 +145,51 @@ func hashPassword(password *string) error {
 	return nil
 }
 
-func validateClaims(claims []int64) error {
-	for _, claim := range claims {
-		if ok := entities.Claim(claim).IsValid(); !ok {
-			return fmt.Errorf("not valid claim detected: %d", claim)
-		}
-	}
-	return nil
-}
-
 // GetAll users
-func (s *userService) GetAll(ctx context.Context) ([]models.UserResp, error) {
+func (s *userService) GetAll(ctx context.Context) (resp []models.UserResp, err error) {
 	result, err := s.repository.Get(ctx, map[string]interface{}{}, nil, nil)
 	if err != nil {
-		return []models.UserResp{}, err
+		return
 	}
 
-	users := make([]models.UserResp, len(result))
+	resp = make([]models.UserResp, len(result))
 	for i, v := range result {
-		users[i] = models.UserResp(*(v.(*entities.User)))
+		resp[i] = models.UserResp(*(v.(*entities.User)))
 	}
 
-	return users, nil
+	return
 }
 
 // GetByEmail user
-func (s *userService) GetByEmail(ctx context.Context, email string) (models.UserResp, error) {
+func (s *userService) GetByEmail(ctx context.Context, email string) (resp models.UserResp, err error) {
 	filter := map[string]interface{}{"email": email}
 	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
-		return models.UserResp{}, err
+		return
 	}
-	if len(result) < 1 {
-		return models.UserResp{}, fmt.Errorf("email not found")
-	}
-	return models.UserResp(*(result[0].(*entities.User))), nil
+
+	resp = models.UserResp(*(result[0].(*entities.User)))
+
+	return
 }
 
 // GetByID user
-func (s *userService) GetByID(ctx context.Context, ID string) (models.UserResp, error) {
+func (s *userService) GetByID(ctx context.Context, ID string) (resp models.UserResp, err error) {
 	user, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
-		return models.UserResp{}, err
+		return
 	}
-	return models.UserResp(*user.(*entities.User)), nil
+
+	resp = models.UserResp(*user.(*entities.User))
+
+	return
 }
 
 // Update user
-func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUserReq) error {
+func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUserReq) (err error) {
 	result, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
-		return err
+		return
 	}
 	user := *result.(*entities.User)
 	if u.Name != nil {
@@ -177,16 +202,17 @@ func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUser
 		user.Email = *u.Email
 	}
 	if u.NewPassword != nil {
-		if checkPasswordHash(*u.OldPassword, user.PasswordHash) {
-			err = hashPassword(u.NewPassword)
-			if err != nil {
-				return err
-			}
-
-			user.PasswordHash = *u.NewPassword
-		} else {
-			return fmt.Errorf("old password incorrect")
+		err = validatePassword(*u.OldPassword, user.PasswordHash)
+		if err != nil {
+			return
 		}
+
+		err = hashPassword(u.NewPassword)
+		if err != nil {
+			return
+		}
+
+		user.PasswordHash = *u.NewPassword
 	}
 	if u.Claims != nil {
 		err = validateClaims(*u.Claims)
@@ -203,27 +229,28 @@ func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUser
 }
 
 // Delete user
-func (s *userService) Delete(ctx context.Context, ID string) error {
-	err := s.repository.Delete(ctx, ID)
-	return err
+func (s *userService) Delete(ctx context.Context, ID string) (err error) {
+	err = s.repository.Delete(ctx, ID)
+	return
 }
 
-// Get user claims
-func (s *userService) GetClaims(ctx context.Context) (map[int]string, error) {
-	return entities.GetClaims(), nil
+// GetClaims user
+func (s *userService) GetClaims(ctx context.Context) (claims map[int]string) {
+	claims = entities.GetClaims()
+	return
 }
 
 // AtomicTransationProof creates two users atomically
-func (s *userService) AtomicTransationProof(ctx context.Context) error {
+func (s *userService) AtomicTransationProof(ctx context.Context) (err error) {
 	user1Hash := "Entity1"
-	err := hashPassword(&user1Hash)
+	err = hashPassword(&user1Hash)
 	if err != nil {
-		return err
+		return
 	}
 	user2Hash := "Entity2"
 	err = hashPassword(&user2Hash)
 	if err != nil {
-		return err
+		return
 	}
 	now := time.Now().UTC()
 
@@ -249,6 +276,6 @@ func (s *userService) AtomicTransationProof(ctx context.Context) error {
 	}
 
 	err = s.repository.InsertMany(ctx, users)
-	return err
 
+	return
 }

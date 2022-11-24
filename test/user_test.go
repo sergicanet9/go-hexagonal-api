@@ -37,7 +37,7 @@ func TestLoginUser_Ok(t *testing.T) {
 		}
 
 		// Act
-		body := models.UserReq{
+		body := models.CreateUserReq{
 			Email:        "testlogin@test.com",
 			PasswordHash: "test",
 		}
@@ -86,7 +86,7 @@ func TestCreateUser_Created(t *testing.T) {
 		testUser := getNewTestUser()
 
 		// Act
-		body := models.UserReq(testUser)
+		body := models.CreateUserReq(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -271,7 +271,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 		// Act
 		testUser.Name = "modified"
 		testUser.Surnames = "modified"
-		body := models.UserReq(testUser)
+		body := models.CreateUserReq(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -324,7 +324,7 @@ func TestDeleteUser_Ok(t *testing.T) {
 		}
 
 		// Act
-		body := models.UserReq(testUser)
+		body := models.CreateUserReq(testUser)
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -419,7 +419,7 @@ func insertUser(u *entities.User, cfg config.Config) error {
 		return err
 
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.PostgresConnectionString)
 		if err != nil {
 			return err
 		}
@@ -460,7 +460,7 @@ func findUser(ID string, cfg config.Config) (entities.User, error) {
 		return u, err
 
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.PostgresConnectionString)
 		if err != nil {
 			return entities.User{}, err
 		}

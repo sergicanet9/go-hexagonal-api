@@ -3,12 +3,14 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/lib/pq"
 	"github.com/sergicanet9/go-hexagonal-api/core/entities"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
+	"github.com/sergicanet9/scv-go-tools/v3/wrappers"
 )
 
 // userRepository adapter of an user repository for postgres
@@ -84,6 +86,10 @@ func (r *userRepository) Get(ctx context.Context, filter map[string]interface{},
 		users = append(users, &u)
 	}
 
+	if len(users) < 1 {
+		return nil, wrappers.NewNonExistentErr(sql.ErrNoRows)
+	}
+
 	return users, nil
 }
 
@@ -98,6 +104,9 @@ func (r *userRepository) GetByID(ctx context.Context, ID string) (interface{}, e
 	var u entities.User
 	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = wrappers.NewNonExistentErr(err)
+		}
 		return nil, err
 	}
 
@@ -123,7 +132,7 @@ func (r *userRepository) Update(ctx context.Context, ID string, user interface{}
 		fmt.Println("RowsAffected Error", err)
 	}
 	if rows < 1 {
-		return sql.ErrNoRows
+		return wrappers.NewNonExistentErr(sql.ErrNoRows)
 	}
 	return nil
 }
@@ -141,7 +150,7 @@ func (r *userRepository) Delete(ctx context.Context, ID string) error {
 		return err
 	}
 	if rows < 1 {
-		return sql.ErrNoRows
+		return wrappers.NewNonExistentErr(sql.ErrNoRows)
 	}
 	return nil
 }

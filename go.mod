@@ -10,8 +10,8 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/pkg/errors v0.9.1
-	github.com/pressly/goose/v3 v3.5.0
-	github.com/sergicanet9/scv-go-tools/v3 v3.4.0
+	github.com/pressly/goose/v3 v3.5.1
+	github.com/sergicanet9/scv-go-tools/v3 v3.5.0
 	github.com/stretchr/testify v1.7.1
 	github.com/swaggo/http-swagger v1.3.0
 	github.com/swaggo/swag v1.8.3

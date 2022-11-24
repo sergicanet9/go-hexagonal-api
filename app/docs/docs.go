@@ -157,7 +157,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UserReq"
+                            "$ref": "#/definitions/models.CreateUserReq"
                         }
                     }
                 ],
@@ -499,6 +499,29 @@ var doc = `{
         }
     },
     "definitions": {
+        "models.CreateUserReq": {
+            "type": "object",
+            "properties": {
+                "claims": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "surnames": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CreationResp": {
             "type": "object",
             "properties": {
@@ -548,29 +571,6 @@ var doc = `{
                     "type": "string"
                 },
                 "old_password": {
-                    "type": "string"
-                },
-                "surnames": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UserReq": {
-            "type": "object",
-            "properties": {
-                "claims": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
                     "type": "string"
                 },
                 "surnames": {

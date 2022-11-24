@@ -67,7 +67,7 @@ func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http
 // @Summary Create user
 // @Description Creates a new user
 // @Tags Users
-// @Param user body models.UserReq true "New user to be created"
+// @Param user body models.CreateUserReq true "New user to be created"
 // @Success 201 {object} models.CreationResp "OK"
 // @Failure 400 {object} object
 // @Failure 408 {object} object
@@ -84,7 +84,7 @@ func createUser(ctx context.Context, cfg config.Config, s ports.UserService) htt
 			return
 		}
 
-		var user models.UserReq
+		var user models.CreateUserReq
 		err = json.Unmarshal(body, &user)
 		if err != nil {
 			utils.ResponseError(w, r, body, err)
@@ -257,11 +257,7 @@ func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) 
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
-		claims, err := s.GetClaims(ctx)
-		if err != nil {
-			utils.ResponseError(w, r, nil, err)
-			return
-		}
+		claims := s.GetClaims(ctx)
 		utils.ResponseJSON(w, r, nil, http.StatusOK, claims)
 	})
 }
