@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path"
 	"time"
@@ -28,6 +28,7 @@ type Config struct {
 	MongoConnectionString    string
 	MongoDBName              string
 	PostgresConnectionString string
+	PostgresMigrationsDir    string
 	JWTSecret                string
 	Timeout                  Duration
 	Async                    Async
@@ -68,7 +69,7 @@ func (c *Config) loadJSON(filePath string) error {
 		return fmt.Errorf("error opening file %v: %w", filePath, err)
 	}
 
-	byteValue, _ := ioutil.ReadAll(file)
+	byteValue, _ := io.ReadAll(file)
 
 	if err = file.Close(); err != nil {
 		return fmt.Errorf("error closing file %v: %w", filePath, err)

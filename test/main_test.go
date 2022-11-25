@@ -6,17 +6,14 @@ import (
 	"log"
 	"net"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/pkg/errors"
-	"github.com/pressly/goose/v3"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 )
 
 const (
@@ -109,23 +106,6 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	connectionString := fmt.Sprintf("host=localhost port=%s dbname=%s user=%s password=%s sslmode=disable", resource.GetPort(postgresInternalPort), postgresDBName, postgresUser, postgresPassword)
 	os.Setenv(postgresConnectionEnv, connectionString)
 
-	// Migrates the database
-	db, err := infrastructure.ConnectPostgresDB(context.Background(), connectionString)
-	if err != nil {
-		log.Fatalf("could not connect to the db: %s", err)
-	}
-
-	workingDirectory, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-	}
-	migrationsDirectory := filepath.Join(filepath.Dir(workingDirectory), "db/postgres/migrations")
-
-	goose.SetTableName("public.goose_db_version")
-	if err := goose.Up(db, migrationsDirectory); err != nil {
-		log.Fatalf("could not run the database migrations: %s", err)
-	}
-
 	return resource
 }
 
@@ -180,6 +160,7 @@ func testConfig(database string) (c config.Config, err error) {
 	c.MongoConnectionString = os.Getenv(mongoConnectionEnv)
 	c.MongoDBName = mongoDBName
 	c.PostgresConnectionString = os.Getenv(postgresConnectionEnv)
+	c.PostgresMigrationsDir = "db/postgres/migrations"
 	c.JWTSecret = jwtSecret
 	c.Timeout = config.Duration{Duration: 5 * time.Second}
 

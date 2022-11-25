@@ -2,6 +2,7 @@
     "MongoConnectionString": "mongodb+srv://admin:admin@cluster0.qy8ev.mongodb.net/go-hexagonal-api?retryWrites=true&w=majority",
     "MongoDbName": "go-hexagonal-api",
     "PostgresConnectionString": "host=scv-postgres.postgres.database.azure.com port=5432 dbname=postgresrestapi user=postgres password=Password2021 sslmode=require",
+    "PostgresMigrationsDir": "db/postgres/migrations",
     "JWTSecret": "CTeemck6Gg",
     "Timeout": "5s",
     "Async": {

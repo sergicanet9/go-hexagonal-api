@@ -67,16 +67,10 @@ make swagger
 ## Database commands for Postgres
 ### Create a new migration
 ```
-make goose-create
+make goose
 ```
 Write the file name without ".sql" suffix and press enter.
 Then edit the newly created file to define the behavior of the migration.
-
-### Apply all the migrations on the remote database
-```
-make goose-up
-```
-Write the connection string in the followig format: "host=XX port=XX dbname=XX user=XX password=XX sslmode=XX" and press enter.
 
 ### Connect to the remote database
 ```
