@@ -232,7 +232,7 @@ func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUser
 	user.ID = ""
 	user.UpdatedAt = time.Now().UTC()
 
-	err = s.repository.Update(ctx, ID, user)
+	err = s.repository.Update(ctx, ID, entities.User(user))
 	return err
 }
 

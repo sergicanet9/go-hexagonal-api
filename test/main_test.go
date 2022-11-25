@@ -65,7 +65,7 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	// Pulls an image, creates a container based on it and runs it
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "mongo",
-		Tag:        "3.0",
+		Tag:        "5.0",
 		Env: []string{
 			"listen_addresses = '*'",
 		},

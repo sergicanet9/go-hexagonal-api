@@ -10,7 +10,7 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/pkg/errors v0.9.1
-	github.com/pressly/goose/v3 v3.5.1
+	github.com/pressly/goose/v3 v3.5.2
 	github.com/sergicanet9/scv-go-tools/v3 v3.5.1
 	github.com/stretchr/testify v1.7.1
 	github.com/swaggo/http-swagger v1.3.0
@@ -66,5 +66,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.11 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
