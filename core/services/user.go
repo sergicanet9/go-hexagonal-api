@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -53,13 +54,11 @@ func (s *userService) validateLogin(ctx context.Context, credentials models.Logi
 		return models.UserResp{}, err
 	}
 
-	filter := map[string]interface{}{"email": credentials.Email}
-	result, err := s.repository.Get(ctx, filter, nil, nil)
+	user, err := s.GetByEmail(ctx, credentials.Email)
 	if err != nil {
 		return models.UserResp{}, err
 	}
 
-	user := models.UserResp(*result[0].(*entities.User))
 	err = validatePassword(credentials.Password, user.PasswordHash)
 	if err != nil {
 		return models.UserResp{}, err
@@ -149,6 +148,9 @@ func hashPassword(password *string) error {
 func (s *userService) GetAll(ctx context.Context) (resp []models.UserResp, err error) {
 	result, err := s.repository.Get(ctx, map[string]interface{}{}, nil, nil)
 	if err != nil {
+		if errors.Is(err, wrappers.NonExistentErr) {
+			err = nil
+		}
 		return
 	}
 
@@ -165,6 +167,9 @@ func (s *userService) GetByEmail(ctx context.Context, email string) (resp models
 	filter := map[string]interface{}{"email": email}
 	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
+		if errors.Is(err, wrappers.NonExistentErr) {
+			err = wrappers.NewNonExistentErr(fmt.Errorf("email %s not found", email))
+		}
 		return
 	}
 
@@ -177,6 +182,9 @@ func (s *userService) GetByEmail(ctx context.Context, email string) (resp models
 func (s *userService) GetByID(ctx context.Context, ID string) (resp models.UserResp, err error) {
 	user, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
+		if errors.Is(err, wrappers.NonExistentErr) {
+			err = wrappers.NewNonExistentErr(fmt.Errorf("ID %s not found", ID))
+		}
 		return
 	}
 
@@ -187,11 +195,11 @@ func (s *userService) GetByID(ctx context.Context, ID string) (resp models.UserR
 
 // Update user
 func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUserReq) (err error) {
-	result, err := s.repository.GetByID(ctx, ID)
+	user, err := s.GetByID(ctx, ID)
 	if err != nil {
 		return
 	}
-	user := *result.(*entities.User)
+
 	if u.Name != nil {
 		user.Name = *u.Name
 	}
@@ -231,6 +239,10 @@ func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUser
 // Delete user
 func (s *userService) Delete(ctx context.Context, ID string) (err error) {
 	err = s.repository.Delete(ctx, ID)
+	if errors.Is(err, wrappers.NonExistentErr) {
+		err = wrappers.NewNonExistentErr(fmt.Errorf("ID %s not found", ID))
+	}
+
 	return
 }
 
