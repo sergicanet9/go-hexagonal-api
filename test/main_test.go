@@ -14,6 +14,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
+	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
 )
 
 const (
@@ -162,7 +163,7 @@ func testConfig(database string) (c config.Config, err error) {
 	c.PostgresConnectionString = os.Getenv(postgresConnectionEnv)
 	c.PostgresMigrationsDir = "db/postgres/migrations"
 	c.JWTSecret = jwtSecret
-	c.Timeout = config.Duration{Duration: 5 * time.Second}
+	c.Timeout = utils.Duration{Duration: 5 * time.Second}
 
 	return c, nil
 }
