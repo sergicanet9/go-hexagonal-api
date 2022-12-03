@@ -4,17 +4,16 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
-	"github.com/pkg/errors"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
+	"github.com/sergicanet9/scv-go-tools/v3/test"
 )
 
 const (
@@ -129,7 +128,7 @@ func Databases(t *testing.T, f func(*testing.T, string), databases ...string) {
 func New(t *testing.T, database string) config.Config {
 	t.Helper()
 
-	cfg, err := testConfig(database)
+	cfg, err := testConfig(t, database)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -146,14 +145,10 @@ func New(t *testing.T, database string) config.Config {
 	return cfg
 }
 
-func testConfig(database string) (c config.Config, err error) {
+func testConfig(t *testing.T, database string) (c config.Config, err error) {
 	c.Version = "Integration tests"
 	c.Environment = "Integration tests"
-	port, err := freePort()
-	if err != nil {
-		return c, err
-	}
-	c.Port = port
+	c.Port = test.FreePort(t)
 	c.Database = database
 
 	c.MongoAddress = "http://localhost"
@@ -166,21 +161,6 @@ func testConfig(database string) (c config.Config, err error) {
 	c.Timeout = utils.Duration{Duration: 5 * time.Second}
 
 	return c, nil
-}
-
-func freePort() (int, error) {
-	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
-	if err != nil {
-		return 0, errors.WithStack(err)
-	}
-
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		return 0, errors.WithStack(err)
-	}
-	defer l.Close()
-
-	return l.Addr().(*net.TCPAddr).Port, nil
 }
 
 // GetAddress returns the address of the api, based on the database set on the config

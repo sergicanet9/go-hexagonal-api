@@ -9,8 +9,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/lib/pq v1.10.7
 	github.com/ory/dockertest/v3 v3.9.1
-	github.com/pkg/errors v0.9.1
-	github.com/sergicanet9/scv-go-tools/v3 v3.7.0
+	github.com/sergicanet9/scv-go-tools/v3 v3.8.1
 	github.com/stretchr/testify v1.7.1
 	github.com/swaggo/http-swagger v1.3.0
 	github.com/swaggo/swag v1.8.3
@@ -49,6 +48,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.1.3 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/pressly/goose/v3 v3.7.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
