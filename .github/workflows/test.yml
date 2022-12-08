@@ -39,6 +39,7 @@ jobs:
 
   run-integration-tests:
     runs-on: ubuntu-latest
+    needs: run-unit-tests
     steps:
       - uses: actions/checkout@v2
       - uses: arnested/go-version-action@v1
