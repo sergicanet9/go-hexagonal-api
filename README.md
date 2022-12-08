@@ -9,6 +9,7 @@ Provides:
 - JWT authentication and claim-based authorization
 - Swagger UI documentation
 - Dockerized app
+- Unit tests with code coverage
 - Integration tests
 - CI/CD with Github Actions
 - Async process for periodical health checking

@@ -162,7 +162,7 @@ func TestGetAllUsers_Ok(t *testing.T) {
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
-		assert.NotNil(t, response)
+		assert.NotEmpty(t, response)
 	})
 }
 
