@@ -7,4 +7,4 @@ on:
 
 jobs:
   test:
-    uses: ./.github/templates/test.yml
+    uses: ./.github/templates/test.yml@main
