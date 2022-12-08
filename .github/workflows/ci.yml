@@ -6,5 +6,7 @@ on:
       - main
 
 jobs:
-  test:
-    uses: ./.github/templates/test.yml@main
+  run-unit-tests:
+    uses: ./.github/actions/unit-tests.yml
+  run-integration-tests:
+    uses: ./.github/actions/integration-tests.yml
