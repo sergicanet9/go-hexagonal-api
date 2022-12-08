@@ -6,15 +6,19 @@ on:
       - main
 
 jobs:
-  run-unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/unit-tests.yml
+  run-tests:
+    uses: ./.github/templates/test.yml
+  # run-unit-tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - uses: ./.github/actions/unit-tests.yml
 
-  run-integration-tests:
-      runs-on: ubuntu-latest
-      needs: run-unit-tests
-      steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/integration-tests.yml
+  # run-integration-tests:
+  #     runs-on: ubuntu-latest
+  #     needs: run-unit-tests
+  #     steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+          
+  #     - uses: ./.github/actions/integration-tests.yml
