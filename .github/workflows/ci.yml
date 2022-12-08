@@ -7,6 +7,12 @@ on:
 
 jobs:
   run-unit-tests:
-    uses: ./.github/actions/unit-tests.yml
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ./.github/actions/unit-tests.yml
+    
   run-integration-tests:
-    uses: ./.github/actions/integration-tests.yml
+      runs-on: ubuntu-latest
+      needs: integration-tests
+      steps:
+      - uses: ./.github/actions/integration-tests.yml
