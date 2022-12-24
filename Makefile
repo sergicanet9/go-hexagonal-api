@@ -1,7 +1,11 @@
+include .env
+
 .PHONY: test
 
 up:
 	docker-compose up -d --build
+	@echo "Mongo Swagger:    http://localhost:${HOST_PORT_MONGOAPI}/swagger/index.html"
+	@echo "Postgres Swagger: http://localhost:${HOST_PORT_POSTGRESAPI}/swagger/index.html"
 down:
 	docker-compose down
 test-unit:
