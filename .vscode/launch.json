@@ -12,14 +12,11 @@
             "program": "${workspaceRoot}/cmd",
             "cwd": "${workspaceRoot}",
             "args": [
-                "-v",
-                "debug",
-                "-env",
-                "local",
-                "-p",
-                "8080",
-                "-db",
-                "mongo"
+                "--ver", "debug",
+                "--env", "local",
+                "--port", "8080",
+                "--db", "mongo",
+                "--dsn", "mongodb://localhost:4041/mongorestapi"
             ]
         },
         {
@@ -30,14 +27,11 @@
             "program": "${workspaceRoot}/cmd",
             "cwd": "${workspaceRoot}",
             "args": [
-                "-v",
-                "debug",
-                "-env",
-                "local",
-                "-p",
-                "8080",
-                "-db",
-                "postgres"
+                "--ver", "debug",
+                "--env", "local",
+                "--port", "8080",
+                "--db", "postgres",
+                "--dsn", "postgres://postgres:Password2022@localhost:4042/postgresrestapi?sslmode=disable"
             ]
         }
     ]

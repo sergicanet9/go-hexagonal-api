@@ -1,14 +1,48 @@
 version: "3.9"
 services:
-  api:
-    image: go-hexagonal-api-$DB.$ENV:$VERSION
+  mongo:
+    image: mongo
+    restart: always   
+    environment:
+      - MONGO_INITDB_DATABASE=$MONGO_DB
+    ports:
+      - "$MONGO_HOST_PORT:$MONGO_CONTAINER_PORT"
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    ports:
+      - "$POSTGRES_HOST_PORT:$POSTGRES_CONTAINER_PORT"
+  api-mongo:
+    image: go-hexagonal-api-mongo.$ENV:$VERSION
     build:
       args:
         version: $VERSION
         environment: $ENV
-        port: $PORT
-        database: $DB
+        port: $CONTAINER_PORT
+        database: mongo
+        dsn: $MONGO_DSN
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - mongo
     ports:
-      - $PORT:$PORT
+      - $HOST_PORT_MONGOAPI:$CONTAINER_PORT
+  api-postgres:
+    image: go-hexagonal-api-postgres.$ENV:$VERSION
+    build:
+      args:
+        version: $VERSION
+        environment: $ENV
+        port: $CONTAINER_PORT
+        database: postgres
+        dsn: $POSTGRES_DSN
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - $HOST_PORT_POSTGRESAPI:$CONTAINER_PORT

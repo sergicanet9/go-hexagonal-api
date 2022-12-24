@@ -1,11 +1,9 @@
 .PHONY: test
 
-mongo-up:
-	export VERSION=$(shell git branch --show-current | xargs basename) && export ENV=local && export PORT=8080 && export DB=mongo && docker-compose up -d --build
-postgres-up:
-	export VERSION=$(shell git branch --show-current | xargs basename) && export ENV=local && export PORT=8080 && export DB=postgres && docker-compose up -d --build
+up:
+	docker-compose up -d --build
 down:
-	export VERSION= && export ENV= && export PORT=0 && export DB= && docker-compose down
+	docker-compose down
 test-unit:
 	go test -race $(shell go list ./... | grep -v /test) -coverprofile=coverage.out
 	go tool cover -func=coverage.out -o=coverage.out

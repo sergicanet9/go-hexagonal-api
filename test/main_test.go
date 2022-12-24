@@ -19,7 +19,6 @@ import (
 const (
 	contentType           = "application/json"
 	mongoInternalPort     = "27017/tcp"
-	mongoDBName           = "test-db"
 	mongoConnectionEnv    = "mongoConnection"
 	postgresUser          = "postgres"
 	postgresPassword      = "test"
@@ -150,12 +149,10 @@ func testConfig(t *testing.T, database string) (c config.Config, err error) {
 	c.Environment = "Integration tests"
 	c.Port = test.FreePort(t)
 	c.Database = database
+	c.DSN = os.Getenv(postgresConnectionEnv)
 
 	c.MongoAddress = "http://localhost"
 	c.PostgresAddress = "http://localhost"
-	c.MongoConnectionString = os.Getenv(mongoConnectionEnv)
-	c.MongoDBName = mongoDBName
-	c.PostgresConnectionString = os.Getenv(postgresConnectionEnv)
 	c.PostgresMigrationsDir = "db/postgres/migrations"
 	c.JWTSecret = jwtSecret
 	c.Timeout = utils.Duration{Duration: 5 * time.Second}

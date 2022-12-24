@@ -13,6 +13,8 @@ ARG port
 ENV p $port
 ARG database
 ENV db $database
+ARG dsn
+ENV dsn $dsn
 
 # Set the Current Working Directory inside the container
 WORKDIR /app/go-hexagonal-api
@@ -30,4 +32,4 @@ COPY . .
 RUN go build -o ./opt/go-hexagonal-api cmd/main.go
 
 # Command to run the executable
-CMD ["sh", "-c", "./opt/go-hexagonal-api -v $v -env $env -p $p -db $db"]
+CMD ["sh", "-c", "./opt/go-hexagonal-api --ver $v --env $env --port $p --db $db --dsn $dsn"]

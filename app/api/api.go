@@ -37,7 +37,7 @@ func New(ctx context.Context, cfg config.Config) (a api, addr string) {
 	var userRepo ports.UserRepository
 	switch a.config.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(ctx, a.config.MongoDBName, a.config.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(ctx, a.config.DSN)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -45,7 +45,7 @@ func New(ctx context.Context, cfg config.Config) (a api, addr string) {
 		userRepo = mongo.NewUserRepository(db)
 		a.address = a.config.MongoAddress
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(ctx, a.config.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(ctx, a.config.DSN)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -74,9 +74,7 @@ func (a *api) Run(ctx context.Context) {
 	handlers.SetHealthRoutes(ctx, a.config, router)
 	handlers.SetUserRoutes(ctx, a.config, router, a.services.user)
 
-	router.PathPrefix("/swagger").Handler(
-		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s:%d/swagger/doc.json", a.address, a.config.Port))),
-	)
+	router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
 
 	log.Printf("Version: %s", a.config.Version)
 	log.Printf("Environment: %s", a.config.Environment)

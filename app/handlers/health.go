@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
@@ -24,9 +25,11 @@ func SetHealthRoutes(ctx context.Context, cfg config.Config, r *mux.Router) {
 // @Router /api/health [get]
 func healthCheck(ctx context.Context, cfg config.Config) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
-		r.Header.Add("Environment", cfg.Environment)
-		r.Header.Add("Database", cfg.Database)
 		r.Header.Add("Version", cfg.Version)
+		r.Header.Add("Environment", cfg.Environment)
+		r.Header.Add("Port", strconv.Itoa(cfg.Port))
+		r.Header.Add("Database", cfg.Database)
+		r.Header.Add("DSN", cfg.DSN)
 
 		utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
 	})

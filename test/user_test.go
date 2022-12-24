@@ -409,7 +409,7 @@ func getNewTestUser() entities.User {
 func insertUser(u *entities.User, cfg config.Config) error {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return err
 		}
@@ -419,7 +419,7 @@ func insertUser(u *entities.User, cfg config.Config) error {
 		return err
 
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return err
 		}
@@ -445,7 +445,7 @@ func insertUser(u *entities.User, cfg config.Config) error {
 func findUser(ID string, cfg config.Config) (entities.User, error) {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return entities.User{}, err
 		}
@@ -460,7 +460,7 @@ func findUser(ID string, cfg config.Config) (entities.User, error) {
 		return u, err
 
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return entities.User{}, err
 		}
