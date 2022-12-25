@@ -68,17 +68,34 @@ func New(ctx context.Context, cfg config.Config) (a api, addr string) {
 }
 
 // Run API
-func (a *api) Run(ctx context.Context) {
-	router := mux.NewRouter()
+func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
+	return func() error {
+		defer cancel()
 
-	handlers.SetHealthRoutes(ctx, a.config, router)
-	handlers.SetUserRoutes(ctx, a.config, router, a.services.user)
+		router := mux.NewRouter()
 
-	router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
+		handlers.SetHealthRoutes(ctx, a.config, router)
+		handlers.SetUserRoutes(ctx, a.config, router, a.services.user)
+		router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
 
-	log.Printf("Version: %s", a.config.Version)
-	log.Printf("Environment: %s", a.config.Environment)
-	log.Printf("Database: %s", a.config.Database)
-	log.Printf("Listening on port %d", a.config.Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), router))
+		log.Printf("Version: %s", a.config.Version)
+		log.Printf("Environment: %s", a.config.Environment)
+		log.Printf("Database: %s", a.config.Database)
+		log.Printf("Listening on port %d", a.config.Port)
+
+		server := &http.Server{
+			Addr:    fmt.Sprintf(":%d", a.config.Port),
+			Handler: router,
+		}
+		go shutdown(ctx, server)
+		return server.ListenAndServe()
+	}
+}
+
+func shutdown(ctx context.Context, server *http.Server) {
+	<-ctx.Done()
+	log.Printf("Shutting down API gracefully...")
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatal(fmt.Errorf("server could not shut down gracefully: %w", err))
+	}
 }

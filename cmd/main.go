@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/jessevdk/go-flags"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/async"
@@ -36,14 +37,18 @@ func main() {
 		log.Fatal(fmt.Errorf("cannot parse config file for env %s: %w", opts.Environment, err))
 	}
 
+	var g multierror.Group
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	a, addr := api.New(ctx, cfg)
+	g.Go(a.Run(ctx, cancel))
+
 	if cfg.Async.Run {
 		async := async.New(cfg, addr)
-		go async.Run(ctx)
+		g.Go(async.Run(ctx, cancel))
 	}
 
-	a.Run(ctx)
+	if err := g.Wait().ErrorOrNil(); err != nil {
+		log.Fatal(err)
+	}
 }

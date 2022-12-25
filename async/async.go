@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hashicorp/go-multierror"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 )
 
@@ -25,43 +24,47 @@ func New(cfg config.Config, address string) *async {
 	}
 }
 
-func (a async) Run(ctx context.Context) {
-	var g multierror.Group
-	g.Go(healthCheck(ctx, a.address, a.config.Port, a.config.Async.Interval.Duration))
+func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error {
+	return func() error {
+		go healthCheck(ctx, cancel, a.address, a.config.Port, a.config.Async.Interval.Duration)
 
-	if err := g.Wait().ErrorOrNil(); err != nil {
-		log.Printf("async process stopped, error: %s", err)
+		for ctx.Err() != nil {
+			<-time.After(1 * time.Second)
+		}
+		return fmt.Errorf("async process stopped")
 	}
 }
 
-func healthCheck(ctx context.Context, address string, port int, interval time.Duration) func() error {
-	return func() error {
-		for ctx.Err() == nil {
-			<-time.After(interval)
-
-			start := time.Now()
-
-			url := fmt.Sprintf("%s:%d/api/health", address, port)
-
-			req, err := http.NewRequest(http.MethodPost, url, http.NoBody)
-			if err != nil {
-				log.Printf("async process failure, error: %s", err)
-				continue
-			}
-
-			req.Header.Set("Content-Type", contentType)
-
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				log.Printf("async process failure, error: %s", err)
-				continue
-			}
-
-			defer resp.Body.Close()
-
-			elapsed := time.Since(start)
-			log.Printf("Health Check complete, time elapsed: %s", elapsed)
+func healthCheck(ctx context.Context, cancel context.CancelFunc, address string, port int, interval time.Duration) {
+	defer cancel()
+	defer func() {
+		if rec := recover(); rec != nil {
+			log.Print("recovered panic in async process: %w", rec)
 		}
-		return ctx.Err()
+	}()
+
+	for {
+		<-time.After(interval)
+
+		start := time.Now()
+
+		url := fmt.Sprintf("%s:%d/api/health", address, port)
+
+		req, err := http.NewRequest(http.MethodPost, url, http.NoBody)
+		if err != nil {
+			log.Printf("async process failure, error: %s", err)
+			continue
+		}
+
+		req.Header.Set("Content-Type", contentType)
+
+		_, err = http.DefaultClient.Do(req)
+		if err != nil {
+			log.Printf("async process failure, error: %s", err)
+			continue
+		}
+
+		elapsed := time.Since(start)
+		log.Printf("Health Check complete, time elapsed: %s", elapsed)
 	}
 }
