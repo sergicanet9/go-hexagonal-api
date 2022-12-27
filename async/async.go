@@ -26,7 +26,7 @@ func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error 
 	return func() error {
 		go healthCheck(ctx, cancel, a.config.Address, a.config.Port, a.config.Async.Interval.Duration)
 
-		for ctx.Err() != nil {
+		for ctx.Err() == nil {
 			<-time.After(1 * time.Second)
 		}
 		return fmt.Errorf("async process stopped")
