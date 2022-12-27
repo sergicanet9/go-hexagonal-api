@@ -22,7 +22,6 @@ import (
 
 type api struct {
 	config   config.Config
-	address  string
 	services svs
 }
 
@@ -31,7 +30,7 @@ type svs struct {
 }
 
 // New creates a new API
-func New(ctx context.Context, cfg config.Config) (a api, addr string) {
+func New(ctx context.Context, cfg config.Config) (a api) {
 	a.config = cfg
 
 	var userRepo ports.UserRepository
@@ -43,7 +42,6 @@ func New(ctx context.Context, cfg config.Config) (a api, addr string) {
 		}
 
 		userRepo = mongo.NewUserRepository(db)
-		a.address = a.config.MongoAddress
 	case "postgres":
 		db, err := infrastructure.ConnectPostgresDB(ctx, a.config.DSN)
 		if err != nil {
@@ -58,13 +56,12 @@ func New(ctx context.Context, cfg config.Config) (a api, addr string) {
 		}
 
 		userRepo = postgres.NewUserRepository(db)
-		a.address = a.config.PostgresAddress
 	default:
 		log.Fatalf("database flag %s not valid", a.config.Database)
 	}
 
 	a.services.user = services.NewUserService(a.config, userRepo)
-	return a, a.address
+	return a
 }
 
 // Run API

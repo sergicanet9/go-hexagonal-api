@@ -13,20 +13,18 @@ import (
 const contentType = "application/json"
 
 type async struct {
-	config  config.Config
-	address string
+	config config.Config
 }
 
-func New(cfg config.Config, address string) *async {
+func New(cfg config.Config) *async {
 	return &async{
-		config:  cfg,
-		address: address,
+		config: cfg,
 	}
 }
 
 func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 	return func() error {
-		go healthCheck(ctx, cancel, a.address, a.config.Port, a.config.Async.Interval.Duration)
+		go healthCheck(ctx, cancel, a.config.Address, a.config.Port, a.config.Async.Interval.Duration)
 
 		for ctx.Err() != nil {
 			<-time.After(1 * time.Second)

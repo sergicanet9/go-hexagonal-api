@@ -18,13 +18,14 @@ import (
 
 const (
 	contentType           = "application/json"
-	mongoInternalPort     = "27017/tcp"
-	mongoConnectionEnv    = "mongoConnection"
+	mongoContainerPort    = "27017/tcp"
+	mongoDBName           = "test-db"
+	mongoDSNEnv           = "mongoDSN"
 	postgresUser          = "postgres"
 	postgresPassword      = "test"
 	postgresDBName        = "test-db"
-	postgresInternalPort  = "5432/tcp"
-	postgresConnectionEnv = "postgresConnection"
+	postgresContainerPort = "5432/tcp"
+	postgresDSNEnv        = "postgresDSN"
 	jwtSecret             = "eaeBbXUxks"
 	nonExpiryToken        = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiYXV0aG9yaXplZCI6dHJ1ZX0.cCKM32os5ROKxeE3IiDWoOyRew9T8puzPUKurPhrDug"
 )
@@ -47,12 +48,12 @@ func TestMain(m *testing.M) {
 	if err = pool.Purge(mongoResource); err != nil {
 		log.Fatalf("could not purge resource: %s", err)
 	}
-	os.Unsetenv(mongoConnectionEnv)
+	os.Unsetenv(mongoDSNEnv)
 
 	if err = pool.Purge(postgresResource); err != nil {
 		log.Fatalf("could not purge resource: %s", err)
 	}
-	os.Unsetenv(postgresConnectionEnv)
+	os.Unsetenv(postgresDSNEnv)
 
 	os.Exit(code)
 }
@@ -75,8 +76,8 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	if err != nil {
 		log.Fatalf("could not start resource: %s", err)
 	}
-	connectionString := fmt.Sprintf("mongodb://localhost:%s", resource.GetPort(mongoInternalPort))
-	os.Setenv(mongoConnectionEnv, connectionString)
+	dsn := fmt.Sprintf("mongodb://localhost:%s/%s", resource.GetPort(mongoContainerPort), mongoDBName)
+	os.Setenv(mongoDSNEnv, dsn)
 
 	return resource
 }
@@ -102,8 +103,8 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	if err != nil {
 		log.Fatalf("could not start resource: %s", err)
 	}
-	connectionString := fmt.Sprintf("host=localhost port=%s dbname=%s user=%s password=%s sslmode=disable", resource.GetPort(postgresInternalPort), postgresDBName, postgresUser, postgresPassword)
-	os.Setenv(postgresConnectionEnv, connectionString)
+	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", postgresUser, postgresPassword, resource.GetPort(postgresContainerPort), postgresDBName)
+	os.Setenv(postgresDSNEnv, dsn)
 
 	return resource
 }
@@ -135,10 +136,9 @@ func New(t *testing.T, database string) config.Config {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
-	a, _ := api.New(ctx, cfg)
-	go func() {
-		a.Run(ctx)
-	}()
+	a := api.New(ctx, cfg)
+	run := a.Run(ctx, cancel)
+	go run()
 
 	<-time.After(100 * time.Millisecond) // waiting time for letting the API start completely
 	return cfg
@@ -149,23 +149,19 @@ func testConfig(t *testing.T, database string) (c config.Config, err error) {
 	c.Environment = "Integration tests"
 	c.Port = test.FreePort(t)
 	c.Database = database
-	c.DSN = os.Getenv(postgresConnectionEnv)
+	switch database {
+	case "mongo":
+		c.DSN = os.Getenv(mongoDSNEnv)
+	case "postgres":
+		c.DSN = os.Getenv(postgresDSNEnv)
+	default:
+		return config.Config{}, fmt.Errorf("database flag %s not valid", database)
+	}
 
-	c.MongoAddress = "http://localhost"
-	c.PostgresAddress = "http://localhost"
+	c.Address = "http://localhost"
 	c.PostgresMigrationsDir = "db/postgres/migrations"
 	c.JWTSecret = jwtSecret
 	c.Timeout = utils.Duration{Duration: 5 * time.Second}
 
 	return c, nil
-}
-
-// GetAddress returns the address of the api, based on the database set on the config
-func GetAddress(cfg config.Config) (string, error) {
-	addresses := map[string]string{"mongo": cfg.MongoAddress, "postgres": cfg.PostgresAddress}
-	if value, ok := addresses[cfg.Database]; ok {
-		return value, nil
-	} else {
-		return "", fmt.Errorf("database flag %s not valid", cfg.Database)
-	}
 }

@@ -40,11 +40,11 @@ func main() {
 	var g multierror.Group
 	ctx, cancel := context.WithCancel(context.Background())
 
-	a, addr := api.New(ctx, cfg)
+	a := api.New(ctx, cfg)
 	g.Go(a.Run(ctx, cancel))
 
 	if cfg.Async.Run {
-		async := async.New(cfg, addr)
+		async := async.New(cfg)
 		g.Go(async.Run(ctx, cancel))
 	}
 
