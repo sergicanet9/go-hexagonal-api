@@ -25,6 +25,7 @@ spec:
   selector:
     matchLabels:
       app: go-hexagonal-api
+  template:
     spec:
       containers:
         - image: scvregistry.azurecr.io/go-hexagonal-api:__image_tag__
