@@ -7,12 +7,16 @@ RUN apk add git
 
 ARG version
 ENV v $version
+
 ARG environment
 ENV env $environment
+
 ARG port
 ENV p $port
+
 ARG database
 ENV db $database
+
 ARG dsn
 ENV dsn $dsn
 

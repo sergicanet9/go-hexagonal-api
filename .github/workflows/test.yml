@@ -49,4 +49,3 @@ jobs:
           go-version: ${{ steps.go-version.outputs.minimal }}
       - name: Run integration tests
         run: make test-integration
-

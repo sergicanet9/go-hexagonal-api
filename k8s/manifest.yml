@@ -1,0 +1,91 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-hexagonal-api-config
+data:
+  config: |
+    {
+      "Address": "http://todo-replace-this",
+      "PostgresMigrationsDir": "db/postgres/migrations",
+      "JWTSecret": "CTeemck6Gg",
+      "Timeout": "5s",
+      "Async": {
+          "Run": true,
+          "Interval": "2m"
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-hexagonal-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-hexagonal-api
+    spec:
+      containers:
+        - image: scvregistry.azurecr.io/go-hexagonal-api:__image_tag__
+          imagePullPolicy: Always
+          name: go-hexagonal-api
+          env:
+            - name: v
+              value: "__image_tag__"
+            - name: env
+              value: "dev"
+            - name: p
+              value: "80"
+            - name: db
+              value: "mongo"
+            - name: dsn
+              value: "mongodb+srv://admin:admin@cluster0.qy8ev.mongodb.net/go-hexagonal-api?retryWrites=true&w=majority"
+          volumeMounts:
+            - name: config-volume
+              mountPath: "/opt/go-hexagonal-api/config"
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: config-volume
+          configMap:
+            name: go-hexagonal-api-config
+            items:
+              - key: config
+                path: config.json
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: go-hexagonal-api
+spec:
+  type: ClusterIP
+  selector:
+    app: go-hexagonal-api
+  ports:
+    - port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-hexagonal-api
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: "$ingress_host$"
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: go-hexagonal-api
+                port:
+                  number: 80
