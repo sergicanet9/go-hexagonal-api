@@ -41,6 +41,10 @@ jobs:
       with:
         resource-group: STUDENT-RG
         cluster-name: scv-aks
+    - name: Replace manifest env and version data
+      run: |
+        MANIFEST_FILE=k8s/manifest.yml
+        sed --in-place='' "s/__tag__/${{ steps.vars.outputs.tag }}/g"  ${MANIFEST_FILE}
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy
