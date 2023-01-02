@@ -24,6 +24,7 @@ metadata:
   name: go-hexagonal-api
 spec:
   replicas: 1
+  progressDeadlineSeconds: 180
   selector:
     matchLabels:
       app: go-hexagonal-api
