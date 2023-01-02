@@ -39,25 +39,6 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         resource-group: STUDENT-RG
         cluster-name: scv-aks
-    - name: Set manifest
-      run: |
-        # REPLACE_FILE_DEFS=build/services/api/manifest-data.json
-        # TARG_REPS=".$(echo ${{ parameters.cluster }} | sed 's/-/_/g')[]"
-        # TARGET_FILE=$(System.ArtifactsDirectory)/k8_manifests/manifest.yml
-        
-        # if [ -f "${REPLACE_FILE_DEFS}" ]; then
-        #   printf "\n\n   ***  Editing K8s Manifest - ${TARGET_FILE} ***\n"
-        
-        #   for item in $(jq -c ${TARG_REPS} ${REPLACE_FILE_DEFS}) ; do
-        #     REPLACE_TARGET=$(echo "${item}" | jq -r '.target')
-        #     REPLACE_VALUE=$(echo "${item}" | jq -r '.value')
-        #     printf "\n - replacing <${REPLACE_TARGET}> with <${REPLACE_VALUE}>"
-        #     sed --in-place='' "s/${REPLACE_TARGET}/${REPLACE_VALUE}/g" ${TARGET_FILE}
-        #   done
-        #   printf "\n\n    *** ${TARGET_FILE} edited."
-        # fi
-
-        # sed -e "s/__tag__/${IMAGE_NAME}/g" build/services/api/manifest.yml > $(Pipeline.Workspace)/k8_manifests/manifest.yml
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy
