@@ -19,6 +19,8 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: loss-limit-api
   name: go-hexagonal-api
 spec:
   replicas: 1
