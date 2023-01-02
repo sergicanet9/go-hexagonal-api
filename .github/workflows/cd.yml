@@ -33,6 +33,8 @@ jobs:
     needs: build-and-push
     environment: dev
     steps:
+    - id: vars
+      run: echo "tag=$(echo ${{ github.ref_name }} | xargs basename)" >> $GITHUB_OUTPUT
     - uses: actions/checkout@v3
     - uses: azure/login@v1
       with:
