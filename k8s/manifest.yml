@@ -28,6 +28,9 @@ spec:
     matchLabels:
       app: go-hexagonal-api
   template:
+    metadata:
+      labels:
+        app: go-hexagonal-api
     spec:
       containers:
         - image: scvregistry.azurecr.io/go-hexagonal-api:__image_tag__
