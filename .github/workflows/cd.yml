@@ -43,6 +43,8 @@ jobs:
         cluster-name: scv-aks
     - name: Replace manifest env and version data
       run: |
+        #set -o xtrace
+        
         MANIFEST_FILE=k8s/manifest.yml
         sed --in-place='' "s/__tag__/${{ steps.vars.outputs.tag }}/g"  ${MANIFEST_FILE}
     - uses: Azure/k8s-deploy@v4
