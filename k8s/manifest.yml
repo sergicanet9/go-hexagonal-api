@@ -24,7 +24,7 @@ metadata:
   name: go-hexagonal-api
 spec:
   replicas: 1
-  progressDeadlineSeconds: 180
+  progressDeadlineSeconds: 240
   selector:
     matchLabels:
       app: go-hexagonal-api
@@ -34,12 +34,12 @@ spec:
         app: go-hexagonal-api
     spec:
       containers:
-        - image: scvregistry.azurecr.io/go-hexagonal-api:__image_tag__
+        - image: scvregistry.azurecr.io/go-hexagonal-api:__tag__
           imagePullPolicy: Always
           name: go-hexagonal-api
           env:
             - name: v
-              value: "__image_tag__"
+              value: "__tag__"
             - name: env
               value: "dev"
             - name: p

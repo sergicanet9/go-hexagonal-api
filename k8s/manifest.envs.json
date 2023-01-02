@@ -1,0 +1,8 @@
+{
+	"dev": [
+		{
+			"target": "\\$cluster\\$",
+			"value":"scv-aks"
+		}
+	]
+}
