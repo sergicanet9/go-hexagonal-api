@@ -6,7 +6,7 @@ metadata:
 data:
   config: |
     {
-      "Address": "http://todo-replace-this",
+      "Address": "scv-aks-dns-b7142f29.hcp.westeurope.azmk8s.io",
       "PostgresMigrationsDir": "db/postgres/migrations",
       "JWTSecret": "CTeemck6Gg",
       "Timeout": "5s",
@@ -80,7 +80,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-    - host: "$ingress_host$"
+    - host: scv-aks-dns-b7142f29.hcp.westeurope.azmk8s.io
       http:
         paths:
           - path: /api
