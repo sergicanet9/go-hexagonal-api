@@ -34,9 +34,11 @@ jobs:
     environment: dev
     steps:
     - uses: actions/checkout@v3
-    - uses: azure/aks-set-context@v3
+    - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/aks-set-context@v3
+      with:
         resource-group: STUDENT-RG
         cluster-name: scv-aks
     - uses: Azure/k8s-deploy@v4
