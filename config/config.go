@@ -32,9 +32,9 @@ type config struct {
 	Async                 Async
 }
 
-// ReadConfig from the configPath passed as an argument. If the config is empty, will use config/config.json
-// if env is passed will load configuration file using the env as follows : config/config.{env}.json.
-// A default value can be specified in the configuration and override it in the environment configuration.
+// ReadConfig from the project´s JSON config files.
+// Default values are specified in the default configuration file, config/config.json
+// and can be overrided with values specified in the environment configuration files, config/config.{env}.json.
 func ReadConfig(version, env string, port int, database, dsn string) (Config, error) {
 	var c Config
 	c.Version = version
@@ -45,15 +45,13 @@ func ReadConfig(version, env string, port int, database, dsn string) (Config, er
 
 	var cfg config
 	configPath := "config"
-	err := utils.LoadJSON(path.Join(configPath, "config.json"), &cfg)
-	if err != nil {
-		return c, err
+
+	if err := utils.LoadJSON(path.Join(configPath, "config.json"), &cfg); err != nil {
+		return c, fmt.Errorf("error parsing configuration, %s", err)
 	}
 
-	if env != "" {
-		if err = utils.LoadJSON(path.Join(configPath, "config."+env+".json"), &cfg); err != nil {
-			return c, fmt.Errorf("error parsing environment configuration, %s", err)
-		}
+	if err := utils.LoadJSON(path.Join(configPath, "config."+env+".json"), &cfg); err != nil {
+		return c, fmt.Errorf("error parsing environment configuration, %s", err)
 	}
 	c.config = cfg
 

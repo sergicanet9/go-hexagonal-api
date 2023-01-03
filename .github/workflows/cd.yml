@@ -49,10 +49,19 @@ jobs:
         container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
         container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
         secret-name: acr-secret
-    - name: Replace image tag and environment data in manifest file
+    - name: Replace version and environment data in manifest file
       run: |        
         MANIFEST_FILE=k8s/manifest.yml
-        sed -i "s/__tag__/${{ steps.vars.outputs.tag }}/g"  $MANIFEST_FILE
+        ENVIRONMENT=dev
+        PORT=80
+        DATABASE=mongo
+        DSN=mongodb+srv:\/\/admin:admin@cluster0.qy8ev.mongodb.net\/go-hexagonal-api?retryWrites=true\&w=majority
+
+        sed -i "s/__version__/${{ steps.vars.outputs.tag }}/g"  $MANIFEST_FILE
+        sed -i "s/__environment__/$ENVIRONMENT/g"  $MANIFEST_FILE
+        sed -i "s/__port_/$PORT/g"  $MANIFEST_FILE
+        sed -i "s/__database__/$DATABASE/g"  $MANIFEST_FILE
+        sed -i "s/__dsn__/$DSN/g"  $MANIFEST_FILE
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy

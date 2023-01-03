@@ -1,8 +1,4 @@
 {
     "Address": "http://localhost",
-    "Timeout": "2m",
-    "Async": {
-        "Run": true,
-        "Interval": "2m"
-    }
+    "Timeout": "2m"
 }
