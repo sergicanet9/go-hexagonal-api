@@ -52,12 +52,6 @@ spec:
             - name: config-volume
               mountPath: "/opt/go-hexagonal-api/config"
               readOnly: true
-          livenessProbe:
-            httpGet:
-              path: /api/health
-              port: 80
-            initialDelaySeconds: 5
-            periodSeconds: 5
       volumes:
         - name: config-volume
           configMap:

@@ -43,16 +43,16 @@ jobs:
       with:
         resource-group: STUDENT-RG
         cluster-name: scv-aks
-    - name: Replace manifest env and version data
-      run: |        
-        MANIFEST_FILE=k8s/manifest.yml
-        sed -i "s/__tag__/${{ steps.vars.outputs.tag }}/g"  k8s/manifest.yml
-    - uses: Azure/k8s-create-secret@v1.1
+    - uses: Azure/k8s-create-secret@v4
       with:
         container-registry-url: scvregistry.azurecr.io
         container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
         container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
         secret-name: acr-secret
+    - name: Replace manifest env and version data
+      run: |        
+        MANIFEST_FILE=k8s/manifest.yml
+        sed -i "s/__tag__/${{ steps.vars.outputs.tag }}/g"  k8s/manifest.yml
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy
