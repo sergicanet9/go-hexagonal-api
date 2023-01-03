@@ -65,5 +65,5 @@ jobs:
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy
-        manifests: k8s/manifest.yml
+        manifests: build/k8s/manifest.yml
         imagepullsecrets: acr-secret
