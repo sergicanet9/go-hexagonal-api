@@ -25,7 +25,7 @@ jobs:
         password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
     - name: Build and push image
       run: |
-        docker build -t scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }} .
+        docker build -f build/docker/Dockerfile -t scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }} .
         docker push scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }}
 
   deploy-mongo-dev:
