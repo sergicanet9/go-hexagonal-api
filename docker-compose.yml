@@ -26,7 +26,7 @@ services:
         database: mongo
         dsn: $MONGO_DSN
       context: .
-      dockerfile: Dockerfile
+      dockerfile: build/docker/Dockerfile
     depends_on:
       - mongo
     ports:
@@ -41,7 +41,7 @@ services:
         database: postgres
         dsn: $POSTGRES_DSN
       context: .
-      dockerfile: Dockerfile
+      dockerfile: build/docker/Dockerfile
     depends_on:
       - postgres
     ports:

@@ -1,13 +1,13 @@
-include .env
+include build/docker/.env
 
 .PHONY: test
 
 up:
-	docker-compose up -d --build
+	docker-compose --env-file build/docker/.env up -d --build
 	@echo "Mongo Swagger:    http://localhost:${HOST_PORT_MONGOAPI}/go-hexagonal-api/mongo/swagger/index.html"
 	@echo "Postgres Swagger: http://localhost:${HOST_PORT_POSTGRESAPI}/go-hexagonal-api/postgres/swagger/index.html"
 down:
-	docker-compose down
+	docker-compose --env-file build/docker/.env down
 test-unit:
 	go test -race $(shell go list ./... | grep -v /test) -coverprofile=coverage.out
 	go tool cover -func=coverage.out -o=coverage.out
