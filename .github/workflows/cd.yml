@@ -51,7 +51,7 @@ jobs:
         secret-name: acr-secret
     - name: Replace version and environment data in manifest file
       run: |        
-        MANIFEST_FILE=k8s/manifest.yml
+        MANIFEST_FILE=build/k8s/manifest.yml
         ENVIRONMENT=dev
         PORT=80
         DATABASE=mongo
