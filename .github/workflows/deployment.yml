@@ -25,7 +25,6 @@ on:
 jobs:
   run-deployment:
     runs-on: ubuntu-latest
-    needs: build-and-push
     environment: dev
     steps:
     - id: vars

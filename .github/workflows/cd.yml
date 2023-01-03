@@ -29,6 +29,7 @@ jobs:
         docker push scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }}
 
   deploy-mongo-dev:
+    needs: build-and-push
     uses: ./.github/workflows/deployment.yml
     with:
       ENVIRONMENT: dev
