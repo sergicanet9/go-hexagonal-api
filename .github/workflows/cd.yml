@@ -49,10 +49,10 @@ jobs:
         container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
         container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
         secret-name: acr-secret
-    - name: Replace manifest env and version data
+    - name: Replace image tag and environment data in manifest file
       run: |        
         MANIFEST_FILE=k8s/manifest.yml
-        sed -i "s/__tag__/${{ steps.vars.outputs.tag }}/g"  k8s/manifest.yml
+        sed -i "s/__tag__/${{ steps.vars.outputs.tag }}/g"  $MANIFEST_FILE
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy
