@@ -57,11 +57,11 @@ jobs:
         DATABASE=mongo
         DSN=mongodb+srv:\/\/admin:admin@cluster0.qy8ev.mongodb.net\/go-hexagonal-api?retryWrites=true\&w=majority
 
-        sed -i "s/__version__/${{ steps.vars.outputs.tag }}/g"  $MANIFEST_FILE
-        sed -i "s/__environment__/$ENVIRONMENT/g"  $MANIFEST_FILE
-        sed -i "s/__port_/$PORT/g"  $MANIFEST_FILE
-        sed -i "s/__database__/$DATABASE/g"  $MANIFEST_FILE
-        sed -i "s/__dsn__/$DSN/g"  $MANIFEST_FILE
+        sed -i "s/__version__/${{ steps.vars.outputs.tag }}/g"  ${MANIFEST_FILE}
+        sed -i "s/__environment__/${ENVIRONMENT}/g"  ${MANIFEST_FILE}
+        sed -i "s/__port_/${PORT}/g"  ${MANIFEST_FILE}
+        sed -i "s/__database__/${DATABASE}/g"  ${MANIFEST_FILE}
+        sed -i "s/__dsn__/${DSN}/g"  ${MANIFEST_FILE}
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy
