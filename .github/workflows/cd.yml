@@ -36,8 +36,10 @@ jobs:
       PORT: 80
       DATABASE: mongo
       DSN: mongodb+srv:\\/\\/admin:admin@cluster0.qy8ev.mongodb.net\\/go-hexagonal-api?retryWrites=true\\&w=majority
-    # secrets:
-    #   AZURE_CREDENTIALS: ${{ secrets.envPAT }}
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURECONTAINERREGISTRY_USERNAME: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+      AZURECONTAINERREGISTRY_PASSWORD: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
 
   # deploy-mongo-dev2:
   #   runs-on: ubuntu-latest
