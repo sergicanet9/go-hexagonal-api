@@ -14,13 +14,13 @@ on:
       DSN:
         required: true
         type: string
-    # secrets:
-    #   AZURE_CREDENTIALS:
-    #     required: true
-    #   AZURECONTAINERREGISTRY_USERNAME:
-    #     required: true
-    #   AZURECONTAINERREGISTRY_PASSWORD:
-    #     required: true  
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+      AZURECONTAINERREGISTRY_USERNAME:
+        required: true
+      AZURECONTAINERREGISTRY_PASSWORD:
+        required: true  
 
 jobs:
   run-deployment:
