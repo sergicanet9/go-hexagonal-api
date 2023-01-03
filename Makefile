@@ -9,12 +9,12 @@ up:
 down:
 	docker-compose --env-file build/docker/.env down
 test-unit:
-	go test -race $(shell go list ./... | grep -v /test) -coverprofile=coverage.out
+	go test -race $(shell go list ./... | grep -v /integration) -coverprofile=coverage.out
 	go tool cover -func=coverage.out -o=coverage.out
 cover:
 	go tool cover -html=coverage.out
 test-integration:
-	go test -race test/*.go
+	go test -race integration/*.go
 swagger:
 	go install github.com/swaggo/swag/cmd/swag@v1.7.0
 	swag init -g cmd/main.go -o app/docs
