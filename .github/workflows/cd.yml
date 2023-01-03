@@ -47,7 +47,14 @@ jobs:
       run: |        
         MANIFEST_FILE=k8s/manifest.yml
         sed -i "s/__tag__/${{ steps.vars.outputs.tag }}/g"  k8s/manifest.yml
+    - uses: Azure/k8s-create-secret@v1.1
+      with:
+        container-registry-url: scvregistry.azurecr.io
+        container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+        container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
+        secret-name: acr-secret
     - uses: Azure/k8s-deploy@v4
       with:
         action: deploy
         manifests: k8s/manifest.yml
+        imagepullsecrets: acr-secret
