@@ -25,7 +25,7 @@ on:
 jobs:
   run-deployment:
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ inputs.ENVIRONMENT }}
     steps:
     - id: vars
       run: echo "tag=$(echo ${{ github.ref_name }} | xargs basename)" >> $GITHUB_OUTPUT

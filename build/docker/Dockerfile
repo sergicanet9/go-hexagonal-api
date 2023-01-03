@@ -15,16 +15,9 @@ WORKDIR /opt/go-hexagonal-api
 ARG version
 ENV v $version
 
-ARG environment
 ENV env $environment
-
-ARG port
 ENV p $port
-
-ARG database
 ENV db $database
-
-ARG dsn
 ENV dsn $dsn
 
 CMD ["sh", "-c", "bin/main --ver $v --env $env --port $p --db $db --dsn $dsn"]

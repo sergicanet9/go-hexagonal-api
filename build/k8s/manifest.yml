@@ -2,26 +2,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: go-hexagonal-api-__database__
-  name: go-hexagonal-api-__database__
+    app: go-hexagonal-api-__database__-__environment__
+  name: go-hexagonal-api-__database__-__environment__
 spec:
   replicas: 1
   progressDeadlineSeconds: 240
   selector:
     matchLabels:
-      app: go-hexagonal-api-__database__
+      app: go-hexagonal-api-__database__-__environment__
   template:
     metadata:
       labels:
-        app: go-hexagonal-api-__database__
+        app: go-hexagonal-api-__database__-__environment__
     spec:
       containers:
         - image: scvregistry.azurecr.io/go-hexagonal-api:__version__
           imagePullPolicy: Always
-          name: go-hexagonal-api-__database__
+          name: go-hexagonal-api-__database__-__environment__
           env:
-            - name: v
-              value: "__version__"
             - name: env
               value: "__environment__"
             - name: p
@@ -34,18 +32,18 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: go-hexagonal-api-__database__
+  name: go-hexagonal-api-__database__-__environment__
 spec:
   type: ClusterIP
   selector:
-    app: go-hexagonal-api-__database__
+    app: go-hexagonal-api-__database__-__environment__
   ports:
     - port: __port__
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: go-hexagonal-api-__database__
+  name: go-hexagonal-api-__database__-__environment__
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -58,6 +56,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: go-hexagonal-api-__database__
+                name: go-hexagonal-api-__database__-__environment__
                 port:
                   number: __port__
