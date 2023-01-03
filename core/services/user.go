@@ -69,6 +69,9 @@ func (s *userService) validateLogin(ctx context.Context, credentials models.Logi
 
 func validatePassword(password, hash string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		err = fmt.Errorf("password incorrect")
+	}
 	return wrappers.NewValidationErr(err)
 }
 

@@ -17,15 +17,15 @@ import (
 
 // SetUserRoutes creates user routes
 func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s ports.UserService) {
-	r.Handle("/api/users/login", loginUser(ctx, cfg, s)).Methods(http.MethodPost)
-	r.Handle("/api/users", createUser(ctx, cfg, s)).Methods(http.MethodPost)
-	r.Handle("/api/users", middlewares.JWT(getAllUsers(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/email/{email}", middlewares.JWT(getUserByEmail(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/{id}", middlewares.JWT(getUserByID(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/{id}", middlewares.JWT(updateUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
-	r.Handle("/api/users/{id}", middlewares.JWT(deleteUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
-	r.Handle("/api/claims", middlewares.JWT(getUserClaims(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/api/users/atomic", middlewares.JWT(atomicTransactionProof(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
+	r.Handle("/users/login", loginUser(ctx, cfg, s)).Methods(http.MethodPost)
+	r.Handle("/users", createUser(ctx, cfg, s)).Methods(http.MethodPost)
+	r.Handle("/users", middlewares.JWT(getAllUsers(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/users/email/{email}", middlewares.JWT(getUserByEmail(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/users/{id}", middlewares.JWT(getUserByID(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/users/{id}", middlewares.JWT(updateUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
+	r.Handle("/users/{id}", middlewares.JWT(deleteUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
+	r.Handle("/claims", middlewares.JWT(getUserClaims(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
+	r.Handle("/users/atomic", middlewares.JWT(atomicTransactionProof(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
 }
 
 // @Summary Login user
@@ -36,7 +36,7 @@ func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s port
 // @Failure 400 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users/login [post]
+// @Router /users/login [post]
 func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
@@ -72,7 +72,7 @@ func loginUser(ctx context.Context, cfg config.Config, s ports.UserService) http
 // @Failure 400 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users [post]
+// @Router /users [post]
 func createUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
@@ -109,7 +109,7 @@ func createUser(ctx context.Context, cfg config.Config, s ports.UserService) htt
 // @Failure 401 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users [get]
+// @Router /users [get]
 func getAllUsers(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
@@ -134,7 +134,7 @@ func getAllUsers(ctx context.Context, cfg config.Config, s ports.UserService) ht
 // @Failure 401 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users/email/{email} [get]
+// @Router /users/email/{email} [get]
 func getUserByEmail(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
@@ -160,8 +160,8 @@ func getUserByEmail(ctx context.Context, cfg config.Config, s ports.UserService)
 // @Failure 401 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users/{id} [get]
-func getUserByID[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+// @Router /users/{id} [get]
+func getUserByID(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -187,8 +187,8 @@ func getUserByID[T string](ctx context.Context, cfg config.Config, s ports.UserS
 // @Failure 401 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users/{id} [patch]
-func updateUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+// @Router /users/{id} [patch]
+func updateUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -226,8 +226,8 @@ func updateUser[T string](ctx context.Context, cfg config.Config, s ports.UserSe
 // @Failure 401 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users/{id} [delete]
-func deleteUser[T string](ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+// @Router /users/{id} [delete]
+func deleteUser(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
@@ -251,7 +251,7 @@ func deleteUser[T string](ctx context.Context, cfg config.Config, s ports.UserSe
 // @Failure 401 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/claims [get]
+// @Router /claims [get]
 func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
@@ -271,7 +271,7 @@ func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) 
 // @Failure 401 {object} object
 // @Failure 408 {object} object
 // @Failure 500 {object} object
-// @Router /api/users/atomic [post]
+// @Router /users/atomic [post]
 func atomicTransactionProof(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)

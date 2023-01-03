@@ -24,7 +24,7 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/claims": {
+        "/claims": {
             "get": {
                 "security": [
                     {
@@ -70,7 +70,7 @@ var doc = `{
                 }
             }
         },
-        "/api/health": {
+        "/health": {
             "get": {
                 "description": "Runs a Health Check",
                 "tags": [
@@ -96,7 +96,7 @@ var doc = `{
                 }
             }
         },
-        "/api/users": {
+        "/users": {
             "get": {
                 "security": [
                     {
@@ -189,7 +189,7 @@ var doc = `{
                 }
             }
         },
-        "/api/users/atomic": {
+        "/users/atomic": {
             "post": {
                 "security": [
                     {
@@ -232,7 +232,7 @@ var doc = `{
                 }
             }
         },
-        "/api/users/email/{email}": {
+        "/users/email/{email}": {
             "get": {
                 "security": [
                     {
@@ -287,7 +287,7 @@ var doc = `{
                 }
             }
         },
-        "/api/users/login": {
+        "/users/login": {
             "post": {
                 "description": "Logs in an user",
                 "tags": [
@@ -333,7 +333,7 @@ var doc = `{
                 }
             }
         },
-        "/api/users/{id}": {
+        "/users/{id}": {
             "get": {
                 "security": [
                     {

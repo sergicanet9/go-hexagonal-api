@@ -53,6 +53,7 @@ func ReadConfig(version, env string, port int, database, dsn string) (Config, er
 	if err := utils.LoadJSON(path.Join(configPath, "config."+env+".json"), &cfg); err != nil {
 		return c, fmt.Errorf("error parsing environment configuration, %s", err)
 	}
+
 	c.config = cfg
 
 	return c, nil

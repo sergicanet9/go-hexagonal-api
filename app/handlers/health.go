@@ -13,7 +13,7 @@ import (
 
 // SetHealthRoutes creates health routes
 func SetHealthRoutes(ctx context.Context, cfg config.Config, r *mux.Router) {
-	r.Handle("/api/health", healthCheck(ctx, cfg)).Methods(http.MethodGet)
+	r.Handle("/health", healthCheck(ctx, cfg)).Methods(http.MethodGet)
 }
 
 // @Summary Health Check
@@ -22,7 +22,7 @@ func SetHealthRoutes(ctx context.Context, cfg config.Config, r *mux.Router) {
 // @Success 200 "OK"
 // @Failure 500 {object} object
 // @Failure 503 {object} object
-// @Router /api/health [get]
+// @Router /health [get]
 func healthCheck(ctx context.Context, cfg config.Config) http.Handler {
 	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Version", cfg.Version)

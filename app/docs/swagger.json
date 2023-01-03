@@ -6,7 +6,7 @@
         "contact": {}
     },
     "paths": {
-        "/api/claims": {
+        "/claims": {
             "get": {
                 "security": [
                     {
@@ -52,7 +52,7 @@
                 }
             }
         },
-        "/api/health": {
+        "/health": {
             "get": {
                 "description": "Runs a Health Check",
                 "tags": [
@@ -78,7 +78,7 @@
                 }
             }
         },
-        "/api/users": {
+        "/users": {
             "get": {
                 "security": [
                     {
@@ -171,7 +171,7 @@
                 }
             }
         },
-        "/api/users/atomic": {
+        "/users/atomic": {
             "post": {
                 "security": [
                     {
@@ -214,7 +214,7 @@
                 }
             }
         },
-        "/api/users/email/{email}": {
+        "/users/email/{email}": {
             "get": {
                 "security": [
                     {
@@ -269,7 +269,7 @@
                 }
             }
         },
-        "/api/users/login": {
+        "/users/login": {
             "post": {
                 "description": "Logs in an user",
                 "tags": [
@@ -315,7 +315,7 @@
                 }
             }
         },
-        "/api/users/{id}": {
+        "/users/{id}": {
             "get": {
                 "security": [
                     {

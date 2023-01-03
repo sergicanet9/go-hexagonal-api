@@ -24,7 +24,7 @@ func New(cfg config.Config) *async {
 
 func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 	return func() error {
-		go healthCheck(ctx, cancel, a.config.Address, a.config.Port, a.config.Async.Interval.Duration)
+		go healthCheck(ctx, cancel, a.config.Address, a.config.Port, a.config.Database, a.config.Async.Interval.Duration)
 
 		for ctx.Err() == nil {
 			<-time.After(1 * time.Second)
@@ -33,7 +33,7 @@ func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error 
 	}
 }
 
-func healthCheck(ctx context.Context, cancel context.CancelFunc, address string, port int, interval time.Duration) {
+func healthCheck(ctx context.Context, cancel context.CancelFunc, address string, port int, database string, interval time.Duration) {
 	defer cancel()
 	defer func() {
 		if rec := recover(); rec != nil {
@@ -46,9 +46,9 @@ func healthCheck(ctx context.Context, cancel context.CancelFunc, address string,
 
 		start := time.Now()
 
-		url := fmt.Sprintf("%s:%d/api/health", address, port)
+		url := fmt.Sprintf("%s:%d/go-hexagonal-api/%s/health", address, port, database)
 
-		req, err := http.NewRequest(http.MethodPost, url, http.NoBody)
+		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
 			log.Printf("async process failure, error: %s", err)
 			continue
@@ -56,9 +56,14 @@ func healthCheck(ctx context.Context, cancel context.CancelFunc, address string,
 
 		req.Header.Set("Content-Type", contentType)
 
-		_, err = http.DefaultClient.Do(req)
+		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			log.Printf("async process failure, error: %s", err)
+			continue
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			log.Printf("async process failure, error: expected status code 200 but got %d", resp.StatusCode)
 			continue
 		}
 

@@ -74,7 +74,7 @@ info:
   description: Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools
   title: Go Hexagonal API
 paths:
-  /api/claims:
+  /claims:
     get:
       description: Gets all claims
       responses:
@@ -103,7 +103,7 @@ paths:
       summary: Get claims
       tags:
       - Users
-  /api/health:
+  /health:
     get:
       description: Runs a Health Check
       responses:
@@ -120,7 +120,7 @@ paths:
       summary: Health Check
       tags:
       - Health
-  /api/users:
+  /users:
     get:
       description: Gets all the users
       responses:
@@ -180,7 +180,7 @@ paths:
       summary: Create user
       tags:
       - Users
-  /api/users/{id}:
+  /users/{id}:
     delete:
       description: Delete a user
       parameters:
@@ -285,7 +285,7 @@ paths:
       summary: Update user
       tags:
       - Users
-  /api/users/atomic:
+  /users/atomic:
     post:
       description: Creates two users atomically
       responses:
@@ -312,7 +312,7 @@ paths:
       summary: Atomic transaction proof
       tags:
       - Users
-  /api/users/email/{email}:
+  /users/email/{email}:
     get:
       description: Gets a user by email
       parameters:
@@ -347,7 +347,7 @@ paths:
       summary: Get user by email
       tags:
       - Users
-  /api/users/login:
+  /users/login:
     post:
       description: Logs in an user
       parameters:

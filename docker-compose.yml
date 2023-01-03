@@ -17,7 +17,7 @@ services:
     ports:
       - "$POSTGRES_HOST_PORT:$POSTGRES_CONTAINER_PORT"
   api-mongo:
-    image: go-hexagonal-api-mongo.$ENV:$VERSION
+    image: go-hexagonal-api-mongo
     build:
       args:
         version: $VERSION
@@ -32,7 +32,7 @@ services:
     ports:
       - $HOST_PORT_MONGOAPI:$CONTAINER_PORT
   api-postgres:
-    image: go-hexagonal-api-postgres.$ENV:$VERSION
+    image: go-hexagonal-api-postgres
     build:
       args:
         version: $VERSION
