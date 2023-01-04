@@ -9,66 +9,45 @@ jobs:
   test:
     uses: ./.github/workflows/test.yml
 
-  build-mongo-dev:
+  build-and-push:
     runs-on: ubuntu-latest
     needs: test
     steps:
     - id: vars
-      run: echo ::set-output name=tag::$(echo ${{ github.ref_name }} | xargs basename)
-    - uses: actions/checkout@v2
+      run: echo "tag=$(echo ${{ github.ref_name }} | xargs basename)" >> $GITHUB_OUTPUT
+    - uses: actions/checkout@v3
     - uses: azure/docker-login@v1
       with:
         login-server: scvregistry.azurecr.io
-        username: ${{ secrets.AzureContainerRegistry_Username }}
-        password: ${{ secrets.AzureContainerRegistry_Password }}
-    - name: Build mongo dev
+        username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+        password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
+    - name: Build and push image
       run: |
-        export VERSION=${{ steps.vars.outputs.tag }} && export ENV=dev && export PORT=443 && export DB=mongo && docker-compose build --no-cache
-        docker tag go-hexagonal-api-mongo.dev:${{ steps.vars.outputs.tag }} scvregistry.azurecr.io/go-hexagonal-api-mongo.dev:${{ steps.vars.outputs.tag }}
-        docker push scvregistry.azurecr.io/go-hexagonal-api-mongo.dev:${{ steps.vars.outputs.tag }}
-  
-  build-postgres-dev:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-    - id: vars
-      run: echo ::set-output name=tag::$(echo ${{ github.ref_name }} | xargs basename)
-    - uses: actions/checkout@v2
-    - uses: azure/docker-login@v1
-      with:
-        login-server: scvregistry.azurecr.io
-        username: ${{ secrets.AzureContainerRegistry_Username }}
-        password: ${{ secrets.AzureContainerRegistry_Password }}
-    - name: Build postgres dev
-      run: |
-        export VERSION=${{ steps.vars.outputs.tag }} && export ENV=dev && export PORT=443 && export DB=postgres && docker-compose build --no-cache
-        docker tag go-hexagonal-api-postgres.dev:${{ steps.vars.outputs.tag }} scvregistry.azurecr.io/go-hexagonal-api-postgres.dev:${{ steps.vars.outputs.tag }}
-        docker push scvregistry.azurecr.io/go-hexagonal-api-postgres.dev:${{ steps.vars.outputs.tag }}
+        docker build -f build/docker/Dockerfile --build-arg version=${{ steps.vars.outputs.tag }} -t scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }} .
+        docker push scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }}
 
-  deploy-mongo-dev:
-    runs-on: ubuntu-latest
-    needs: build-mongo-dev
-    environment: mongo-dev
-    steps:
-    - id: vars
-      run: echo ::set-output name=tag::$(echo ${{ github.ref_name }} | xargs basename)
-    - name: Deploy mongo dev
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'go-hexagonal-api-mongo-dev'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Mongo_Dev }}
-        images: 'scvregistry.azurecr.io/go-hexagonal-api-mongo.dev:${{ steps.vars.outputs.tag }}'
+  mongo-dev:
+    needs: build-and-push
+    uses: ./.github/workflows/deployment.yml
+    with:
+      ENVIRONMENT: dev
+      PORT: 80
+      DATABASE: mongo
+      DSN: mongodb+srv:\\/\\/admin:admin@cluster0.qy8ev.mongodb.net\\/go-hexagonal-api?retryWrites=true\\&w=majority
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURECONTAINERREGISTRY_USERNAME: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+      AZURECONTAINERREGISTRY_PASSWORD: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
 
-  deploy-postgres-dev:
-    runs-on: ubuntu-latest
-    needs: build-postgres-dev
-    environment: postgres-dev
-    steps:
-    - id: vars
-      run: echo ::set-output name=tag::$(echo ${{ github.ref_name }} | xargs basename)
-    - name: Deploy postgres dev
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'go-hexagonal-api-postgres-dev'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_Postgres_Dev }}
-        images: 'scvregistry.azurecr.io/go-hexagonal-api-postgres.dev:${{ steps.vars.outputs.tag }}'
+  postgres-dev:
+    needs: build-and-push
+    uses: ./.github/workflows/deployment.yml
+    with:
+      ENVIRONMENT: dev
+      PORT: 80
+      DATABASE: postgres
+      DSN: postgres:\\/\\/postgres:Password2021@scv-postgres.postgres.database.azure.com:5432\\/postgresrestapi?sslmode=require
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURECONTAINERREGISTRY_USERNAME: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+      AZURECONTAINERREGISTRY_PASSWORD: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}

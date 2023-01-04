@@ -22,7 +22,6 @@ import (
 
 type api struct {
 	config   config.Config
-	address  string
 	services svs
 }
 
@@ -31,21 +30,20 @@ type svs struct {
 }
 
 // New creates a new API
-func New(ctx context.Context, cfg config.Config) (a api, addr string) {
+func New(ctx context.Context, cfg config.Config) (a api) {
 	a.config = cfg
 
 	var userRepo ports.UserRepository
 	switch a.config.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(ctx, a.config.MongoDBName, a.config.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(ctx, a.config.DSN)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		userRepo = mongo.NewUserRepository(db)
-		a.address = a.config.MongoAddress
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(ctx, a.config.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(ctx, a.config.DSN)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -58,30 +56,43 @@ func New(ctx context.Context, cfg config.Config) (a api, addr string) {
 		}
 
 		userRepo = postgres.NewUserRepository(db)
-		a.address = a.config.PostgresAddress
 	default:
 		log.Fatalf("database flag %s not valid", a.config.Database)
 	}
 
 	a.services.user = services.NewUserService(a.config, userRepo)
-	return a, a.address
+	return a
 }
 
 // Run API
-func (a *api) Run(ctx context.Context) {
-	router := mux.NewRouter()
+func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
+	return func() error {
+		defer cancel()
 
-	handlers.SetHealthRoutes(ctx, a.config, router)
-	handlers.SetUserRoutes(ctx, a.config, router, a.services.user)
+		router := mux.NewRouter()
 
-	router.PathPrefix("/swagger").Handler(
-		httpSwagger.Handler(httpSwagger.URL(fmt.Sprintf("%s:%d/swagger/doc.json", a.address, a.config.Port))),
-	)
+		handlers.SetHealthRoutes(ctx, a.config, router)
+		handlers.SetUserRoutes(ctx, a.config, router, a.services.user)
+		router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
 
-	log.Printf("Version: %s", a.config.Version)
-	log.Printf("Environment: %s", a.config.Environment)
-	log.Printf("Database: %s", a.config.Database)
-	log.Printf("Listening on port %d", a.config.Port)
-	log.Printf("Open %s:%d/swagger/index.html in the browser", a.address, a.config.Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", a.config.Port), router))
+		log.Printf("Version: %s", a.config.Version)
+		log.Printf("Environment: %s", a.config.Environment)
+		log.Printf("Database: %s", a.config.Database)
+		log.Printf("Listening on port %d", a.config.Port)
+
+		server := &http.Server{
+			Addr:    fmt.Sprintf(":%d", a.config.Port),
+			Handler: router,
+		}
+		go shutdown(ctx, server)
+		return server.ListenAndServe()
+	}
+}
+
+func shutdown(ctx context.Context, server *http.Server) {
+	<-ctx.Done()
+	log.Printf("Shutting down API gracefully...")
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatal(fmt.Errorf("server could not shut down gracefully: %w", err))
+	}
 }

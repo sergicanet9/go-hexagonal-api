@@ -4,65 +4,75 @@
 ![Coverage](https://img.shields.io/badge/Coverage-24.2%25-red)
 
 REST API implementing Hexagonal Architecture (Ports & Adapters) making use of own [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) package.
+<br />
+It consists in a set of endpoints for user management that can indistinctly work with either a MongoDB or PostgreSQL instance, using the same endpoints and business logic.
 
 Provides:
-- MongoDB and PostgreSQL repository adapters for persistent storage decoupled from the business logic
+- MongoDB and PostgreSQL decoupled implementations of the repository adapter for persistent storage
 - Database migrations with Goose for PostgreSQL implementation
 - CRUD functionalities for user management
-- Multi-environment configs
 - JWT authentication and claim-based authorization
 - Swagger UI documentation
-- Dockerized app
 - Unit tests with code coverage
-- Integration tests
+- Integration tests for happy path
+- Multi-environment JSON config files
+- Dockerized app and Kubernetes Deployment
 - CI/CD with Github Actions
 - Async process for periodical health checking
 
-## Run and debug the application locally
+## Run it with docker
 ```
-    go run cmd/main.go -v={version} -env={env} -p={port} -db={database}
+make up
 ```
-or:
-```
-go build cmd/main.go
- ./main -env={env} -v={version} -env={env} -p={port} -db={database}
-```
-Then open {address}:{port}/swagger/index.html in the browser, where {address} is the value specified in the corresponding config.{env}.json, corresponding to "MongoAddress" or "PostgresAddress", depending on the database choosed.
+It will start 4 containers. Two of them are databases (MongoDB and PostgreSQL) and the other two are instances of the API, each of them already set up to work with one of the databases.
 <br />
-<br />
- NOTES:
-- The v, env, p and db flags are optional. Default values, respectively: "debug", "local", "8080", "mongo".
-- For debugging the application with Visual Studio Code´s build-in debugger, select the desired database configuration in the Run and Debug menu and click on Start Debugging button or press F5. All flags can be changed in the debugging configurations provided in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json).
+Both Swagger URLs will be printed when running the command.
 
-## Run the application in a local docker container
-```
-make mongo-up
-```
-or:
-```
-make mongo-up
-```
-Then open {address}:{port}/swagger/index.html in the browser, where {address} is the value specified in [config.local.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/config/config.local.json), corresponding to "MongoAddress" or "PostgresAddress", depending on the command run.
-<br />
-<br />
-NOTES:
-- When running this commands, the docker images will be built using the current git branch name for the v flag, "local" for the env flag and "8080" for the port flag.
-
-### Stop and remove the running container
+### Stop and remove the running containers
 ```
 make down
 ```
 
-## Run the integration tests
+## Debug it with VS Code
+Debugging configurations provided in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for both MongoDB and PostgreSQL. Just select the desired one in the VS Code´s build-in debugger and run it.
+<br />
+Then open `http://localhost:{port}/swagger/index.html`, where `{port}` is the value specified in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for the selected configuration.
+<br />
+<br />
+NOTE: Docker is required and the target's database container needs to be running.
+
+## Run it with command line
 ```
-make test
+    go run cmd/main.go --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn}
 ```
-Then to see the coverage report run the following command:
+or:
+```
+go build cmd/main.go
+ ./main --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn}
+```
+Provide the desired values to `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`.
+<br />
+Then open `http://localhost:{port}/swagger/index.html`.
+<br />
+<br />
+NOTE: Docker is required and the target's database container needs to be running.
+
+## Run unit tests
+```
+make test-unit
+```
+
+### Check coverage report
 ```
 make cover
 ```
+
+## Run integration tests
+```
+make test-integration
+```
  NOTES:
-- The docker daemon needs to be up and running for executing the tests.
+- Docker is required for executing integration tests.
 
 ## (Re)Generate Swagger documentation
 ```
@@ -93,16 +103,11 @@ az login
 az postgres flexible-server db delete -g {resource_group} -s {resource_name} --database-name {db_name}
 ```
 
-## Deploy a new environment in Azure
-The steps for creating and deploying a new cloud environment on Azure are the following:
-1. Create an Azure Web App on Azure Portal and name it go-hexagonal-api-{db}-{env}, where {db} and {env} are the database used and the name of the new environment, respectively.
-2. Add an entry on the Web App´s Configuration with name "WEBSITES_PORT" and value "443".
-3. On the Web App´s App Service Logs, select "File system" and configure the Quota (MB) and the Retention Period (Days) for enabling app logs.
-4. On the Web App´s Deployment Center, select Github Actions option. Authorize the Github account if required. Then select the repository name, the registry source (Azure Container Registry, Docker Hub, etc.) and type the image name in the following format: go-hexagonal-api-{db}.{env}. Make sure that the secrets for accessing to the registry source are provided on Github´s repository settings.
-5. Download the publish profile on Web App´s overview and add a secret entry on Github´s repository settings with its value and name it "AZUREAPPSERVICE_PUBLISHPROFILE_{DB}_{ENV}".
-6. On Github´s repository settings, add a new environment named {db}-{env} and configure a manual approval protection rule.
-7. On the source code, create a file named config.{env}.json in the config folder and add the environment values in it.
-8. Edit the CI/CD Pipeline file to include build-{db}-{env} and deploy-{db}-{env} jobs, using the proper environment names and secrets. Make sure that the running port specified in the file is "443".
+## Live AKS environments
+### Dev
+http://go-hexagonal-api-mongo-dev.westeurope.cloudapp.azure.com/swagger/index.html
+<br />
+http://go-hexagonal-api-postgres-dev.westeurope.cloudapp.azure.com/swagger/index.html
 
 ## Author
 Sergi Canet Vela

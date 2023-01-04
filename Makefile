@@ -1,18 +1,20 @@
+include build/docker/.env
+
 .PHONY: test
 
-mongo-up:
-	export VERSION=$(shell git branch --show-current | xargs basename) && export ENV=local && export PORT=8080 && export DB=mongo && docker-compose up -d --build
-postgres-up:
-	export VERSION=$(shell git branch --show-current | xargs basename) && export ENV=local && export PORT=8080 && export DB=postgres && docker-compose up -d --build
+up:
+	docker-compose --env-file build/docker/.env up -d --build
+	@echo "Mongo Swagger:    http://localhost:${HOST_PORT_MONGOAPI}/swagger/index.html"
+	@echo "Postgres Swagger: http://localhost:${HOST_PORT_POSTGRESAPI}/swagger/index.html"
 down:
-	export VERSION= && export ENV= && export PORT=0 && export DB= && docker-compose down
+	docker-compose --env-file build/docker/.env down
 test-unit:
-	go test -race $(shell go list ./... | grep -v /test) -coverprofile=coverage.out
+	go test -race $(shell go list ./... | grep -v /integration) -coverprofile=coverage.out
 	go tool cover -func=coverage.out -o=coverage.out
 cover:
 	go tool cover -html=coverage.out
 test-integration:
-	go test -race test/*.go
+	go test -race integration/*.go
 swagger:
 	go install github.com/swaggo/swag/cmd/swag@v1.7.0
 	swag init -g cmd/main.go -o app/docs

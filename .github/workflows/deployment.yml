@@ -1,0 +1,66 @@
+name: deployment
+on: 
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+      PORT:
+        required: true
+        type: number
+      DATABASE:
+        required: true
+        type: string
+      DSN:
+        required: true
+        type: string
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+      AZURECONTAINERREGISTRY_USERNAME:
+        required: true
+      AZURECONTAINERREGISTRY_PASSWORD:
+        required: true  
+
+jobs:
+  run-deployment:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+    - id: vars
+      run: echo "tag=$(echo ${{ github.ref_name }} | xargs basename)" >> $GITHUB_OUTPUT
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/aks-set-context@v3
+      with:
+        resource-group: STUDENT-RG
+        cluster-name: scv-aks
+    - uses: azure/docker-login@v1
+      with:
+        login-server: scvregistry.azurecr.io
+        username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+        password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
+    - uses: Azure/k8s-create-secret@v4
+      with:
+        container-registry-url: scvregistry.azurecr.io
+        container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+        container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
+        secret-name: acr-secret
+    - name: Replace version and environment data in manifest file
+      run: |
+        sed -i "s/__version__/${{ steps.vars.outputs.tag }}/g"  build/k8s/manifest.yml
+        sed -i "s/__environment__/${{ inputs.ENVIRONMENT }}/g"  build/k8s/manifest.yml
+        sed -i "s/__port__/${{ inputs.PORT }}/g"  build/k8s/manifest.yml
+        sed -i "s/__database__/${{ inputs.DATABASE }}/g"  build/k8s/manifest.yml
+        sed -i "s/__dsn__/${{ inputs.DSN }}/g"  build/k8s/manifest.yml
+    - uses: Azure/k8s-deploy@v4
+      with:
+        action: deploy
+        manifests: build/k8s/manifest.yml
+        images: scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }}
+        imagepullsecrets: acr-secret
+    - name: Rollout restart deployment
+      run: |
+        kubectl rollout restart deployment go-hexagonal-api-${{ inputs.DATABASE }}-${{ inputs.ENVIRONMENT }}

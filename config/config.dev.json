@@ -1,4 +1,6 @@
 {
-    "MongoAddress": "https://go-hexagonal-api-mongo-dev.azurewebsites.net",
-    "PostgresAddress": "https://go-hexagonal-api-postgres-dev.azurewebsites.net"
+    "Async": {
+        "Run": true,
+        "Interval": "1m"
+    }
 }

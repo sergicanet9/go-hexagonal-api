@@ -74,7 +74,24 @@ info:
   description: Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools
   title: Go Hexagonal API
 paths:
-  /api/claims:
+  /health:
+    get:
+      description: Runs a Health Check
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            type: object
+      summary: Health Check
+      tags:
+      - Health
+  /v1/claims:
     get:
       description: Gets all claims
       responses:
@@ -103,24 +120,7 @@ paths:
       summary: Get claims
       tags:
       - Users
-  /api/health:
-    get:
-      description: Runs a Health Check
-      responses:
-        "200":
-          description: OK
-        "500":
-          description: Internal Server Error
-          schema:
-            type: object
-        "503":
-          description: Service Unavailable
-          schema:
-            type: object
-      summary: Health Check
-      tags:
-      - Health
-  /api/users:
+  /v1/users:
     get:
       description: Gets all the users
       responses:
@@ -180,7 +180,7 @@ paths:
       summary: Create user
       tags:
       - Users
-  /api/users/{id}:
+  /v1/users/{id}:
     delete:
       description: Delete a user
       parameters:
@@ -285,7 +285,7 @@ paths:
       summary: Update user
       tags:
       - Users
-  /api/users/atomic:
+  /v1/users/atomic:
     post:
       description: Creates two users atomically
       responses:
@@ -312,7 +312,7 @@ paths:
       summary: Atomic transaction proof
       tags:
       - Users
-  /api/users/email/{email}:
+  /v1/users/email/{email}:
     get:
       description: Gets a user by email
       parameters:
@@ -347,7 +347,7 @@ paths:
       summary: Get user by email
       tags:
       - Users
-  /api/users/login:
+  /v1/users/login:
     post:
       description: Logs in an user
       parameters:

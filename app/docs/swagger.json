@@ -6,7 +6,33 @@
         "contact": {}
     },
     "paths": {
-        "/api/claims": {
+        "/health": {
+            "get": {
+                "description": "Runs a Health Check",
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health Check",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/claims": {
             "get": {
                 "security": [
                     {
@@ -52,33 +78,7 @@
                 }
             }
         },
-        "/api/health": {
-            "get": {
-                "description": "Runs a Health Check",
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Health Check",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/users": {
+        "/v1/users": {
             "get": {
                 "security": [
                     {
@@ -171,7 +171,7 @@
                 }
             }
         },
-        "/api/users/atomic": {
+        "/v1/users/atomic": {
             "post": {
                 "security": [
                     {
@@ -214,7 +214,7 @@
                 }
             }
         },
-        "/api/users/email/{email}": {
+        "/v1/users/email/{email}": {
             "get": {
                 "security": [
                     {
@@ -269,7 +269,7 @@
                 }
             }
         },
-        "/api/users/login": {
+        "/v1/users/login": {
             "post": {
                 "description": "Logs in an user",
                 "tags": [
@@ -315,7 +315,7 @@
                 }
             }
         },
-        "/api/users/{id}": {
+        "/v1/users/{id}": {
             "get": {
                 "security": [
                     {

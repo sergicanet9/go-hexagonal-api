@@ -1,4 +1,4 @@
-package test
+package integration
 
 import (
 	"fmt"
@@ -10,13 +10,9 @@ func TestHealthCheck_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/health", address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/health", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {

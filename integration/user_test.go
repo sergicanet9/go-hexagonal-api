@@ -1,4 +1,4 @@
-package test
+package integration
 
 import (
 	"bytes"
@@ -25,13 +25,9 @@ func TestLoginUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 		testUser := getNewTestUser()
 		testUser.Email = "testlogin@test.com"
-		err = insertUser(&testUser, cfg)
+		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -46,7 +42,7 @@ func TestLoginUser_Ok(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users/login", address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/users/login", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
 		if err != nil {
@@ -75,14 +71,10 @@ func TestLoginUser_Ok(t *testing.T) {
 	})
 }
 
-func TestCreateUser_Created(t *testing.T) {
+func TestCreateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 		testUser := getNewTestUser()
 
 		// Act
@@ -92,7 +84,7 @@ func TestCreateUser_Created(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users", address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/users", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
 		if err != nil {
@@ -131,13 +123,9 @@ func TestGetAllUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/users", address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/users", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -170,18 +158,14 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 		testUser := getNewTestUser()
-		err = insertUser(&testUser, cfg)
+		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/users/email/%s", address, cfg.Port, testUser.Email)
+		url := fmt.Sprintf("http://:%d/v1/users/email/%s", cfg.Port, testUser.Email)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -214,18 +198,14 @@ func TestGetUserByID_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 		testUser := getNewTestUser()
-		err = insertUser(&testUser, cfg)
+		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/users/%s", address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("http://:%d/v1/users/%s", cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -258,12 +238,8 @@ func TestUpdateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 		testUser := getNewTestUser()
-		err = insertUser(&testUser, cfg)
+		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -277,7 +253,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users/%s", address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("http://:%d/v1/users/%s", cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(b))
 		if err != nil {
@@ -313,12 +289,8 @@ func TestDeleteUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 		testUser := getNewTestUser()
-		err = insertUser(&testUser, cfg)
+		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -330,7 +302,7 @@ func TestDeleteUser_Ok(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/api/users/%s", address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("http://:%d/v1/users/%s", cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(b))
 		if err != nil {
@@ -360,13 +332,9 @@ func TestGetUserClaims_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		address, err := GetAddress(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/api/claims", address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/claims", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
@@ -409,7 +377,7 @@ func getNewTestUser() entities.User {
 func insertUser(u *entities.User, cfg config.Config) error {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return err
 		}
@@ -419,7 +387,7 @@ func insertUser(u *entities.User, cfg config.Config) error {
 		return err
 
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return err
 		}
@@ -445,7 +413,7 @@ func insertUser(u *entities.User, cfg config.Config) error {
 func findUser(ID string, cfg config.Config) (entities.User, error) {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.MongoDBName, cfg.MongoConnectionString)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return entities.User{}, err
 		}
@@ -460,7 +428,7 @@ func findUser(ID string, cfg config.Config) (entities.User, error) {
 		return u, err
 
 	case "postgres":
-		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.PostgresConnectionString)
+		db, err := infrastructure.ConnectPostgresDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return entities.User{}, err
 		}
