@@ -42,12 +42,12 @@ jobs:
         login-server: scvregistry.azurecr.io
         username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
         password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
-    # - uses: Azure/k8s-create-secret@v4
-    #   with:
-    #     container-registry-url: scvregistry.azurecr.io
-    #     container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
-    #     container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
-    #     secret-name: acr-secret
+    - uses: Azure/k8s-create-secret@v4
+      with:
+        container-registry-url: scvregistry.azurecr.io
+        container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+        container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
+        secret-name: acr-secret
     - name: Replace version and environment data in manifest file
       run: |
         sed -i "s/__version__/${{ steps.vars.outputs.tag }}/g"  build/k8s/manifest.yml
@@ -60,4 +60,4 @@ jobs:
         action: deploy
         manifests: build/k8s/manifest.yml
         images: scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }}
-        # imagepullsecrets: acr-secret
+        imagepullsecrets: acr-secret
