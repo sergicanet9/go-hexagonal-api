@@ -24,7 +24,33 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/claims": {
+        "/health": {
+            "get": {
+                "description": "Runs a Health Check",
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health Check",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/claims": {
             "get": {
                 "security": [
                     {
@@ -70,33 +96,7 @@ var doc = `{
                 }
             }
         },
-        "/health": {
-            "get": {
-                "description": "Runs a Health Check",
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Health Check",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                }
-            }
-        },
-        "/users": {
+        "/v1/users": {
             "get": {
                 "security": [
                     {
@@ -189,7 +189,7 @@ var doc = `{
                 }
             }
         },
-        "/users/atomic": {
+        "/v1/users/atomic": {
             "post": {
                 "security": [
                     {
@@ -232,7 +232,7 @@ var doc = `{
                 }
             }
         },
-        "/users/email/{email}": {
+        "/v1/users/email/{email}": {
             "get": {
                 "security": [
                     {
@@ -287,7 +287,7 @@ var doc = `{
                 }
             }
         },
-        "/users/login": {
+        "/v1/users/login": {
             "post": {
                 "description": "Logs in an user",
                 "tags": [
@@ -333,7 +333,7 @@ var doc = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/v1/users/{id}": {
             "get": {
                 "security": [
                     {

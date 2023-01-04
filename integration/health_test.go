@@ -12,7 +12,7 @@ func TestHealthCheck_Ok(t *testing.T) {
 		cfg := New(t, database)
 
 		// Act
-		url := fmt.Sprintf("%s:%d/go-hexagonal-api/%s/health", cfg.Address, cfg.Port, database)
+		url := fmt.Sprintf("%s:%d/health", cfg.Address, cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
