@@ -5,7 +5,7 @@ metadata:
     app: go-hexagonal-api-__database__-__environment__
   name: go-hexagonal-api-__database__-__environment__
 spec:
-  replicas: 1
+  replicas: 2
   progressDeadlineSeconds: 240
   selector:
     matchLabels:
