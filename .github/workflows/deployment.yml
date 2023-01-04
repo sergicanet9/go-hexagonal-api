@@ -37,6 +37,11 @@ jobs:
       with:
         resource-group: STUDENT-RG
         cluster-name: scv-aks
+    - uses: azure/docker-login@v1
+      with:
+        login-server: scvregistry.azurecr.io
+        username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
+        password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
     - uses: Azure/k8s-create-secret@v4
       with:
         container-registry-url: scvregistry.azurecr.io
