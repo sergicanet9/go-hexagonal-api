@@ -54,4 +54,5 @@ jobs:
       with:
         action: deploy
         manifests: build/k8s/manifest.yml
+        images: scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }}
         imagepullsecrets: acr-secret
