@@ -1,3 +1,6 @@
 {
-    "Address": "http://localhost"
+    "Async": {
+        "Run": true,
+        "Interval": "5m"
+    }
 }
