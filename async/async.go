@@ -24,7 +24,7 @@ func New(cfg config.Config) *async {
 
 func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 	return func() error {
-		go healthCheck(ctx, cancel, a.config.Port, a.config.Async.Interval.Duration)
+		go healthCheck(ctx, cancel, fmt.Sprintf("http://:%d/health", a.config.Port), a.config.Async.Interval.Duration)
 
 		for ctx.Err() == nil {
 			<-time.After(1 * time.Second)
@@ -33,7 +33,7 @@ func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error 
 	}
 }
 
-func healthCheck(ctx context.Context, cancel context.CancelFunc, port int, interval time.Duration) {
+func healthCheck(ctx context.Context, cancel context.CancelFunc, url string, interval time.Duration) {
 	defer cancel()
 	defer func() {
 		if rec := recover(); rec != nil {
@@ -41,12 +41,10 @@ func healthCheck(ctx context.Context, cancel context.CancelFunc, port int, inter
 		}
 	}()
 
-	for {
+	for ctx.Err() == nil {
 		<-time.After(interval)
 
 		start := time.Now()
-
-		url := fmt.Sprintf("http://:%d/health", port)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
