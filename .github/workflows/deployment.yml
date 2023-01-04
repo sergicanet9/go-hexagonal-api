@@ -61,3 +61,6 @@ jobs:
         manifests: build/k8s/manifest.yml
         images: scvregistry.azurecr.io/go-hexagonal-api:${{ steps.vars.outputs.tag }}
         imagepullsecrets: acr-secret
+    - name: Rollout restart deployment
+      run: |
+        kubectl rollout restart deployment go-hexagonal-api-${{ inputs.DATABASE }}-${{ inputs.ENVIRONMENT }}
