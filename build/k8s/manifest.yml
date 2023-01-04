@@ -28,17 +28,17 @@ spec:
               value: "__database__"
             - name: dsn
               value: "__dsn__"
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: go-hexagonal-api-__database__-__environment__
-spec:
-  type: ClusterIP
-  selector:
-    app: go-hexagonal-api-__database__-__environment__
-  ports:
-    - port: __port__
+# ---
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: go-hexagonal-api-__database__-__environment__
+# spec:
+#   type: ClusterIP
+#   selector:
+#     app: go-hexagonal-api-__database__-__environment__
+#   ports:
+#     - port: __port__
 # ---
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
