@@ -39,7 +39,8 @@ Debugging configurations provided in [launch.json](https://github.com/sergicanet
 Then open `http://localhost:{port}/swagger/index.html`, where `{port}` is the value specified in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for the selected configuration.
 <br />
 <br />
-NOTE: Docker is required and the target's database container needs to be running.
+NOTES:
+- Docker is required and the target's database container needs to be running.
 
 ## Run it with command line
 ```
@@ -55,7 +56,8 @@ Provide the desired values to `{version}`, `{environment}`, `{port}`, `{database
 Then open `http://localhost:{port}/swagger/index.html`.
 <br />
 <br />
-NOTE: Docker is required and the target's database container needs to be running.
+NOTES:
+- Docker is required and the target's database container needs to be running.
 
 ## Run unit tests
 ```
