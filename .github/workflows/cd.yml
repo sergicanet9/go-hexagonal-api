@@ -2,18 +2,16 @@ name: CD
 
 on:
   push:
-    branches:
-      - improvements
-    # tags:
-    #    - '*'
+    tags:
+       - '*'
 
 jobs:
-  # test:
-  #   uses: ./.github/workflows/test.yml
+  test:
+    uses: ./.github/workflows/test.yml
 
   build-and-push:
     runs-on: ubuntu-latest
-    # needs: test
+    needs: test
     steps:
     - id: vars
       run: echo "tag=$(echo ${{ github.ref_name }} | xargs basename)" >> $GITHUB_OUTPUT

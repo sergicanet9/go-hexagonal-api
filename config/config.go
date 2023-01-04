@@ -25,7 +25,6 @@ type Config struct {
 }
 
 type config struct {
-	Address               string
 	PostgresMigrationsDir string
 	JWTSecret             string
 	Timeout               utils.Duration

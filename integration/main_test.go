@@ -158,7 +158,6 @@ func testConfig(t *testing.T, database string) (c config.Config, err error) {
 		return config.Config{}, fmt.Errorf("database flag %s not valid", database)
 	}
 
-	c.Address = "http://localhost"
 	c.PostgresMigrationsDir = "db/postgres/migrations"
 	c.JWTSecret = jwtSecret
 	c.Timeout = utils.Duration{Duration: 5 * time.Second}

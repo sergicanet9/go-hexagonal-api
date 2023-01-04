@@ -1,6 +1,6 @@
 {
     "Async": {
         "Run": true,
-        "Interval": "1h"
+        "Interval": "1m"
     }
 }

@@ -42,7 +42,7 @@ func TestLoginUser_Ok(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/v1/users/login", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/users/login", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
 		if err != nil {
@@ -71,7 +71,7 @@ func TestLoginUser_Ok(t *testing.T) {
 	})
 }
 
-func TestCreateUser_Created(t *testing.T) {
+func TestCreateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
@@ -84,7 +84,7 @@ func TestCreateUser_Created(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/v1/users", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/users", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
 		if err != nil {
@@ -125,7 +125,7 @@ func TestGetAllUsers_Ok(t *testing.T) {
 		cfg := New(t, database)
 
 		// Act
-		url := fmt.Sprintf("%s:%d/v1/users", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/users", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -165,7 +165,7 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/v1/users/email/%s", cfg.Address, cfg.Port, testUser.Email)
+		url := fmt.Sprintf("http://:%d/v1/users/email/%s", cfg.Port, testUser.Email)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -205,7 +205,7 @@ func TestGetUserByID_Ok(t *testing.T) {
 		}
 
 		// Act
-		url := fmt.Sprintf("%s:%d/v1/users/%s", cfg.Address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("http://:%d/v1/users/%s", cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
@@ -253,7 +253,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/v1/users/%s", cfg.Address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("http://:%d/v1/users/%s", cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(b))
 		if err != nil {
@@ -302,7 +302,7 @@ func TestDeleteUser_Ok(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		url := fmt.Sprintf("%s:%d/v1/users/%s", cfg.Address, cfg.Port, testUser.ID)
+		url := fmt.Sprintf("http://:%d/v1/users/%s", cfg.Port, testUser.ID)
 
 		req, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(b))
 		if err != nil {
@@ -334,7 +334,7 @@ func TestGetUserClaims_Ok(t *testing.T) {
 		cfg := New(t, database)
 
 		// Act
-		url := fmt.Sprintf("%s:%d/v1/claims", cfg.Address, cfg.Port)
+		url := fmt.Sprintf("http://:%d/v1/claims", cfg.Port)
 
 		req, err := http.NewRequest(http.MethodGet, url, nil)
 		if err != nil {
