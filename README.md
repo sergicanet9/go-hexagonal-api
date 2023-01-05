@@ -1,7 +1,7 @@
 # go-hexagonal-api
 ![CI](https://github.com/sergicanet9/go-hexagonal-api/actions/workflows/ci.yml/badge.svg)
 ![CD](https://github.com/sergicanet9/go-hexagonal-api/actions/workflows/cd.yml/badge.svg)
-![Coverage](https://img.shields.io/badge/Coverage-24.2%25-red)
+![Coverage](https://img.shields.io/badge/Coverage-39.0%25-yellow)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergicanet9/go-hexagonal-api.svg)](https://pkg.go.dev/github.com/sergicanet9/go-hexagonal-api)
 
 REST API implementing Hexagonal Architecture (Ports & Adapters) making use of own [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) package.
