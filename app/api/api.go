@@ -92,7 +92,5 @@ func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 func shutdown(ctx context.Context, server *http.Server) {
 	<-ctx.Done()
 	log.Printf("Shutting down API gracefully...")
-	if err := server.Shutdown(ctx); err != nil {
-		log.Fatal(fmt.Errorf("server could not shut down gracefully: %w", err))
-	}
+	server.Shutdown(ctx)
 }
