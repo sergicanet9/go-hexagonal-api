@@ -32,7 +32,7 @@ func main() {
 		log.Fatal(fmt.Errorf("provided flags not valid: %s, %w", args, err))
 	}
 
-	cfg, err := config.ReadConfig(opts.Version, opts.Environment, opts.Port, opts.Database, opts.DSN)
+	cfg, err := config.ReadConfig(opts.Version, opts.Environment, opts.Port, opts.Database, opts.DSN, "config")
 	if err != nil {
 		log.Fatal(fmt.Errorf("cannot parse config file for env %s: %w", opts.Environment, err))
 	}

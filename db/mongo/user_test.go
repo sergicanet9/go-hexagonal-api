@@ -50,7 +50,7 @@ func TestInsertMany_Ok(t *testing.T) {
 		err := repo.InsertMany(context.Background(), newEntities)
 
 		// Assert
-		assert.Equal(t, nil, err)
+		assert.Nil(t, err)
 	})
 }
 
