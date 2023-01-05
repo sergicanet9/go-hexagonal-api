@@ -3,6 +3,7 @@ module github.com/sergicanet9/go-hexagonal-api
 go 1.19
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/gorilla/mux v1.8.0
@@ -20,7 +21,6 @@ require (
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
-	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
