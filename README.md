@@ -83,30 +83,35 @@ make swagger
 ```
 
 ## Database commands for Postgres
-### Create a new migration
+### Create new migration
 ```
 make goose
 ```
 Write the file name without ".sql" suffix and press enter.
 Then edit the newly created file to define the behavior of the migration.
 
-### Connect to the remote database
+### Connect to database
 ```
-psql -h {host} -U {username} {db_name}
-```
-
-### Dump the remote database
-```
-pg_dump -h {host} -U {username} {db_name} --schema-only > dump.sql
+psql "{dsn}"
 ```
 
-### Drop the remote database (Azure Postgres Flexible Server)
+### Create new database
+```
+CREATE DATABASE {db_name};
+```
+
+### Drop database (Azure Postgres Flexible Server)
 ```
 az login
 az postgres flexible-server db delete -g {resource_group} -s {resource_name} --database-name {db_name}
 ```
 
-## Live AKS environments
+### Dump database schema
+```
+pg_dump -h {host} -U {username} {db_name} --schema-only > dump.sql
+```
+
+## Live AKS environments (turned off)
 ### Dev
 http://go-hexagonal-api-mongo-dev.westeurope.cloudapp.azure.com/swagger/index.html
 <br />

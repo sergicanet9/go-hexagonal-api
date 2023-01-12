@@ -16,7 +16,7 @@
                 "--env", "local",
                 "--port", "8080",
                 "--db", "mongo",
-                "--dsn", "mongodb://localhost:4041/mongorestapi"
+                "--dsn", "mongodb://localhost:4041/gohexagonalapi"
             ]
         },
         {
@@ -31,7 +31,7 @@
                 "--env", "local",
                 "--port", "8080",
                 "--db", "postgres",
-                "--dsn", "postgres://postgres:Password2022@localhost:4042/postgresrestapi?sslmode=disable"
+                "--dsn", "postgres://postgres:admin@localhost:4042/gohexagonalapi?sslmode=disable"
             ]
         }
     ]
