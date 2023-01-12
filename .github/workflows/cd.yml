@@ -33,7 +33,7 @@ jobs:
       ENVIRONMENT: dev
       PORT: 80
       DATABASE: mongo
-      DSN: mongodb+srv:\\/\\/admin:admin@cluster0.qy8ev.mongodb.net\\/go-hexagonal-api?retryWrites=true\\&w=majority
+      DSN: mongodb+srv:\\/\\/admin:admin@cluster0.qy8ev.mongodb.net\\/go-hexagonal-api-dev?retryWrites=true\\&w=majority
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURECONTAINERREGISTRY_USERNAME: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
@@ -46,7 +46,7 @@ jobs:
       ENVIRONMENT: dev
       PORT: 80
       DATABASE: postgres
-      DSN: postgres:\\/\\/postgres:Password2021@scv-postgres.postgres.database.azure.com:5432\\/postgresrestapi?sslmode=require
+      DSN: postgres:\\/\\/postgres:Password2021@scv-postgres.postgres.database.azure.com:5432\\/postgresrestapi-dev?sslmode=require
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       AZURECONTAINERREGISTRY_USERNAME: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
