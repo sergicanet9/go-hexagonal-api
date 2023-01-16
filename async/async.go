@@ -34,12 +34,12 @@ func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error 
 }
 
 func healthCheck(ctx context.Context, cancel context.CancelFunc, url string, interval time.Duration) {
+	defer cancel()
 	defer func() {
 		if rec := recover(); rec != nil {
 			log.Print("recovered panic in async process: %w", rec)
 		}
 	}()
-	defer cancel()
 
 	for ctx.Err() == nil {
 		<-time.After(interval)

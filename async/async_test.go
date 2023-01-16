@@ -13,6 +13,7 @@ import (
 func TestNew_Ok(t *testing.T) {
 	// Arrange
 	expectedConfig := config.Config{}
+
 	// Act
 	async := New(expectedConfig)
 
@@ -33,25 +34,6 @@ func TestRun_ContextCancelled(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, expectedError, errFunc().Error())
-}
-
-// TestHealthCheck_SuccessfulURLThenContextCancelledAndPanic checks that healthCheck finishes and returns the expected error when the context gets cancelled
-// and a panic is raised
-func TestHealthCheck_ContextCancelledAndPanic(t *testing.T) {
-	// Arrange
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
-	defer cancel()
-
-	cancel = func() {
-		panic("test-panic")
-	}
-	expectedError := context.DeadlineExceeded.Error()
-
-	// Act
-	healthCheck(ctx, cancel, "", time.Second)
-
-	// Assert
-	assert.Equal(t, expectedError, ctx.Err().Error())
 }
 
 // TestHealthCheck_SuccessfulURLThenContextCancelled checks that healthCheck finishes and returns the expected error when the context gets cancelled
