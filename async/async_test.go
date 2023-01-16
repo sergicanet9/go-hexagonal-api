@@ -20,7 +20,7 @@ func TestNew_Ok(t *testing.T) {
 	assert.Equal(t, expectedConfig, async.config)
 }
 
-// TestRun_ContextCancelled checks that Run finishes and returns the expected error when the context gets cancelled.
+// TestRun_ContextCancelled checks that Run finishes and returns the expected error when the context gets cancelled
 func TestRun_ContextCancelled(t *testing.T) {
 	// Arrange
 	async := &async{}
@@ -35,8 +35,27 @@ func TestRun_ContextCancelled(t *testing.T) {
 	assert.Equal(t, expectedError, errFunc().Error())
 }
 
+// TestHealthCheck_SuccessfulURLThenContextCancelledAndPanic checks that healthCheck finishes and returns the expected error when the context gets cancelled
+// and a panic is raised
+func TestHealthCheck_ContextCancelledAndPanic(t *testing.T) {
+	// Arrange
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+
+	cancel = func() {
+		panic("test-panic")
+	}
+	expectedError := context.DeadlineExceeded.Error()
+
+	// Act
+	healthCheck(ctx, cancel, "", time.Second)
+
+	// Assert
+	assert.Equal(t, expectedError, ctx.Err().Error())
+}
+
 // TestHealthCheck_SuccessfulURLThenContextCancelled checks that healthCheck finishes and returns the expected error when the context gets cancelled
-// while the given URL was returning success.
+// while the given URL was returning success
 func TestHealthCheck_SuccessfulURLThenContextCancelled(t *testing.T) {
 	// Arrange
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
@@ -50,8 +69,23 @@ func TestHealthCheck_SuccessfulURLThenContextCancelled(t *testing.T) {
 	assert.Equal(t, expectedError, ctx.Err().Error())
 }
 
+// TestHealthCheck_InvalidURLThenContextCancelled checks that healthCheck finishes and returns the expected error when the context gets cancelled
+// while the given URL was invalid
+func TestHealthCheck_InvalidURLThenContextCancelled(t *testing.T) {
+	// Arrange
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	notFoundURL := "http://€@$testing.com"
+	expectedError := context.DeadlineExceeded.Error()
+
+	// Act
+	healthCheck(ctx, cancel, notFoundURL, time.Second)
+
+	// Assert
+	assert.Equal(t, expectedError, ctx.Err().Error())
+}
+
 // TestHealthCheck_NotFoundURLThenContextCancelled checks that healthCheck finishes and returns the expected error when the context gets cancelled
-// while the given URL was returning not found.
+// while the given URL was returning not found
 func TestHealthCheck_NotFoundURLThenContextCancelled(t *testing.T) {
 	// Arrange
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)

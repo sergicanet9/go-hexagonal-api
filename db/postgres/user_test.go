@@ -392,3 +392,51 @@ func TestInsertMany_InsertError(t *testing.T) {
 	// Assert
 	assert.Equal(t, expectedError, err.Error())
 }
+
+// TestInsertMany_BeginError checks that InsertMany returns an error when the begin statement fails
+func TestInsertMany_BeginError(t *testing.T) {
+	// Arrange
+	mock, db := mocks.NewSqlDB(t)
+	defer db.Close()
+
+	repo := &userRepository{
+		infrastructure.PostgresRepository{
+			DB: db,
+		},
+	}
+
+	newUsers := []interface{}{entities.User{}}
+	expectedError := "begin error"
+	mock.ExpectBegin().WillReturnError(fmt.Errorf(expectedError))
+
+	// Act
+	err := repo.InsertMany(context.Background(), newUsers)
+
+	// Assert
+	assert.Equal(t, expectedError, err.Error())
+}
+
+// TestInsertMany_CommitError checks that InsertMany returns an error when the commit statement fails
+func TestInsertMany_CommitError(t *testing.T) {
+	// Arrange
+	mock, db := mocks.NewSqlDB(t)
+	defer db.Close()
+
+	repo := &userRepository{
+		infrastructure.PostgresRepository{
+			DB: db,
+		},
+	}
+
+	newUsers := []interface{}{entities.User{}}
+	expectedError := "commit error"
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO users").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit().WillReturnError(fmt.Errorf(expectedError))
+
+	// Act
+	err := repo.InsertMany(context.Background(), newUsers)
+
+	// Assert
+	assert.Equal(t, expectedError, err.Error())
+}
