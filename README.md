@@ -60,12 +60,12 @@ Then open `http://localhost:{port}/swagger/index.html`.
 NOTES:
 - Docker is required and the target's database container needs to be running.
 
-## Run unit tests
+## Run unit tests with code coverage
 ```
 make test-unit
 ```
 
-### Check coverage report
+### View coverage report
 ```
 make cover
 ```
