@@ -3,7 +3,7 @@ on:
   workflow_call:
 
 jobs:
-  run-unit-tests:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -37,9 +37,9 @@ jobs:
           github_token: ${{ github.token }}
           branch: ${{ github.head_ref }}
 
-  run-integration-tests:
+  integration-tests:
     runs-on: ubuntu-latest
-    needs: run-unit-tests
+    needs: unit-tests
     steps:
       - uses: actions/checkout@v3
       - uses: arnested/go-version-action@v1

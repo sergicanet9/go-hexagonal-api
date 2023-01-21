@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/jessevdk/go-flags"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
-	"github.com/sergicanet9/go-hexagonal-api/async"
+	"github.com/sergicanet9/go-hexagonal-api/app/async"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 )
 

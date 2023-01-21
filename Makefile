@@ -7,16 +7,18 @@ up:
 down:
 	docker-compose down
 test-unit:
-	go test -race $(shell go list ./... | grep -v /integration) -coverprofile=coverage.out
-	go tool cover -func=coverage.out -o=coverage.out
+	go test -race $(shell go list ./... | grep -v /test) -coverprofile=coverage.out
 cover:
 	go tool cover -html=coverage.out
 test-integration:
-	go test -race integration/*.go
+	go test -race test/integration/*.go
 swagger:
 	go install github.com/swaggo/swag/cmd/swag@v1.7.0
 	swag init -g cmd/main.go -o app/docs
+mocks:
+	go install github.com/vektra/mockery/v2@latest
+	mockery --dir=core/ports --all --output=test/mocks
 goose:
 	go install github.com/pressly/goose/v3/cmd/goose@v3.5.0
 	@read -p "Name for the change (e.g. add_column): " name; \
-	goose -dir db/postgres/migrations/ create $${name:-<name>} sql
+	goose -dir infrastructure/postgres/migrations/ create $$name sql

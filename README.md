@@ -75,11 +75,15 @@ make cover
 make test-integration
 ```
  NOTES:
-- Docker is required for executing integration tests.
+- Docker is required for running integration tests.
 
 ## (Re)Generate Swagger documentation
 ```
 make swagger
+```
+## (Re)Generate Mockery mocks
+```
+make mocks
 ```
 
 ## Database commands for Postgres

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sergicanet9/go-hexagonal-api/async/healthchecker"
+	"github.com/sergicanet9/go-hexagonal-api/app/async/healthchecker"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 )
 
@@ -13,8 +13,8 @@ type async struct {
 	config config.Config
 }
 
-func New(cfg config.Config) *async {
-	return &async{
+func New(cfg config.Config) async {
+	return async{
 		config: cfg,
 	}
 }

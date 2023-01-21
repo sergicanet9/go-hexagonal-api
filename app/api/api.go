@@ -14,8 +14,8 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/go-hexagonal-api/core/services"
-	"github.com/sergicanet9/go-hexagonal-api/db/mongo"
-	"github.com/sergicanet9/go-hexagonal-api/db/postgres"
+	"github.com/sergicanet9/go-hexagonal-api/infrastructure/mongo"
+	"github.com/sergicanet9/go-hexagonal-api/infrastructure/postgres"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	httpSwagger "github.com/swaggo/http-swagger"
 )

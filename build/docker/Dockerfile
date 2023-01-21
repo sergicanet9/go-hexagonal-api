@@ -8,7 +8,7 @@ FROM alpine:latest
 
 COPY --from=builder /opt/go-hexagonal-api/bin/main /opt/go-hexagonal-api/bin/main
 COPY --from=builder /opt/go-hexagonal-api/config/*.json /opt/go-hexagonal-api/config/
-COPY --from=builder /opt/go-hexagonal-api/db/postgres/migrations/*.sql /opt/go-hexagonal-api/db/postgres/migrations/
+COPY --from=builder /opt/go-hexagonal-api/infrastructure/postgres/migrations/*.sql /opt/go-hexagonal-api/infrastructure/postgres/migrations/
 
 WORKDIR /opt/go-hexagonal-api
 
