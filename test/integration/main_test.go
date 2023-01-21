@@ -13,7 +13,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
-	"github.com/sergicanet9/scv-go-tools/v3/test"
+	"github.com/sergicanet9/scv-go-tools/v3/testutils"
 )
 
 const (
@@ -147,7 +147,7 @@ func New(t *testing.T, database string) config.Config {
 func testConfig(t *testing.T, database string) (c config.Config, err error) {
 	c.Version = "Integration tests"
 	c.Environment = "Integration tests"
-	c.Port = test.FreePort(t)
+	c.Port = testutils.FreePort(t)
 	c.Database = database
 	switch database {
 	case "mongo":
