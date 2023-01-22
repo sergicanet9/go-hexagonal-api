@@ -25,9 +25,9 @@ Provides:
 ```
 make up
 ```
-It will start 4 containers. Two of them are databases (MongoDB and PostgreSQL) and the other two are instances of the API, each of them already set up to work with one of the databases.
+It starts 4 containers. Two of them are databases (MongoDB and PostgreSQL) and the other two are instances of the API, each of them already set up to work with one of the databases.
 <br />
-Both Swagger URLs will be printed when running the command.
+Both Swagger URLs are printed when running the command.
 
 ### Stop and remove the running containers
 ```

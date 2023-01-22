@@ -257,7 +257,7 @@ func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) 
 		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
 		defer cancel()
 
-		claims := s.GetClaims(ctx)
+		claims := s.GetUserClaims(ctx)
 		utils.ResponseJSON(w, r, nil, http.StatusOK, claims)
 	})
 }

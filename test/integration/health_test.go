@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// TestHealthCheck_Ok checks that Health endpoint returns the expected response when everything goes as expected
 func TestHealthCheck_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange

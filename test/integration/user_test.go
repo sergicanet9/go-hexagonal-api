@@ -21,6 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// TestLoginUser_Ok checks that Login endpoint returns the expected response when everything goes as expected
 func TestLoginUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
@@ -71,6 +72,7 @@ func TestLoginUser_Ok(t *testing.T) {
 	})
 }
 
+// TestCreateUser checks that CreateUser endpoint returns the expected response when everything goes as expected
 func TestCreateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
@@ -119,6 +121,7 @@ func TestCreateUser_Ok(t *testing.T) {
 	})
 }
 
+// TestGetAllUsers_Ok checks that GetAllUsers endpoint returns the expected response when everything goes as expected
 func TestGetAllUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
@@ -154,6 +157,7 @@ func TestGetAllUsers_Ok(t *testing.T) {
 	})
 }
 
+// TestGetUserByEmail_Ok checks that GetUserByEmail endpoint returns the expected response when everything goes as expected
 func TestGetUserByEmail_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
@@ -194,6 +198,7 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 	})
 }
 
+// TestGetUserByID_Ok checks that GetUserByID endpoint returns the expected response when everything goes as expected
 func TestGetUserByID_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
@@ -234,6 +239,7 @@ func TestGetUserByID_Ok(t *testing.T) {
 	})
 }
 
+// TestUpdateUser_Ok checks that UpdateUser endpoint returns the expected response when everything goes as expected
 func TestUpdateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
@@ -284,6 +290,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 	})
 }
 
+// TestDeleteUser_Ok checks that DeleteUser endpoint returns the expected response when everything goes as expected
 func TestDeleteUser_Ok(t *testing.T) {
 	notFoundError := map[string]error{"mongo": mongo.ErrNoDocuments, "postgres": sql.ErrNoRows}
 	Databases(t, func(t *testing.T, database string) {
@@ -328,6 +335,7 @@ func TestDeleteUser_Ok(t *testing.T) {
 	})
 }
 
+// TestGetUserClaims_Ok checks that GetUserClaims endpoint returns the expected response when everything goes as expected
 func TestGetUserClaims_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange

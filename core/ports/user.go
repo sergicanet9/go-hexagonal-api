@@ -22,6 +22,6 @@ type UserService interface {
 	GetByID(ctx context.Context, ID string) (models.UserResp, error)
 	Update(ctx context.Context, ID string, u models.UpdateUserReq) error
 	Delete(ctx context.Context, ID string) error
-	GetClaims(ctx context.Context) map[int]string
+	GetUserClaims(ctx context.Context) map[int]string
 	AtomicTransationProof(ctx context.Context) error
 }

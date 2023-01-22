@@ -26,7 +26,7 @@ func TestNewUserRepository_Ok(t *testing.T) {
 	})
 }
 
-// TestInsertMany_Ok checks that InsertMany does not return any error when all goes as expected
+// TestInsertMany_Ok checks that InsertMany does not return an error when everything goes as expected
 func TestInsertMany_Ok(t *testing.T) {
 	mt := mocks.NewMongoDB(t)
 	defer mt.Close()

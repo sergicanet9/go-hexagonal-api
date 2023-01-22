@@ -28,7 +28,7 @@ func TestNewUserRepository_Ok(t *testing.T) {
 	assert.NotEmpty(t, repo)
 }
 
-// TestCreate_Ok checks that Create does not return an error when a valid entity is received
+// TestCreate_Ok checks that Create returns the expected response when a valid entity is received
 func TestCreate_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
@@ -75,7 +75,7 @@ func TestCreate_InsertError(t *testing.T) {
 	assert.Equal(t, expectedError, err.Error())
 }
 
-// TestGet_Ok checks that Get does not return an error when a valid filter is received
+// TestGet_Ok checks that Get returns the expected response when a valid filter is received
 func TestGet_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
@@ -148,7 +148,7 @@ func TestGet_NoResourcesFound(t *testing.T) {
 	assert.Equal(t, wrappers.NewNonExistentErr(sql.ErrNoRows), err)
 }
 
-// TestGetByID_Ok checks that GetByID does not return an error when the received ID has a valid format
+// TestGetByID_Ok checks that GetByID returns the expected response when the received ID has a valid format
 func TestGetByID_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
@@ -345,7 +345,7 @@ func TestDelete_NotDeletedError(t *testing.T) {
 	assert.Equal(t, wrappers.NewNonExistentErr(sql.ErrNoRows), err)
 }
 
-// TestInsertMany_Ok checks that InsertMany does not return any error when all goes as expected
+// TestInsertMany_Ok checks that InsertMany does not return an error when everything goes as expected
 func TestInsertMany_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)

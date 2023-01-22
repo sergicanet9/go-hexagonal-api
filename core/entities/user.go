@@ -7,22 +7,22 @@ import (
 // EntityNameUser contains the name of the entity
 const EntityNameUser = "users"
 
-// Claim type
-type Claim int
+// UserClaim type
+type UserClaim int
 
 const (
 	admin = iota
 )
 
-func (claim Claim) String() string {
+func (claim UserClaim) String() string {
 	return [...]string{"admin"}[claim]
 }
 
-func (claim Claim) IsValid() bool {
+func (claim UserClaim) IsValid() bool {
 	return claim >= admin && claim <= admin
 }
 
-func GetClaims() map[int]string {
+func GetUserClaims() map[int]string {
 	claims := make(map[int]string)
 	for i, claim := range [...]string{"admin"} {
 		claims[i] = claim

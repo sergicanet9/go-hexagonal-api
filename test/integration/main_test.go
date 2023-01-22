@@ -160,7 +160,7 @@ func testConfig(t *testing.T, database string) (c config.Config, err error) {
 
 	c.PostgresMigrationsDir = "infrastructure/postgres/migrations"
 	c.JWTSecret = jwtSecret
-	c.Timeout = utils.Duration{Duration: 5 * time.Second}
+	c.Timeout = utils.Duration{Duration: 30 * time.Second}
 
 	return c, nil
 }

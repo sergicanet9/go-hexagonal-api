@@ -87,20 +87,17 @@ func createToken(userid string, jwtSecret string, claims []int64) (string, error
 		return "", err
 	}
 	for _, claim := range claims {
-		addClaims[entities.Claim(claim).String()] = true
+		addClaims[entities.UserClaim(claim).String()] = true
 	}
 
 	add := jwt.NewWithClaims(jwt.SigningMethodHS256, addClaims)
 	token, err := add.SignedString([]byte(jwtSecret))
-	if err != nil {
-		return "", err
-	}
-	return token, nil
+	return token, err
 }
 
 func validateClaims(claims []int64) error {
 	for _, claim := range claims {
-		if ok := entities.Claim(claim).IsValid(); !ok {
+		if ok := entities.UserClaim(claim).IsValid(); !ok {
 			return wrappers.NewValidationErr(fmt.Errorf("claim %d is not valid", claim))
 		}
 	}
@@ -250,8 +247,8 @@ func (s *userService) Delete(ctx context.Context, ID string) (err error) {
 }
 
 // GetClaims user
-func (s *userService) GetClaims(ctx context.Context) (claims map[int]string) {
-	claims = entities.GetClaims()
+func (s *userService) GetUserClaims(ctx context.Context) (claims map[int]string) {
+	claims = entities.GetUserClaims()
 	return
 }
 
@@ -291,6 +288,5 @@ func (s *userService) AtomicTransationProof(ctx context.Context) (err error) {
 	}
 
 	err = s.repository.InsertMany(ctx, users)
-
 	return
 }
