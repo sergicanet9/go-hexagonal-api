@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/integration/mtest"
 )
 
-// TestNewUserRepository_Ok checks that TestNewUserRepository creates a new userRepository struct
+// TestNewUserRepository_Ok checks that NewUserRepository creates a new userRepository struct
 func TestNewUserRepository_Ok(t *testing.T) {
 	mt := mocks.NewMongoDB(t)
 	defer mt.Close()

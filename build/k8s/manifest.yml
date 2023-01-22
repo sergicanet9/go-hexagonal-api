@@ -16,7 +16,7 @@ spec:
         app: go-hexagonal-api-__database__-__environment__
     spec:
       containers:
-        - image: scvregistry.azurecr.io/go-hexagonal-api:__version__
+        - image: __acr__/go-hexagonal-api:__version__
           imagePullPolicy: Always
           name: go-hexagonal-api-__database__-__environment__
           env:

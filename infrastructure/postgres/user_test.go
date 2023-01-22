@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestNewUserRepository_Ok checks that TestNewUserRepository creates a new userRepository struct
+// TestNewUserRepository_Ok checks that NewUserRepository creates a new userRepository struct
 func TestNewUserRepository_Ok(t *testing.T) {
 	// Arrange
 	_, db := mocks.NewSqlDB(t)

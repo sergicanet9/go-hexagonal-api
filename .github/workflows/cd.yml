@@ -30,6 +30,9 @@ jobs:
     needs: build-and-push
     uses: ./.github/workflows/deployment.yml
     with:
+      AZURECONTAINERREGISTRY_URL: scvregistry.azurecr.io
+      AZURE_RESOURCEGROUP: STUDENT-RG
+      AZURE_CLUSTERNAME: scv-aks
       ENVIRONMENT: dev
       PORT: 80
       DATABASE: mongo
@@ -43,6 +46,9 @@ jobs:
     needs: build-and-push
     uses: ./.github/workflows/deployment.yml
     with:
+      AZURECONTAINERREGISTRY_URL: scvregistry.azurecr.io
+      AZURE_RESOURCEGROUP: STUDENT-RG
+      AZURE_CLUSTERNAME: scv-aks
       ENVIRONMENT: dev
       PORT: 80
       DATABASE: postgres
