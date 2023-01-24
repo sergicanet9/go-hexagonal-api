@@ -1,19 +1,48 @@
 version: "3.9"
 services:
+###TODO CHECK permissions when git clone again
   mongo:
     image: mongo
-    restart: always   
     environment:
       - MONGO_INITDB_DATABASE=$MONGO_DB
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=imagiaRoot
     ports:
       - "$MONGO_HOST_PORT:$MONGO_CONTAINER_PORT"
+    volumes:
+      - ./.mongo.keyfile:/auth/file.key
+    # entrypoint:
+    #         - bash
+    #         - -c
+    #         - |
+    #             chmod 400 /auth/file.key
+    #             chown 999:999 /auth/file.key
+    #             exec docker-entrypoint.sh $$@     
+    command: ["--keyFile", "/auth/file.key", "--replSet", "rs0", "--bind_ip_all"]
+    healthcheck:
+    #    test: test $$(echo "rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
+      # test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u root -p imagiaRoot --quiet) -eq 1
+      # test: test $$(echo "rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}).ok || rs.status().ok" | mongosh -u root -p imagiaRoot --quiet) -eq 1
+      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongosh -u root -p imagiaRoot --quiet) -eq 1
+      # test: |
+      #   test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u root -p imagiaRoot --quiet) -eq 1
+      #   test $$(echo "rs.add("localhost:27017").ok | mongo -u root -p imagiaRoot --quiet) -eq 1
+      interval: 10s
+
+  # mongo:
+  #   image: mongo
+  #   restart: always
+  #   environment:
+  #     - MONGO_INITDB_DATABASE=$MONGO_DB
+  #   ports:
+  #     - "$MONGO_HOST_PORT:$MONGO_CONTAINER_PORT"
   postgres:
     image: postgres:alpine
     restart: always
     environment:
-      POSTGRES_DB: $POSTGRES_DB
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
     ports:
       - "$POSTGRES_HOST_PORT:$POSTGRES_CONTAINER_PORT"
   api-mongo:

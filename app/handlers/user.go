@@ -282,6 +282,6 @@ func atomicTransactionProof(ctx context.Context, cfg config.Config, s ports.User
 			utils.ResponseError(w, r, nil, err)
 			return
 		}
-		utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
+		utils.ResponseJSON(w, r, nil, http.StatusCreated, nil)
 	})
 }

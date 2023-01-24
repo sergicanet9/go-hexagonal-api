@@ -371,6 +371,38 @@ func TestGetUserClaims_Ok(t *testing.T) {
 	})
 }
 
+// TestAtomicTransactionProof_Ok checks that AtomicTransactionProof endpoint returns the expected response when everything goes as expected
+func TestAtomicTransactionProof_Ok(t *testing.T) {
+	Databases(t, func(t *testing.T, database string) {
+		// Arrange
+		cfg := New(t, database)
+
+		// Act
+		url := fmt.Sprintf("http://:%d/v1/users/atomic", cfg.Port)
+
+		req, err := http.NewRequest(http.MethodPost, url, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		req.Header.Set("Content-Type", contentType)
+		req.Header.Set("Authorization", nonExpiryToken)
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer resp.Body.Close()
+
+		// Assert
+		if want, got := http.StatusCreated, resp.StatusCode; want != got {
+			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
+		}
+		//TODO find users and assert
+	})
+}
+
 // HELP FUNCTIONS
 
 func getNewTestUser() entities.User {
