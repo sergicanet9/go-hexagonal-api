@@ -9,8 +9,15 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=imagiaRoot
     ports:
       - "$MONGO_HOST_PORT:$MONGO_CONTAINER_PORT"
-    volumes:
-      - ./.mongo.keyfile:/auth/file.key
+    entrypoint:
+      - bash
+      - -c
+      - |
+          mkdir /auth
+          echo "secret123" > /auth/file.key
+          chmod 400 /auth/file.key
+          chown 999:999 /auth/file.key
+          exec docker-entrypoint.sh $$@     
     command: ["--keyFile", "/auth/file.key", "--replSet", "rs0", "--bind_ip_all"]
     healthcheck:
       test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongosh -u root -p imagiaRoot --quiet) -eq 1
