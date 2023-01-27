@@ -35,13 +35,13 @@ make down
 ```
 
 ## Debug it with VS Code
-Debugging configurations provided in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for both MongoDB and PostgreSQL. Just select the desired one in the VS Code´s build-in debugger and run it.
+Debugging configurations provided in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for hitting both MongoDB and PostgreSQL containers. Just select the desired one in the VS Code´s build-in debugger and run it.
 <br />
 Then open `http://localhost:{port}/swagger/index.html`, where `{port}` is the value specified in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for the selected configuration.
 <br />
 <br />
 NOTES:
-- Docker is required and the target's database container needs to be running.
+- The target database container needs to be up and running.
 
 ## Run it with command line
 ```
@@ -57,8 +57,6 @@ Provide the desired values to `{version}`, `{environment}`, `{port}`, `{database
 Then open `http://localhost:{port}/swagger/index.html`.
 <br />
 <br />
-NOTES:
-- Docker is required and the target's database container needs to be running.
 
 ## Run unit tests with code coverage
 ```
