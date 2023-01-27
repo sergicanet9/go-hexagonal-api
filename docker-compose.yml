@@ -1,19 +1,18 @@
 version: "3.9"
 services:
-###TODO CHECK permissions when git clone again
   mongo:
     image: mongo
     environment:
       - MONGO_INITDB_DATABASE=$MONGO_DB
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=imagiaRoot
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
     ports:
       - "$MONGO_HOST_PORT:$MONGO_CONTAINER_PORT"
     volumes:
       - ./mongo.keyfile:/auth/file.key
     command: ["--keyFile", "/auth/file.key", "--replSet", "rs0", "--bind_ip_all"]
     healthcheck:
-      test: test $$(echo "rs.initiate().ok" | mongosh -u root -p imagiaRoot --quiet) -eq 1 || exit 0      
+      test: test $$(echo "rs.initiate().ok" | mongosh -u $MONGO_USER -p $MONGO_PASSWORD --quiet) -eq 1 || exit 0      
       interval: 5s
   postgres:
     image: postgres:alpine

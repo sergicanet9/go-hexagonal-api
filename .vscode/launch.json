@@ -16,7 +16,7 @@
                 "--env", "local",
                 "--port", "8080",
                 "--db", "mongo",
-                "--dsn", "mongodb://localhost:4041/gohexagonalapi"
+                "--dsn", "mongodb://mongo:admin@localhost:4041/gohexagonalapi?authSource=admin&connect=direct"
             ]
         },
         {

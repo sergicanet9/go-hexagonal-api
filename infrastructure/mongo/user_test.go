@@ -19,10 +19,11 @@ func TestNewUserRepository_Ok(t *testing.T) {
 
 	mt.Run("", func(mt *mtest.T) {
 		// Act
-		repo := NewUserRepository(mt.DB)
+		repo, err := NewUserRepository(context.Background(), mt.DB)
 
 		// Assert
 		assert.NotEmpty(t, repo)
+		assert.Nil(t, err)
 	})
 }
 

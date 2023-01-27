@@ -41,7 +41,10 @@ func New(ctx context.Context, cfg config.Config) (a api) {
 			log.Fatal(err)
 		}
 
-		userRepo = mongo.NewUserRepository(db)
+		userRepo, err = mongo.NewUserRepository(ctx, db)
+		if err != nil {
+			log.Fatal(err)
+		}
 	case "postgres":
 		db, err := infrastructure.ConnectPostgresDB(ctx, a.config.DSN)
 		if err != nil {
