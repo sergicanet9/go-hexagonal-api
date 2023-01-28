@@ -18,11 +18,15 @@ func TestNewUserRepository_Ok(t *testing.T) {
 	defer mt.Close()
 
 	mt.Run("", func(mt *mtest.T) {
+		// Arrange
+		mt.AddMockResponses(mtest.CreateSuccessResponse())
+
 		// Act
-		repo := NewUserRepository(mt.DB)
+		repo, err := NewUserRepository(context.Background(), mt.DB)
 
 		// Assert
 		assert.NotEmpty(t, repo)
+		assert.Nil(t, err)
 	})
 }
 

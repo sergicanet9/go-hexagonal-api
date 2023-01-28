@@ -9,8 +9,11 @@ __debug_bin
 # Test binary, built with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE (remove the comment below to include it)
+# Output of the go coverage tool
 *.out
+
+# Keyfiles
+*.keyfile
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

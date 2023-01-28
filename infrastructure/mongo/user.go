@@ -6,6 +6,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/core/entities"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readconcern"
@@ -18,14 +19,23 @@ type userRepository struct {
 }
 
 // NewUserRepository creates a user repository for mongo
-func NewUserRepository(db *mongo.Database) ports.UserRepository {
-	return &userRepository{
+func NewUserRepository(ctx context.Context, db *mongo.Database) (ports.UserRepository, error) {
+	r := &userRepository{
 		infrastructure.MongoRepository{
 			DB:         db,
 			Collection: db.Collection(entities.EntityNameUser),
 			Target:     entities.User{},
 		},
 	}
+
+	_, err := r.Collection.Indexes().CreateOne(
+		ctx,
+		mongo.IndexModel{
+			Keys:    bson.D{{Key: "email", Value: 1}},
+			Options: options.Index().SetUnique(true),
+		},
+	)
+	return r, err
 }
 
 func (r *userRepository) InsertMany(ctx context.Context, users []interface{}) error {
