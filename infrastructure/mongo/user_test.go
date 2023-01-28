@@ -30,8 +30,8 @@ func TestNewUserRepository_Ok(t *testing.T) {
 	})
 }
 
-// TestInsertMany_Ok checks that InsertMany does not return an error when everything goes as expected
-func TestInsertMany_Ok(t *testing.T) {
+// TestCreateMany_Ok checks that CreateMany does not return an error when everything goes as expected
+func TestCreateMany_Ok(t *testing.T) {
 	mt := mocks.NewMongoDB(t)
 	defer mt.Close()
 
@@ -48,17 +48,20 @@ func TestInsertMany_Ok(t *testing.T) {
 		mt.AddMockResponses(mtest.CreateSuccessResponse())
 		mt.AddMockResponses(mtest.CreateSuccessResponse())
 
-		newEntities := []interface{}{entities.User{}}
+		entityToAdd := entities.User{}
+		newEntities := []interface{}{entityToAdd}
 
 		// Act
-		err := repo.InsertMany(context.Background(), newEntities)
+		ids, err := repo.CreateMany(context.Background(), newEntities)
 
 		// Assert
+		assert.True(t, len(ids) == 1)
+		assert.IsType(t, entityToAdd.ID, ids[0])
 		assert.Nil(t, err)
 	})
 }
 
-// TestInsertMany_CreateError checks that InsertMany returns an error when Create fails
+// TestCreateMany_CreateError checks that CreateMany returns an error when Create fails
 func TestInsertMany_CreateError(t *testing.T) {
 	mt := mocks.NewMongoDB(t)
 	defer mt.Close()
@@ -78,7 +81,7 @@ func TestInsertMany_CreateError(t *testing.T) {
 		newEntities := []interface{}{entities.User{}}
 
 		// Act
-		err := repo.InsertMany(context.Background(), newEntities)
+		_, err := repo.CreateMany(context.Background(), newEntities)
 
 		// Assert
 		assert.NotEmpty(t, err)

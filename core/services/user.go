@@ -105,25 +105,25 @@ func validateClaims(claims []int64) error {
 }
 
 // Create user
-func (s *userService) Create(ctx context.Context, u models.CreateUserReq) (resp models.CreationResp, err error) {
-	if err := u.Validate(); err != nil {
-		return resp, err
+func (s *userService) Create(ctx context.Context, user models.CreateUserReq) (resp models.CreationResp, err error) {
+	if err = user.Validate(); err != nil {
+		return
 	}
 
-	err = hashPassword(&u.PasswordHash)
+	err = hashPassword(&user.PasswordHash)
 	if err != nil {
 		return
 	}
 
-	err = validateClaims(u.Claims)
+	err = validateClaims(user.Claims)
 	if err != nil {
 		return
 	}
 
 	now := time.Now().UTC()
-	u.CreatedAt = now
-	u.UpdatedAt = now
-	insertedID, err := s.repository.Create(ctx, entities.User(u))
+	user.CreatedAt = now
+	user.UpdatedAt = now
+	insertedID, err := s.repository.Create(ctx, entities.User(user))
 	if err != nil {
 		return
 	}
@@ -142,6 +142,43 @@ func hashPassword(password *string) error {
 	}
 	*password = string(bytes)
 	return nil
+}
+
+// CreateMany users
+func (s *userService) CreateMany(ctx context.Context, users []models.CreateUserReq) (resp models.MultiCreationResp, err error) {
+	var create []interface{}
+	now := time.Now().UTC()
+
+	for _, user := range users {
+		if err = user.Validate(); err != nil {
+			return
+		}
+
+		err = hashPassword(&user.PasswordHash)
+		if err != nil {
+			return
+		}
+
+		err = validateClaims(user.Claims)
+		if err != nil {
+			return
+		}
+
+		user.CreatedAt = now
+		user.UpdatedAt = now
+
+		create = append(create, entities.User(user))
+	}
+
+	insertedIDs, err := s.repository.CreateMany(ctx, create)
+	if err != nil {
+		return
+	}
+
+	resp = models.MultiCreationResp{
+		InsertedIDs: insertedIDs,
+	}
+	return
 }
 
 // GetAll users
@@ -194,45 +231,45 @@ func (s *userService) GetByID(ctx context.Context, ID string) (resp models.UserR
 }
 
 // Update user
-func (s *userService) Update(ctx context.Context, ID string, u models.UpdateUserReq) (err error) {
-	user, err := s.GetByID(ctx, ID)
+func (s *userService) Update(ctx context.Context, ID string, user models.UpdateUserReq) (err error) {
+	dbUser, err := s.GetByID(ctx, ID)
 	if err != nil {
 		return
 	}
 
-	if u.Name != nil {
-		user.Name = *u.Name
+	if user.Name != nil {
+		dbUser.Name = *user.Name
 	}
-	if u.Surnames != nil {
-		user.Surnames = *u.Surnames
+	if user.Surnames != nil {
+		dbUser.Surnames = *user.Surnames
 	}
-	if u.Email != nil {
-		user.Email = *u.Email
+	if user.Email != nil {
+		dbUser.Email = *user.Email
 	}
-	if u.NewPassword != nil {
-		err = validatePassword(*u.OldPassword, user.PasswordHash)
+	if user.NewPassword != nil {
+		err = validatePassword(*user.OldPassword, dbUser.PasswordHash)
 		if err != nil {
 			return
 		}
 
-		err = hashPassword(u.NewPassword)
+		err = hashPassword(user.NewPassword)
 		if err != nil {
 			return
 		}
 
-		user.PasswordHash = *u.NewPassword
+		dbUser.PasswordHash = *user.NewPassword
 	}
-	if u.Claims != nil {
-		err = validateClaims(*u.Claims)
+	if user.Claims != nil {
+		err = validateClaims(*user.Claims)
 		if err != nil {
 			return err
 		}
-		user.Claims = *u.Claims
+		dbUser.Claims = *user.Claims
 	}
-	user.ID = ""
-	user.UpdatedAt = time.Now().UTC()
+	dbUser.ID = ""
+	dbUser.UpdatedAt = time.Now().UTC()
 
-	err = s.repository.Update(ctx, ID, entities.User(user))
+	err = s.repository.Update(ctx, ID, entities.User(dbUser))
 	return err
 }
 
@@ -249,44 +286,5 @@ func (s *userService) Delete(ctx context.Context, ID string) (err error) {
 // GetClaims user
 func (s *userService) GetUserClaims(ctx context.Context) (claims map[int]string) {
 	claims = entities.GetUserClaims()
-	return
-}
-
-// AtomicTransationProof creates two users atomically
-func (s *userService) AtomicTransationProof(ctx context.Context) (err error) {
-	user1Hash := "Entity1"
-	err = hashPassword(&user1Hash)
-	if err != nil {
-		return
-	}
-	user2Hash := "Entity2"
-	err = hashPassword(&user2Hash)
-	if err != nil {
-		return
-	}
-	now := time.Now().UTC()
-
-	var users = []interface{}{
-		entities.User{
-			Name:         "Entity1",
-			Surnames:     "Entity1",
-			Email:        "Entity1",
-			PasswordHash: user1Hash,
-			Claims:       nil,
-			CreatedAt:    now,
-			UpdatedAt:    now,
-		},
-		entities.User{
-			Name:         "Entity2",
-			Surnames:     "Entity2",
-			Email:        "Entity2",
-			PasswordHash: user2Hash,
-			Claims:       nil,
-			CreatedAt:    now,
-			UpdatedAt:    now,
-		},
-	}
-
-	err = s.repository.InsertMany(ctx, users)
 	return
 }

@@ -345,8 +345,8 @@ func TestDelete_NotDeletedError(t *testing.T) {
 	assert.Equal(t, wrappers.NewNonExistentErr(sql.ErrNoRows), err)
 }
 
-// TestInsertMany_Ok checks that InsertMany does not return an error when everything goes as expected
-func TestInsertMany_Ok(t *testing.T) {
+// TestCreateMany_Ok checks that CreateMany does not return an error when everything goes as expected
+func TestCreateMany_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
 	defer db.Close()
@@ -358,19 +358,22 @@ func TestInsertMany_Ok(t *testing.T) {
 	}
 
 	newUsers := []interface{}{entities.User{}}
+	expectedID := "f8352727-231e-4de1-8257-c235a0af5c4a"
 	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO users").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery("INSERT INTO users").WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedID))
 	mock.ExpectCommit()
 
 	// Act
-	err := repo.InsertMany(context.Background(), newUsers)
+	ids, err := repo.CreateMany(context.Background(), newUsers)
 
 	// Assert
+	assert.True(t, len(ids) == 1)
+	assert.Equal(t, expectedID, ids[0])
 	assert.Nil(t, err)
 }
 
-// TestInsertMany_InsertError checks that InsertMany returns an error when the insert statement fails
-func TestInsertMany_InsertError(t *testing.T) {
+// TestCreateMany_InsertError checks that CreateMany returns an error when the insert statement fails
+func TestCreateMany_InsertError(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
 	defer db.Close()
@@ -384,17 +387,17 @@ func TestInsertMany_InsertError(t *testing.T) {
 	newUsers := []interface{}{entities.User{}}
 	expectedError := "insert error"
 	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO users").WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectQuery("INSERT INTO users").WillReturnError(fmt.Errorf(expectedError))
 
 	// Act
-	err := repo.InsertMany(context.Background(), newUsers)
+	_, err := repo.CreateMany(context.Background(), newUsers)
 
 	// Assert
 	assert.Equal(t, expectedError, err.Error())
 }
 
-// TestInsertMany_BeginError checks that InsertMany returns an error when the begin statement fails
-func TestInsertMany_BeginError(t *testing.T) {
+// TestCreateMany_BeginError checks that CreateMany returns an error when the begin statement fails
+func TestCreateMany_BeginError(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
 	defer db.Close()
@@ -410,14 +413,14 @@ func TestInsertMany_BeginError(t *testing.T) {
 	mock.ExpectBegin().WillReturnError(fmt.Errorf(expectedError))
 
 	// Act
-	err := repo.InsertMany(context.Background(), newUsers)
+	_, err := repo.CreateMany(context.Background(), newUsers)
 
 	// Assert
 	assert.Equal(t, expectedError, err.Error())
 }
 
-// TestInsertMany_CommitError checks that InsertMany returns an error when the commit statement fails
-func TestInsertMany_CommitError(t *testing.T) {
+// TestCreateMany_CommitError checks that CreateMany returns an error when the commit statement fails
+func TestCreateMany_CommitError(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
 	defer db.Close()
@@ -429,13 +432,14 @@ func TestInsertMany_CommitError(t *testing.T) {
 	}
 
 	newUsers := []interface{}{entities.User{}}
+	expectedID := "f8352727-231e-4de1-8257-c235a0af5c4a"
 	expectedError := "commit error"
 	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO users").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectQuery("INSERT INTO users").WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedID))
 	mock.ExpectCommit().WillReturnError(fmt.Errorf(expectedError))
 
 	// Act
-	err := repo.InsertMany(context.Background(), newUsers)
+	_, err := repo.CreateMany(context.Background(), newUsers)
 
 	// Assert
 	assert.Equal(t, expectedError, err.Error())

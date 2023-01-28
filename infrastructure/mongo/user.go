@@ -38,27 +38,29 @@ func NewUserRepository(ctx context.Context, db *mongo.Database) (ports.UserRepos
 	return r, err
 }
 
-func (r *userRepository) InsertMany(ctx context.Context, users []interface{}) error {
+func (r *userRepository) CreateMany(ctx context.Context, users []interface{}) ([]string, error) {
 	wc := writeconcern.New(writeconcern.WMajority())
 	rc := readconcern.Snapshot()
 	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
 
 	session, err := r.DB.Client().StartSession()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer session.EndSession(ctx)
 
+	var result []string
 	callback := func(sessionContext mongo.SessionContext) (interface{}, error) {
 		for _, entity := range users {
-			_, err = r.Create(sessionContext, entity)
+			id, err := r.Create(sessionContext, entity)
 			if err != nil {
 				return nil, err
 			}
+			result = append(result, id)
 		}
 		return nil, nil
 	}
 
 	_, err = session.WithTransaction(context.Background(), callback, txnOpts)
-	return err
+	return result, err
 }

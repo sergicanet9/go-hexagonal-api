@@ -19,13 +19,13 @@ import (
 func SetUserRoutes(ctx context.Context, cfg config.Config, r *mux.Router, s ports.UserService) {
 	r.Handle("/v1/users/login", loginUser(ctx, cfg, s)).Methods(http.MethodPost)
 	r.Handle("/v1/users", createUser(ctx, cfg, s)).Methods(http.MethodPost)
+	r.Handle("/v1/users/many", createManyUsers(ctx, cfg, s)).Methods(http.MethodPost)
 	r.Handle("/v1/users", middlewares.JWT(getAllUsers(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
 	r.Handle("/v1/users/email/{email}", middlewares.JWT(getUserByEmail(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
 	r.Handle("/v1/users/{id}", middlewares.JWT(getUserByID(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
 	r.Handle("/v1/users/{id}", middlewares.JWT(updateUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPatch)
 	r.Handle("/v1/users/{id}", middlewares.JWT(deleteUser(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{"admin": true})).Methods(http.MethodDelete)
 	r.Handle("/v1/claims", middlewares.JWT(getUserClaims(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodGet)
-	r.Handle("/v1/users/atomic", middlewares.JWT(atomicTransactionProof(ctx, cfg, s), cfg.JWTSecret, jwt.MapClaims{})).Methods(http.MethodPost)
 }
 
 // @Summary Login user
@@ -92,6 +92,42 @@ func createUser(ctx context.Context, cfg config.Config, s ports.UserService) htt
 		}
 
 		result, err := s.Create(ctx, user)
+		if err != nil {
+			utils.ResponseError(w, r, body, err)
+			return
+		}
+		utils.ResponseJSON(w, r, body, http.StatusCreated, result)
+	})
+}
+
+// @Summary Create many users
+// @Description Creates many users atomically
+// @Tags Users
+// @Param users body []models.CreateUserReq true "New users to be created"
+// @Success 201 {object} models.MultiCreationResp "OK"
+// @Failure 400 {object} object
+// @Failure 408 {object} object
+// @Failure 500 {object} object
+// @Router /v1/users/many [post]
+func createManyUsers(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
+	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
+		defer cancel()
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			utils.ResponseError(w, r, body, err)
+			return
+		}
+
+		var users []models.CreateUserReq
+		err = json.Unmarshal(body, &users)
+		if err != nil {
+			utils.ResponseError(w, r, body, err)
+			return
+		}
+
+		result, err := s.CreateMany(ctx, users)
 		if err != nil {
 			utils.ResponseError(w, r, body, err)
 			return
@@ -259,29 +295,5 @@ func getUserClaims(ctx context.Context, cfg config.Config, s ports.UserService) 
 
 		claims := s.GetUserClaims(ctx)
 		utils.ResponseJSON(w, r, nil, http.StatusOK, claims)
-	})
-}
-
-// @Summary Atomic transaction proof
-// @Description Creates two users atomically
-// @Tags Users
-// @Security Bearer
-// @Success 200 "OK"
-// @Failure 400 {object} object
-// @Failure 401 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users/atomic [post]
-func atomicTransactionProof(ctx context.Context, cfg config.Config, s ports.UserService) http.Handler {
-	return middlewares.Recover(func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(ctx, cfg.Timeout.Duration)
-		defer cancel()
-
-		err := s.AtomicTransationProof(ctx)
-		if err != nil {
-			utils.ResponseError(w, r, nil, err)
-			return
-		}
-		utils.ResponseJSON(w, r, nil, http.StatusCreated, nil)
 	})
 }

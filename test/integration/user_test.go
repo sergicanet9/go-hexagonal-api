@@ -121,6 +121,61 @@ func TestCreateUser_Ok(t *testing.T) {
 	})
 }
 
+// TestCreateManyUsers_Ok checks that CreateManyUsers endpoint returns the expected response when everything goes as expected
+func TestCreateManyUsers_Ok(t *testing.T) {
+	Databases(t, func(t *testing.T, database string) {
+		// Arrange
+		cfg := New(t, database)
+		users := []entities.User{getNewTestUser(), getNewTestUser()}
+
+		// Act
+		body := []models.CreateUserReq{
+			models.CreateUserReq(users[0]),
+			models.CreateUserReq(users[1]),
+		}
+		b, err := json.Marshal(body)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		url := fmt.Sprintf("http://:%d/v1/users/many", cfg.Port)
+
+		req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(b))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		req.Header.Set("Content-Type", contentType)
+		req.Header.Set("Authorization", nonExpiryToken)
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer resp.Body.Close()
+
+		// Assert
+		if want, got := http.StatusCreated, resp.StatusCode; want != got {
+			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
+		}
+		var response models.MultiCreationResp
+		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
+		}
+		assert.Equal(t, 2, len(response.InsertedIDs))
+		for i, id := range response.InsertedIDs {
+			createdUser1, err := findUser(id, cfg)
+			if err != nil {
+				t.Fatalf("unexpected error while finding the created user: %s", err)
+			}
+			assert.Equal(t, users[i].Name, createdUser1.Name)
+			assert.Equal(t, users[i].Surnames, createdUser1.Surnames)
+			assert.Equal(t, users[i].Email, createdUser1.Email)
+		}
+	})
+}
+
 // TestGetAllUsers_Ok checks that GetAllUsers endpoint returns the expected response when everything goes as expected
 func TestGetAllUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
@@ -368,38 +423,6 @@ func TestGetUserClaims_Ok(t *testing.T) {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
 		assert.NotEmpty(t, response)
-	})
-}
-
-// TestAtomicTransactionProof_Ok checks that AtomicTransactionProof endpoint returns the expected response when everything goes as expected
-func TestAtomicTransactionProof_Ok(t *testing.T) {
-	Databases(t, func(t *testing.T, database string) {
-		// Arrange
-		cfg := New(t, database)
-
-		// Act
-		url := fmt.Sprintf("http://:%d/v1/users/atomic", cfg.Port)
-
-		req, err := http.NewRequest(http.MethodPost, url, nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		req.Header.Set("Content-Type", contentType)
-		req.Header.Set("Authorization", nonExpiryToken)
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		defer resp.Body.Close()
-
-		// Assert
-		if want, got := http.StatusCreated, resp.StatusCode; want != got {
-			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
-		}
-		//TODO find users and assert
 	})
 }
 

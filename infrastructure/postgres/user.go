@@ -29,7 +29,7 @@ func NewUserRepository(db *sql.DB) ports.UserRepository {
 
 func (r *userRepository) Create(ctx context.Context, user interface{}) (string, error) {
 	q := `
-    INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
+	INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id;
     `
@@ -155,29 +155,39 @@ func (r *userRepository) Delete(ctx context.Context, ID string) error {
 	return nil
 }
 
-func (r *userRepository) InsertMany(ctx context.Context, users []interface{}) error {
+func (r *userRepository) CreateMany(ctx context.Context, users []interface{}) ([]string, error) {
+	// `tx` is an instance of `*sql.Tx` through which we can execute our queries
 	tx, err := r.DB.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	// `tx` is an instance of `*sql.Tx` through which we can execute our queries
 
+	var result []string
 	for _, entity := range users {
 		u := entity.(entities.User)
 
+		q := `
+		INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
+			VALUES ($1, $2, $3, $4, $5, $6, $7)
+			RETURNING id;`
+
 		// Here, the query is executed on the transaction instance, and not applied to the database yet
-		_, err = tx.ExecContext(ctx, "INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)", u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt)
+		row := tx.QueryRowContext(
+			ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt,
+		)
+		err := row.Scan(&u.ID)
 		if err != nil {
 			// Incase we find any error in the query execution, rollback the transaction
 			tx.Rollback()
-			return err
+			return nil, err
 		}
+		result = append(result, u.ID)
 	}
 
 	// Finally, if no errors are recieved from the queries, commit the transaction
 	// this applies the above changes to our database
 	if err := tx.Commit(); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return result, nil
 }

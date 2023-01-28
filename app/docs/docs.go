@@ -189,49 +189,6 @@ var doc = `{
                 }
             }
         },
-        "/v1/users/atomic": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Creates two users atomically",
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Atomic transaction proof",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "408": {
-                        "description": "Request Timeout",
-                        "schema": {
-                            "type": "object"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                }
-            }
-        },
         "/v1/users/email/{email}": {
             "get": {
                 "security": [
@@ -310,6 +267,55 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.LoginUserResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "408": {
+                        "description": "Request Timeout",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/users/many": {
+            "post": {
+                "description": "Creates many users atomically",
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create many users",
+                "parameters": [
+                    {
+                        "description": "New users to be created",
+                        "name": "users",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CreateUserReq"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MultiCreationResp"
                         }
                     },
                     "400": {
@@ -549,6 +555,17 @@ var doc = `{
                 },
                 "user": {
                     "$ref": "#/definitions/models.UserResp"
+                }
+            }
+        },
+        "models.MultiCreationResp": {
+            "type": "object",
+            "properties": {
+                "inserted_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

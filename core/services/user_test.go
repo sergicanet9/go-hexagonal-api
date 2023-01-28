@@ -292,6 +292,117 @@ func TestCreate_InvalidClaims(t *testing.T) {
 	assert.Equal(t, expectedError, err.Error())
 }
 
+// TestCreateMany_Ok checks that CreateMany does not return an error when a valid request is received
+func TestCreateMany_Ok(t *testing.T) {
+	// Arrange
+	req := []models.CreateUserReq{
+		{
+			Email:        "test@test.com",
+			PasswordHash: "test",
+		},
+	}
+
+	expectedResponse := models.MultiCreationResp{
+		InsertedIDs: []string{"new-id"},
+	}
+
+	userRepositoryMock := mocks.NewUserRepository(t)
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return(expectedResponse.InsertedIDs, nil).Once()
+
+	service := &userService{
+		config:     config.Config{},
+		repository: userRepositoryMock,
+	}
+
+	// Act
+	resp, err := service.CreateMany(context.Background(), req)
+
+	// Assert
+	assert.Nil(t, err)
+	assert.Equal(t, expectedResponse, resp)
+}
+
+// TestCreateMany_CreateManyError checks that CreateMany returns an error when the CreateMany function from the repository fails
+func TestCreateMany_CreateManyError(t *testing.T) {
+	// Arrange
+	req := []models.CreateUserReq{
+		{
+			Email:        "test@test.com",
+			PasswordHash: "test",
+		},
+	}
+
+	expectedError := "repository-error"
+
+	userRepositoryMock := mocks.NewUserRepository(t)
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return([]string{}, fmt.Errorf(expectedError)).Once()
+
+	service := &userService{
+		config:     config.Config{},
+		repository: userRepositoryMock,
+	}
+
+	// Act
+	_, err := service.CreateMany(context.Background(), req)
+
+	// Assert
+	assert.NotEmpty(t, err)
+	assert.Equal(t, expectedError, err.Error())
+}
+
+// TestCreateMany_InvalidRequest checks that CreateMany returns an error when one of the users in the received request is not valid
+func TestCreateMany_InvalidRequest(t *testing.T) {
+	// Arrange
+	req := []models.CreateUserReq{
+		{
+			Email:        "",
+			PasswordHash: "",
+		},
+	}
+
+	expectedError := "email cannot be empty | password cannot be empty"
+
+	service := &userService{
+		config:     config.Config{},
+		repository: nil,
+	}
+
+	// Act
+	_, err := service.CreateMany(context.Background(), req)
+
+	// Assert
+	assert.NotEmpty(t, err)
+	assert.IsType(t, wrappers.ValidationErr, err)
+	assert.Equal(t, expectedError, err.Error())
+}
+
+// TestCreateMany_InvalidClaims checks that CreateMany returns an error when the received claims of one of the users in the request are not valid
+func TestCreateMany_InvalidClaims(t *testing.T) {
+	// Arrange
+	req := []models.CreateUserReq{
+		{
+			Email:        "test@test.com",
+			PasswordHash: "test",
+			Claims:       []int64{3},
+		},
+	}
+
+	expectedError := "claim 3 is not valid"
+
+	service := &userService{
+		config:     config.Config{},
+		repository: nil,
+	}
+
+	// Act
+	_, err := service.CreateMany(context.Background(), req)
+
+	// Assert
+	assert.NotEmpty(t, err)
+	assert.IsType(t, wrappers.ValidationErr, err)
+	assert.Equal(t, expectedError, err.Error())
+}
+
 // TestGetAll_Ok checks that GetAll returns the expected response when everything goes as expected
 func TestGetAll_Ok(t *testing.T) {
 	// Arrange
@@ -571,22 +682,4 @@ func TestGetUserClaims_Ok(t *testing.T) {
 
 	// Assert
 	assert.Equal(t, expectedClaims, resp)
-}
-
-// TestAtomicTransationProof_Ok checks that AtomicTransactionProof does not return an error when everything goes as expected
-func TestAtomicTransationProof_Ok(t *testing.T) {
-	// Arrange
-	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.InsertMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return(nil).Once()
-
-	service := &userService{
-		config:     config.Config{},
-		repository: userRepositoryMock,
-	}
-
-	// Act
-	err := service.AtomicTransationProof(context.Background())
-
-	// Assert
-	assert.Nil(t, err)
 }

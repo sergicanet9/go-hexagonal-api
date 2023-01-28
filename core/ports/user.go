@@ -10,18 +10,18 @@ import (
 // UserRepositoy interface
 type UserRepository interface {
 	repository.Repository
-	InsertMany(ctx context.Context, entities []interface{}) error
+	CreateMany(ctx context.Context, entities []interface{}) ([]string, error)
 }
 
 // UserService interface
 type UserService interface {
 	Login(ctx context.Context, credentials models.LoginUserReq) (models.LoginUserResp, error)
-	Create(ctx context.Context, u models.CreateUserReq) (models.CreationResp, error)
+	Create(ctx context.Context, user models.CreateUserReq) (models.CreationResp, error)
+	CreateMany(ctx context.Context, users []models.CreateUserReq) (models.MultiCreationResp, error)
 	GetAll(ctx context.Context) ([]models.UserResp, error)
 	GetByEmail(ctx context.Context, email string) (models.UserResp, error)
 	GetByID(ctx context.Context, ID string) (models.UserResp, error)
-	Update(ctx context.Context, ID string, u models.UpdateUserReq) error
+	Update(ctx context.Context, ID string, user models.UpdateUserReq) error
 	Delete(ctx context.Context, ID string) error
 	GetUserClaims(ctx context.Context) map[int]string
-	AtomicTransationProof(ctx context.Context) error
 }

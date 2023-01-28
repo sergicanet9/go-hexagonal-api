@@ -33,6 +33,13 @@ definitions:
       user:
         $ref: '#/definitions/models.UserResp'
     type: object
+  models.MultiCreationResp:
+    properties:
+      inserted_ids:
+        items:
+          type: string
+        type: array
+    type: object
   models.UpdateUserReq:
     properties:
       claims:
@@ -285,33 +292,6 @@ paths:
       summary: Update user
       tags:
       - Users
-  /v1/users/atomic:
-    post:
-      description: Creates two users atomically
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-          schema:
-            type: object
-        "401":
-          description: Unauthorized
-          schema:
-            type: object
-        "408":
-          description: Request Timeout
-          schema:
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            type: object
-      security:
-      - Bearer: []
-      summary: Atomic transaction proof
-      tags:
-      - Users
   /v1/users/email/{email}:
     get:
       description: Gets a user by email
@@ -375,6 +355,38 @@ paths:
           schema:
             type: object
       summary: Login user
+      tags:
+      - Users
+  /v1/users/many:
+    post:
+      description: Creates many users atomically
+      parameters:
+      - description: New users to be created
+        in: body
+        name: users
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.CreateUserReq'
+          type: array
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MultiCreationResp'
+        "400":
+          description: Bad Request
+          schema:
+            type: object
+        "408":
+          description: Request Timeout
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: object
+      summary: Create many users
       tags:
       - Users
 securityDefinitions:
