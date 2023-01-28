@@ -41,7 +41,7 @@ Then open `http://localhost:{port}/swagger/index.html`, where `{port}` is the va
 <br />
 <br />
 NOTES:
-- The target database container needs to be up and running.
+- The target database container needs to be up and running (run `make up`).
 
 ## Run it with command line
 ```
