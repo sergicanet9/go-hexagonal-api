@@ -51,12 +51,12 @@ func TestMain(m *testing.M) {
 
 	// When it´s done, kill and remove the containers
 	if err = pool.Purge(mongoResource); err != nil {
-		log.Fatalf("could not purge resource: %s", err)
+		log.Panicf("could not purge resource: %s", err)
 	}
 	os.Unsetenv(mongoDSNEnv)
 
 	if err = pool.Purge(postgresResource); err != nil {
-		log.Fatalf("could not purge resource: %s", err)
+		log.Panicf("could not purge resource: %s", err)
 	}
 	os.Unsetenv(postgresDSNEnv)
 
@@ -68,15 +68,21 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	_, filePath, _, _ := runtime.Caller(0)
 	fileKey, err := os.CreateTemp(path.Dir(filePath), "")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	defer os.Remove(fileKey.Name())
 
 	bytes := []byte(`secret123`)
 	err = os.WriteFile(fileKey.Name(), bytes, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
+
+	err = os.Chmod(fileKey.Name(), 0400)
+	if err != nil {
+		log.Panic(err)
+	}
+
 	// pulls an image, creates a container based on it and runs it
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "mongo",
