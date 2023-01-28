@@ -18,6 +18,9 @@ func TestNewUserRepository_Ok(t *testing.T) {
 	defer mt.Close()
 
 	mt.Run("", func(mt *mtest.T) {
+		// Arrange
+		mt.AddMockResponses(mtest.CreateSuccessResponse())
+
 		// Act
 		repo, err := NewUserRepository(context.Background(), mt.DB)
 

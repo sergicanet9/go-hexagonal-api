@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	"runtime"
 	"testing"
 	"time"
 
@@ -13,17 +15,20 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
+	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/sergicanet9/scv-go-tools/v3/testutils"
 )
 
 const (
 	contentType           = "application/json"
-	mongoContainerPort    = "27017/tcp"
 	mongoDBName           = "test-db"
+	mongoUser             = "mongo"
+	mongoPassword         = "test"
+	mongoContainerPort    = "27017/tcp"
 	mongoDSNEnv           = "mongoDSN"
+	postgresDBName        = "test-db"
 	postgresUser          = "postgres"
 	postgresPassword      = "test"
-	postgresDBName        = "test-db"
 	postgresContainerPort = "5432/tcp"
 	postgresDSNEnv        = "postgresDSN"
 	jwtSecret             = "eaeBbXUxks"
@@ -59,13 +64,30 @@ func TestMain(m *testing.M) {
 }
 
 func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
-	// Pulls an image, creates a container based on it and runs it
+	// creates filekey
+	_, filePath, _, _ := runtime.Caller(0)
+	fileKey, err := os.CreateTemp(path.Dir(filePath), "")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer os.Remove(fileKey.Name())
+
+	bytes := []byte(`secret123`)
+	err = os.WriteFile(fileKey.Name(), bytes, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// pulls an image, creates a container based on it and runs it
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "mongo",
 		Tag:        "5.0",
 		Env: []string{
-			"listen_addresses = '*'",
+			fmt.Sprintf("MONGO_INITDB_DATABASE=%s", mongoDBName),
+			fmt.Sprintf("MONGO_INITDB_ROOT_USERNAME=%s", mongoUser),
+			fmt.Sprintf("MONGO_INITDB_ROOT_PASSWORD=%s", mongoPassword),
 		},
+		Mounts: []string{fmt.Sprintf("%s:/auth/file.key", fileKey.Name())},
+		Cmd:    []string{"--keyFile", "/auth/file.key", "--replSet", "rs0", "--bind_ip_all"},
 	}, func(config *docker.HostConfig) {
 		// set AutoRemove to true so that stopped container goes away by itself
 		config.AutoRemove = true
@@ -76,14 +98,31 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	if err != nil {
 		log.Fatalf("could not start resource: %s", err)
 	}
-	dsn := fmt.Sprintf("mongodb://localhost:%s/%s", resource.GetPort(mongoContainerPort), mongoDBName)
+
+	dsn := fmt.Sprintf("mongodb://%s:%s@localhost:%s/%s?authSource=admin&connect=direct", mongoUser, mongoPassword, resource.GetPort(mongoContainerPort), mongoDBName)
 	os.Setenv(mongoDSNEnv, dsn)
+
+	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
+	pool.MaxWait = 10 * time.Second
+	err = pool.Retry(func() error {
+		_, err = infrastructure.ConnectMongoDB(context.Background(), dsn)
+		return err
+	})
+	if err != nil {
+		log.Fatalf("Could not connect to docker: %s", err)
+	}
+
+	exitCode, err := resource.Exec([]string{"/bin/sh", "-c", fmt.Sprintf("echo 'rs.initiate().ok' | mongosh -u %s -p %s --quiet", mongoUser, mongoPassword)}, dockertest.ExecOptions{})
+	print(exitCode)
+	if err != nil {
+		log.Fatalf("failure executing command in the resource: %s", err)
+	}
 
 	return resource
 }
 
 func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
-	// Pulls an image, creates a container based on it and runs it
+	// pulls an image, creates a container based on it and runs it
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "postgres",
 		Tag:        "12.6",
@@ -91,7 +130,6 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 			fmt.Sprintf("POSTGRES_USER=%s", postgresUser),
 			fmt.Sprintf("POSTGRES_PASSWORD=%s", postgresPassword),
 			fmt.Sprintf("POSTGRES_DB=%s", postgresDBName),
-			"listen_addresses = '*'",
 		},
 	}, func(config *docker.HostConfig) {
 		// set AutoRemove to true so that stopped container goes away by itself
@@ -105,6 +143,16 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	}
 	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", postgresUser, postgresPassword, resource.GetPort(postgresContainerPort), postgresDBName)
 	os.Setenv(postgresDSNEnv, dsn)
+
+	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
+	pool.MaxWait = 10 * time.Second
+	err = pool.Retry(func() error {
+		_, err = infrastructure.ConnectPostgresDB(context.Background(), dsn)
+		return err
+	})
+	if err != nil {
+		log.Fatalf("Could not connect to docker: %s", err)
+	}
 
 	return resource
 }
