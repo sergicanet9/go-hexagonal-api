@@ -146,7 +146,6 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 		}
 
 		req.Header.Set("Content-Type", contentType)
-		req.Header.Set("Authorization", nonExpiryToken)
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
