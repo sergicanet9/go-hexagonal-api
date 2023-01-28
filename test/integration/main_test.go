@@ -40,7 +40,7 @@ func TestMain(m *testing.M) {
 	// Uses a sensible default on windows (tcp/http) and linux/osx (socket)
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		log.Fatalf("could not connect to docker: %s", err)
+		log.Panicf("could not connect to docker: %s", err)
 	}
 
 	mongoResource := setupMongo(pool)
@@ -96,7 +96,7 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 		}
 	})
 	if err != nil {
-		log.Fatalf("could not start resource: %s", err)
+		log.Panicf("could not start resource: %s", err)
 	}
 
 	dsn := fmt.Sprintf("mongodb://%s:%s@localhost:%s/%s?authSource=admin&connect=direct", mongoUser, mongoPassword, resource.GetPort(mongoContainerPort), mongoDBName)
@@ -109,13 +109,13 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 		return err
 	})
 	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+		log.Panicf("Could not connect to docker: %s", err)
 	}
 
 	exitCode, err := resource.Exec([]string{"/bin/sh", "-c", fmt.Sprintf("echo 'rs.initiate().ok' | mongosh -u %s -p %s --quiet", mongoUser, mongoPassword)}, dockertest.ExecOptions{})
 	print(exitCode)
 	if err != nil {
-		log.Fatalf("failure executing command in the resource: %s", err)
+		log.Panicf("failure executing command in the resource: %s", err)
 	}
 
 	return resource
@@ -139,7 +139,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 		}
 	})
 	if err != nil {
-		log.Fatalf("could not start resource: %s", err)
+		log.Panicf("could not start resource: %s", err)
 	}
 	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", postgresUser, postgresPassword, resource.GetPort(postgresContainerPort), postgresDBName)
 	os.Setenv(postgresDSNEnv, dsn)
@@ -151,7 +151,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 		return err
 	})
 	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+		log.Panicf("Could not connect to docker: %s", err)
 	}
 
 	return resource
