@@ -78,11 +78,6 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 		log.Panic(err)
 	}
 
-	err = os.Chmod(fileKey.Name(), 0400)
-	if err != nil {
-		log.Panic(err)
-	}
-
 	// pulls an image, creates a container based on it and runs it
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "mongo",
@@ -105,6 +100,14 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 		log.Panicf("could not start resource: %s", err)
 	}
 
+	exitCode, err := resource.Exec([]string{"/bin/sh", "-c", "chown mongodb:mongodb /auth/file.key"}, dockertest.ExecOptions{})
+	if err != nil {
+		log.Panicf("failure executing command in the resource: %s", err)
+	}
+	if exitCode != 0 {
+		log.Panicf("failure executing command in the resource, exit code was %d", exitCode)
+	}
+
 	dsn := fmt.Sprintf("mongodb://%s:%s@localhost:%s/%s?authSource=admin&connect=direct", mongoUser, mongoPassword, resource.GetPort(mongoContainerPort), mongoDBName)
 	os.Setenv(mongoDSNEnv, dsn)
 
@@ -118,10 +121,12 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 		log.Panicf("Could not connect to docker: %s", err)
 	}
 
-	exitCode, err := resource.Exec([]string{"/bin/sh", "-c", fmt.Sprintf("echo 'rs.initiate().ok' | mongosh -u %s -p %s --quiet", mongoUser, mongoPassword)}, dockertest.ExecOptions{})
-	print(exitCode)
+	exitCode, err = resource.Exec([]string{"/bin/sh", "-c", fmt.Sprintf("echo 'rs.initiate().ok' | mongosh -u %s -p %s --quiet", mongoUser, mongoPassword)}, dockertest.ExecOptions{})
 	if err != nil {
 		log.Panicf("failure executing command in the resource: %s", err)
+	}
+	if exitCode != 0 {
+		log.Panicf("failure executing command in the resource, exit code was %d", exitCode)
 	}
 
 	return resource
@@ -147,6 +152,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 	if err != nil {
 		log.Panicf("could not start resource: %s", err)
 	}
+
 	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", postgresUser, postgresPassword, resource.GetPort(postgresContainerPort), postgresDBName)
 	os.Setenv(postgresDSNEnv, dsn)
 
