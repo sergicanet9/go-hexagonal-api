@@ -14,6 +14,7 @@ Provides:
 - CRUD functionalities for user management
 - JWT authentication and claim-based authorization
 - Swagger UI documentation
+- pgAdmin and mongo-express UIs for database management
 - Unit tests with code coverage
 - Integration tests for happy path
 - Multi-environment JSON config files
@@ -25,7 +26,7 @@ Provides:
 ```
 make up
 ```
-It starts 4 containers. Two of them are databases (MongoDB and PostgreSQL) and the other two are instances of the API, each of them already set up to work with one of the databases.
+It starts 6 containers: two databases (MongoDB and PostgreSQL), their respective UIs (mongo-express and pgAdmin), and two API instances (each of them already set up to work with one of the databases).
 <br />
 Both Swagger URLs are printed when running the command.
 
@@ -112,6 +113,19 @@ az postgres flexible-server db delete -g {resource_group} -s {resource_name} --d
 ```
 pg_dump -h {host} -U {username} {db_name} --schema-only > dump.sql
 ```
+
+## Connect to pgAdmin
+Open `http://localhost:{port}}`, where `{port}` is the host port value specified in [docker-compose](https://github.com/sergicanet9/go-hexagonal-api/blob/main/docker-compose.yml) for the pgadmin service.
+<br />
+Log in with the email and password specified as environment variables in [docker-compose](https://github.com/sergicanet9/go-hexagonal-api/blob/main/docker-compose.yml) for the pgadmin service (PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD).
+<br />
+When prompted for the database user password, use the value of `POSTGRES_PASSWORD` from the [.env](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.env) file.
+
+
+## Connect to mongo-express
+Open `http://localhost:{port}}`, where `{port}` is the host port value specified in [docker-compose](https://github.com/sergicanet9/go-hexagonal-api/blob/main/docker-compose.yml) for the mongo-express service.
+<br />
+Log in with the username and password specified as environment variables in [docker-compose](https://github.com/sergicanet9/go-hexagonal-api/blob/main/docker-compose.yml) for the mongo-express service (ME_CONFIG_BASICAUTH_USERNAME and ME_CONFIG_BASICAUTH_PASSWORD).
 
 ## Live AKS environments (turned off)
 ### Dev

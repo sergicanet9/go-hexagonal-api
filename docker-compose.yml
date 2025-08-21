@@ -14,6 +14,21 @@ services:
     healthcheck:
       test: test $$(echo "rs.initiate().ok" | mongosh -u $MONGO_USER -p $MONGO_PASSWORD --quiet) -eq 1 || exit 0      
       interval: 5s
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=$MONGO_USER
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=$MONGO_PASSWORD
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_BASICAUTH_USERNAME=mongo
+      - ME_CONFIG_BASICAUTH_PASSWORD=mongo
+    depends_on:
+      - mongo
+    ports:
+      - "9999:8081"
   postgres:
     image: postgres:alpine
     restart: always
@@ -23,6 +38,19 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
     ports:
       - "$POSTGRES_HOST_PORT:$POSTGRES_CONTAINER_PORT"
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pagadmin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=postgres@gohexagonalapi.com
+      - PGADMIN_DEFAULT_PASSWORD=postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8888:80"
+    volumes:
+    - ./.pgadmin/servers.json:/pgadmin4/servers.json
   api-mongo:
     image: go-hexagonal-api:$VERSION
     container_name: go-hexagonal-api-mongo-$ENV
