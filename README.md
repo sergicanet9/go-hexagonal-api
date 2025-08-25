@@ -72,7 +72,6 @@ These endpoints don't require authentication.
 | `POST` | `/v1/users` | Creates a new user. |
 | `POST` | `/v1/users/login` | Authenticates a user and returns a JWT token. |
 | `POST` | `/v1/users/many` | Creates multiple users from a list. |
-| `GET` | `/v1/claims` | Returns all existing claims. |
 
 ### Protected Routes
 These endpoints require a valid JWT in the Authorization header, formatted as `Bearer {token}`.
