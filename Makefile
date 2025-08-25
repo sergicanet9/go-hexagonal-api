@@ -7,8 +7,10 @@ up:
 	openssl rand -base64 24 > mongo.keyfile
 	chmod 400 mongo.keyfile
 	docker-compose up -d --build
-	@echo "Mongo Swagger:    http://localhost:${HOST_PORT_MONGOAPI}/swagger/index.html"
-	@echo "Postgres Swagger: http://localhost:${HOST_PORT_POSTGRESAPI}/swagger/index.html"
+	@echo "Mongo API Swagger:    http://localhost:${HOST_PORT_MONGOAPI}/swagger/index.html"
+	@echo "Postgres API Swagger: http://localhost:${HOST_PORT_POSTGRESAPI}/swagger/index.html"
+	@echo "Mongo Express:        http://localhost:${MONGO_EXPRESS_HOST_PORT}"
+	@echo "PgAdmin:              http://localhost:${PGADMIN_HOST_PORT}"
 down:
 	docker-compose down
 test-unit:
