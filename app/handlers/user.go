@@ -48,7 +48,7 @@ func SetUserRoutes(router *mux.Router, u userHandler) {
 	secureRouter.HandleFunc("/v1/users/{id}", u.updateUser).Methods(http.MethodPatch)
 	secureRouter.HandleFunc("/v1/claims", u.getUserClaims).Methods(http.MethodGet)
 
-	adminRouter := secureRouter.PathPrefix("").Subrouter()
+	adminRouter := router.PathPrefix("").Subrouter()
 	adminRouter.Use(middlewares.JWT(u.cfg.JWTSecret, jwt.MapClaims{"admin": true}))
 
 	adminRouter.HandleFunc("/v1/users/{id}", u.deleteUser).Methods(http.MethodDelete)
