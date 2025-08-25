@@ -44,7 +44,7 @@ func (req CreateUserReq) Validate() error {
 	}
 
 	if len(msgs) > 0 {
-		return wrappers.NewValidationErr(fmt.Errorf(strings.Join(msgs, " | ")))
+		return wrappers.NewValidationErr(fmt.Errorf("%s", strings.Join(msgs, " | ")))
 	}
 
 	return nil
@@ -68,7 +68,7 @@ func (req LoginUserReq) Validate() error {
 	}
 
 	if len(msgs) > 0 {
-		return wrappers.NewValidationErr(fmt.Errorf(strings.Join(msgs, " | ")))
+		return wrappers.NewValidationErr(fmt.Errorf("%s", strings.Join(msgs, " | ")))
 	}
 
 	return nil

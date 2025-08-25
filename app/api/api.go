@@ -74,8 +74,12 @@ func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 
 		router := mux.NewRouter()
 
-		handlers.SetHealthRoutes(ctx, a.config, router)
-		handlers.SetUserRoutes(ctx, a.config, router, a.services.user)
+		healthHandler := handlers.NewHealthHandler(ctx, a.config)
+		handlers.SetHealthRoutes(router, healthHandler)
+
+		userHandler := handlers.NewUserHandler(ctx, a.config, a.services.user)
+		handlers.SetUserRoutes(router, userHandler)
+
 		router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
 
 		log.Printf("Version: %s", a.config.Version)

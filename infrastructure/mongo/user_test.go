@@ -15,7 +15,6 @@ import (
 // TestNewUserRepository_Ok checks that NewUserRepository creates a new userRepository struct
 func TestNewUserRepository_Ok(t *testing.T) {
 	mt := mocks.NewMongoDB(t)
-	defer mt.Close()
 
 	mt.Run("", func(mt *mtest.T) {
 		// Arrange
@@ -33,7 +32,6 @@ func TestNewUserRepository_Ok(t *testing.T) {
 // TestCreateMany_Ok checks that CreateMany does not return an error when everything goes as expected
 func TestCreateMany_Ok(t *testing.T) {
 	mt := mocks.NewMongoDB(t)
-	defer mt.Close()
 
 	mt.Run("", func(mt *mtest.T) {
 		// Arrange
@@ -64,7 +62,6 @@ func TestCreateMany_Ok(t *testing.T) {
 // TestCreateMany_CreateError checks that CreateMany returns an error when Create fails
 func TestInsertMany_CreateError(t *testing.T) {
 	mt := mocks.NewMongoDB(t)
-	defer mt.Close()
 
 	mt.Run("", func(mt *mtest.T) {
 		// Arrange

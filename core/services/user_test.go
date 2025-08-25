@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -228,7 +229,7 @@ func TestCreate_CreateError(t *testing.T) {
 	expectedError := "repository-error"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return("", fmt.Errorf(expectedError)).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return("", errors.New(expectedError)).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -335,7 +336,7 @@ func TestCreateMany_CreateManyError(t *testing.T) {
 	expectedError := "repository-error"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return([]string{}, fmt.Errorf(expectedError)).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return([]string{}, errors.New(expectedError)).Once()
 
 	service := &userService{
 		config:     config.Config{},

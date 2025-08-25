@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -66,7 +66,7 @@ func TestCreate_InsertError(t *testing.T) {
 
 	newUser := entities.User{}
 	expectedError := "insert error"
-	mock.ExpectQuery("INSERT INTO users").WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectQuery("INSERT INTO users").WillReturnError(errors.New(expectedError))
 
 	// Act
 	_, err := repo.Create(context.Background(), newUser)
@@ -119,7 +119,7 @@ func TestGet_SelectError(t *testing.T) {
 		},
 	}
 	expectedError := "select error"
-	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(errors.New(expectedError))
 
 	// Act
 	_, err := repo.Get(context.Background(), map[string]interface{}{}, nil, nil)
@@ -188,7 +188,7 @@ func TestGetByID_SelectError(t *testing.T) {
 		},
 	}
 	expectedError := "select error"
-	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(errors.New(expectedError))
 
 	// Act
 	_, err := repo.GetByID(context.Background(), "")
@@ -251,7 +251,7 @@ func TestUpdate_UpdateError(t *testing.T) {
 	}
 
 	expectedError := "update error"
-	mock.ExpectExec("UPDATE users").WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectExec("UPDATE users").WillReturnError(errors.New(expectedError))
 
 	// Act
 	err := repo.Update(context.Background(), "", entities.User{})
@@ -315,7 +315,7 @@ func TestDelte_DeleteError(t *testing.T) {
 	}
 
 	expectedError := "delete error"
-	mock.ExpectExec("DELETE FROM users").WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectExec("DELETE FROM users").WillReturnError(errors.New(expectedError))
 
 	// Act
 	err := repo.Delete(context.Background(), "")
@@ -387,7 +387,7 @@ func TestCreateMany_InsertError(t *testing.T) {
 	newUsers := []interface{}{entities.User{}}
 	expectedError := "insert error"
 	mock.ExpectBegin()
-	mock.ExpectQuery("INSERT INTO users").WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectQuery("INSERT INTO users").WillReturnError(errors.New(expectedError))
 
 	// Act
 	_, err := repo.CreateMany(context.Background(), newUsers)
@@ -410,7 +410,7 @@ func TestCreateMany_BeginError(t *testing.T) {
 
 	newUsers := []interface{}{entities.User{}}
 	expectedError := "begin error"
-	mock.ExpectBegin().WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectBegin().WillReturnError(errors.New(expectedError))
 
 	// Act
 	_, err := repo.CreateMany(context.Background(), newUsers)
@@ -436,7 +436,7 @@ func TestCreateMany_CommitError(t *testing.T) {
 	expectedError := "commit error"
 	mock.ExpectBegin()
 	mock.ExpectQuery("INSERT INTO users").WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedID))
-	mock.ExpectCommit().WillReturnError(fmt.Errorf(expectedError))
+	mock.ExpectCommit().WillReturnError(errors.New(expectedError))
 
 	// Act
 	_, err := repo.CreateMany(context.Background(), newUsers)

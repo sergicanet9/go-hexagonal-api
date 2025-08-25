@@ -16,7 +16,8 @@ func TestHealthCheck_Ok(t *testing.T) {
 	r := mux.NewRouter()
 
 	cfg := config.Config{}
-	SetHealthRoutes(context.Background(), cfg, r)
+	healthHandler := NewHealthHandler(context.Background(), cfg)
+	SetHealthRoutes(r, healthHandler)
 
 	rr := httptest.NewRecorder()
 	url := "http://testing/health"
