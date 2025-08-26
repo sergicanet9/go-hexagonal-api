@@ -68,7 +68,7 @@ These endpoints don't require authentication.
 <br />
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/v1/health` | Performs a health check of the API's status. |
+| `GET` | `/health` | Performs a health check of the API's status. |
 | `POST` | `/v1/users` | Creates a new user. |
 | `POST` | `/v1/users/login` | Authenticates a user and returns a JWT token. |
 | `POST` | `/v1/users/many` | Creates multiple users from a list. |
