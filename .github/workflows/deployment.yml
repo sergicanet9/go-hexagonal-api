@@ -68,7 +68,7 @@ jobs:
 
       - name: Replace params and environment data in manifest file
         run: |
-          sed -i "s|__ghcr__/${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}/${{ github.repository }}|g" build/k8s/manifest.yml
+          sed -i "s|__ghcr__|${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}/${{ github.repository }}|g" build/k8s/manifest.yml
           sed -i "s|__version__|${{ inputs.VERSION }}|g" build/k8s/manifest.yml
           sed -i "s|__environment__|${{ inputs.ENVIRONMENT }}|g" build/k8s/manifest.yml
           sed -i "s|__port__|${{ inputs.PORT }}|g" build/k8s/manifest.yml
