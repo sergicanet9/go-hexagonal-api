@@ -39,8 +39,8 @@ jobs:
     uses: ./.github/workflows/deployment.yml
     with:
       GITHUB_CONTAINERREGISTRY_URL: ghcr.io
-      GCP_CLUSTER_REGION: us-central1
-      GCP_CLUSTER_NAME: my-gke-cluster
+      GCP_CLUSTER_REGION: us-east1
+      GCP_CLUSTER_NAME: scv-cluster
       ENVIRONMENT: prod
       PORT: 80
       NODEPORT: 30001
