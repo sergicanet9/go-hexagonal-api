@@ -9,17 +9,17 @@ A robust REST API for user management built with **Go** and implementing the **H
 The API is designed to work seamlessly with either a MongoDB or PostgreSQL database instance, using the same business logic and handlers.
 
 ## 🚀 Features
-- **Hexagonal Architecture**: Clear separation of concerns with domain, application, and infrastructure layers.
+- **Hexagonal Architecture**: Clear separation of concerns with domain, application and infrastructure layers.
 - **Database Agnostic**: Decoupled repository adapters allow switching between MongoDB and PostgreSQL storage without changing core logic.
 - **Authentication & Authorization**: Implements JWT authentication and claim-based authorization for secure endpoints for user management.
-- **Asyncronous Process**: Go routines management with an included periodical health checking of the application.
-- **Lifecycle Management**: Multi-environment support with config files, dockerfile and docker-compose, kubernetes deployment file and CI/CD pipelines with GitHub Actions.
+- **Asyncronous Process**: Go routines management with an included process for periodically health checking the application.
+- **Lifecycle Management**: Multi-environment support with config files, dockerfile and docker-compose, kubernetes deployment files and CI/CD pipelines with GitHub Actions.
 - **Testing**: Comprehensive unit tests with code coverage and integration tests for the happy path.
 - **Developer Experience**: Built-in Makefile, Swagger UI for API documentation and management UIs for each database (pgAdmin and mongo-express).
 
 ## 🏁 Getting Started
 ### Run it with Docker
-To start the entire application stack using Docker Compose:
+To start the entire application stack using Docker Compose, run:
 ```
 make up
 ```
@@ -36,7 +36,7 @@ make down
 ```
 
 ### Run it with command line
-You can run a single API instance with command-line arguments:
+You can run a single API instance with command-line arguments with the following command:
 ```
     go run cmd/main.go --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn}
 ```
@@ -45,7 +45,7 @@ or:
 go build cmd/main.go
  ./main --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn}
 ```
-Provide the desired values to `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`.
+Provide the desired values for: `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`.
 <br />
 Then open `http://localhost:{port}/swagger/index.html` to access the Swagger UI page.
 <br />
