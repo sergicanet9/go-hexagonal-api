@@ -68,6 +68,14 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+     # TODO : Remove this step after testing
+      - name: Debug DSN value
+        run: |
+          echo "La variable DSN tiene un valor de ${{ secrets.DSN }}"
+          echo "La variable DSN tiene una longitud de ${#DSN_SECRET}"
+          echo "La variable DSN tiene un valor de ${DSN_SECRET}"
+          echo "La variable DSN tiene un valor de $DSN_SECRET"
+
       - name: Replace params and environment data in manifest file
         run: |
           sed -i "s|__ghcr__|${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}/${{ github.repository }}|g" build/k8s/manifest.yml
