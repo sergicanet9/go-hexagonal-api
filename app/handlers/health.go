@@ -40,7 +40,10 @@ func (h *healthHandler) healthCheck(w http.ResponseWriter, r *http.Request) {
 	r.Header.Add("Environment", h.cfg.Environment)
 	r.Header.Add("Port", strconv.Itoa(h.cfg.Port))
 	r.Header.Add("Database", h.cfg.Database)
-	r.Header.Add("DSN", h.cfg.DSN)
+
+	if h.cfg.Environment == "local" {
+		r.Header.Add("DSN", h.cfg.DSN)
+	}
 
 	utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
 }
