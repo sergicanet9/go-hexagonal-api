@@ -21,7 +21,7 @@ import (
 func main() {
 	var opts struct {
 		Version     string `long:"ver" description:"Version" required:"true"`
-		Environment string `long:"env" description:"Environment" choice:"local" choice:"dev" required:"true"`
+		Environment string `long:"env" description:"Environment" choice:"local" choice:"prod" required:"true"`
 		Port        int    `long:"port" description:"Running port" required:"true"`
 		Database    string `long:"db" description:"The database adapter to use" choice:"mongo" choice:"postgres" required:"true"`
 		DSN         string `long:"dsn" description:"DSN of the selected database" required:"true"`

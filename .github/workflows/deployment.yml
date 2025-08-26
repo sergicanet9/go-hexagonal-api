@@ -2,13 +2,13 @@ name: deployment
 on:
   workflow_call:
     inputs:
-      AZURECONTAINERREGISTRY_URL:
+      GITHUB_CONTAINERREGISTRY_URL:
         required: true
         type: string
-      AZURE_RESOURCEGROUP:
+      GCP_CLUSTER_REGION:
         required: true
         type: string
-      AZURE_CLUSTERNAME:
+      GCP_CLUSTER_NAME:
         required: true
         type: string
       ENVIRONMENT:
@@ -17,18 +17,21 @@ on:
       PORT:
         required: true
         type: number
+      NODEPORT:
+        required: true
+        type: number
       DATABASE:
         required: true
         type: string
-      DSN:
+      VERSION:
         required: true
         type: string
     secrets:
-      AZURE_CREDENTIALS:
+      GCP_PROJECT_ID:
         required: true
-      AZURECONTAINERREGISTRY_USERNAME:
+      GCP_SA_KEY:
         required: true
-      AZURECONTAINERREGISTRY_PASSWORD:
+      DSN:
         required: true
 
 jobs:
@@ -36,41 +39,44 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENVIRONMENT }}
     steps:
-      - id: vars
-        run: echo "tag=$(echo ${{ github.ref_name }} | xargs basename)" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v3
-      - uses: azure/login@v1
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: azure/aks-set-context@v3
+          registry: ${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
         with:
-          resource-group: ${{ inputs.AZURE_RESOURCEGROUP }}
-          cluster-name: ${{ inputs.AZURE_CLUSTERNAME }}
-      - uses: azure/docker-login@v1
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
         with:
-          login-server: ${{ inputs.AZURECONTAINERREGISTRY_URL }}
-          username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
-          password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
-      - uses: Azure/k8s-create-secret@v4
+          cluster_name: ${{ inputs.GCP_CLUSTER_NAME }}
+          location: ${{ inputs.GCP_CLUSTER_REGION }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
         with:
-          container-registry-url: ${{ inputs.AZURECONTAINERREGISTRY_URL }}
-          container-registry-username: ${{ secrets.AZURECONTAINERREGISTRY_USERNAME }}
-          container-registry-password: ${{ secrets.AZURECONTAINERREGISTRY_PASSWORD }}
-          secret-name: acr-secret
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
       - name: Replace params and environment data in manifest file
         run: |
-          sed -i "s/__acr__/${{ inputs.AZURECONTAINERREGISTRY_URL }}/g"  build/k8s/manifest.yml
-          sed -i "s/__version__/${{ steps.vars.outputs.tag }}/g"  build/k8s/manifest.yml
+          sed -i "s/__ghcr__/${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}/${{ github.repository }}/g"  build/k8s/manifest.yml
+          sed -i "s/__version__/${{ inputs.VERSION }}/g"  build/k8s/manifest.yml
           sed -i "s/__environment__/${{ inputs.ENVIRONMENT }}/g"  build/k8s/manifest.yml
           sed -i "s/__port__/${{ inputs.PORT }}/g"  build/k8s/manifest.yml
+          sed -i "s/__nodeport__/${{ inputs.NODEPORT }}/g"  build/k8s/manifest.yml
           sed -i "s/__database__/${{ inputs.DATABASE }}/g"  build/k8s/manifest.yml
-          sed -i "s/__dsn__/${{ inputs.DSN }}/g"  build/k8s/manifest.yml
-      - uses: Azure/k8s-deploy@v4
-        with:
-          action: deploy
-          manifests: build/k8s/manifest.yml
-          images: ${{ inputs.AZURECONTAINERREGISTRY_URL }}/go-hexagonal-api:${{ steps.vars.outputs.tag }}
-          imagepullsecrets: acr-secret
-      - name: Rollout restart deployment
+          sed -i "s/__dsn__/${{ secrets.DSN }}/g"  build/k8s/manifest.yml
+
+      - name: Deploy to GKE
         run: |
+          kubectl apply -f build/k8s/manifest.yml
           kubectl rollout restart deployment go-hexagonal-api-${{ inputs.DATABASE }}-${{ inputs.ENVIRONMENT }}

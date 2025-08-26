@@ -16,7 +16,7 @@
                 "--env", "local",
                 "--port", "8080",
                 "--db", "mongo",
-                "--dsn", "mongodb://mongo:admin@localhost:4041/gohexagonalapi?authSource=admin&connect=direct"
+                "--dsn", "mongodb://mongo:admin@localhost:4041/gohexagonalapilocal?authSource=admin&connect=direct"
             ]
         },
         {
@@ -31,7 +31,7 @@
                 "--env", "local",
                 "--port", "8080",
                 "--db", "postgres",
-                "--dsn", "postgres://postgres:admin@localhost:4042/gohexagonalapi?sslmode=disable"
+                "--dsn", "postgres://postgres:admin@localhost:4042/gohexagonalapilocal?sslmode=disable"
             ]
         }
     ]

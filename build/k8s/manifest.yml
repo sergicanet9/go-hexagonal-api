@@ -5,7 +5,7 @@ metadata:
     app: go-hexagonal-api-__database__-__environment__
   name: go-hexagonal-api-__database__-__environment__
 spec:
-  replicas: 2
+  replicas: 1
   progressDeadlineSeconds: 240
   selector:
     matchLabels:
@@ -16,7 +16,7 @@ spec:
         app: go-hexagonal-api-__database__-__environment__
     spec:
       containers:
-        - image: __acr__/go-hexagonal-api:__version__
+        - image: __ghcr__/go-hexagonal-api:__version__
           imagePullPolicy: Always
           name: go-hexagonal-api-__database__-__environment__
           env:
@@ -34,8 +34,10 @@ kind: Service
 metadata:
   name: go-hexagonal-api-__database__-__environment__
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: go-hexagonal-api-__database__-__environment__
   ports:
     - port: __port__
+    - targetPort: __port__
+      nodePort: __nodeport__
