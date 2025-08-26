@@ -6,12 +6,12 @@ on:
        - '*'
 
 jobs:
-  # test:
-  #   uses: ./.github/workflows/test.yml # TODO enable this after testing
+  test:
+    uses: ./.github/workflows/test.yml
 
   build-and-push:
     runs-on: ubuntu-latest
-    # needs: test # TODO enable this after testing
+    needs: test
     outputs:
       tag: ${{ steps.vars.outputs.tag }}
     steps:
