@@ -17,11 +17,18 @@ COPY --from=builder /opt/go-hexagonal-api/infrastructure/postgres/migrations/*.s
 WORKDIR /opt/go-hexagonal-api
 
 ARG version
-ENV v $version
+ENV v=$version
 
-ENV env $environment
-ENV p $port
-ENV db $database
-ENV dsn $dsn
+ARG environment
+ENV env=$environment
+
+ARG port
+ENV p=$port
+
+ARG database
+ENV db=$database
+
+ARG dsn
+ENV dsn=$dsn
 
 CMD ["sh", "-c", "bin/main --ver $v --env $env --port $p --db $db --dsn $dsn"]
