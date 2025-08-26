@@ -38,6 +38,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENVIRONMENT }}
+    env:
+      DSN_SECRET: ${{ secrets.DSN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -66,10 +68,6 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Print DSN secret value for debugging # TODO remove this step later
-        run: |
-          echo "The DSN value is: ${{ secrets.DSN }}"
-
       - name: Replace params and environment data in manifest file
         run: |
           sed -i "s|__ghcr__|${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}/${{ github.repository }}|g" build/k8s/manifest.yml
@@ -78,7 +76,7 @@ jobs:
           sed -i "s|__port__|${{ inputs.PORT }}|g" build/k8s/manifest.yml
           sed -i "s|__nodeport__|${{ inputs.NODEPORT }}|g" build/k8s/manifest.yml
           sed -i "s|__database__|${{ inputs.DATABASE }}|g" build/k8s/manifest.yml
-          sed -i "s|__dsn__|${{ secrets.DSN }}|g" build/k8s/manifest.yml
+          sed -i "s|__dsn__|$DSN_SECRET|g" build/k8s/manifest.yml
 
       - name: Deploy to GKE
         run: |
