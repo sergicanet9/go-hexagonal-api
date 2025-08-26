@@ -38,8 +38,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ inputs.ENVIRONMENT }}
-    env:
-      DSN_SECRET: ${{ secrets.DSN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -84,7 +82,9 @@ jobs:
           sed -i "s|__port__|${{ inputs.PORT }}|g" build/k8s/manifest.yml
           sed -i "s|__nodeport__|${{ inputs.NODEPORT }}|g" build/k8s/manifest.yml
           sed -i "s|__database__|${{ inputs.DATABASE }}|g" build/k8s/manifest.yml
-          sed -i "s|__dsn__|$DSN_SECRET|g" build/k8s/manifest.yml
+
+          ESCAPED_DSN=$(echo "${{ secrets.DSN }}" | sed 's/[&/|]/\\&/g')
+          sed -i "s|__dsn__|$ESCAPED_DSN|g" build/k8s/manifest.yml
 
       - name: Deploy to GKE
         run: |
