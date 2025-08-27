@@ -63,9 +63,6 @@ jobs:
             --from-literal=token="${{ secrets.CLOUDFLARED_TOKEN }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Check manifest before apply
-        run: cat build/k8s/manifest-cloudflared.yml  # TODO remove
-
       - name: Deploy to GKE
         run: |
           kubectl apply -f build/k8s/manifest-cloudflared.yml
