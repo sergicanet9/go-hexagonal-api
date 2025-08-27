@@ -36,7 +36,7 @@ make down
 ```
 
 ### Run it with command line
-You can run a single API instance with command-line arguments with the following command:
+Run a single API instance with command-line arguments with the following command:
 ```
     go run cmd/main.go --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn}
 ```
@@ -139,11 +139,12 @@ Open the mongo-express URL printed after running `make up`.
 <br />
 Log in with the username and password specified as `MONGO_EXPRESS_LOGIN_USERNAME`and `MONGO_EXPRESS_LOGIN_PASSWORD`in the [.env](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.env) file.
 
-## ☁️ Live AKS environments (turned off)
-### Dev
-http://go-hexagonal-api-mongo-dev.westeurope.cloudapp.azure.com/swagger/index.html
+## ☁️ Live environment
+The API is deployed on a **Google Kubernetes Engine (GKE)** cluster, using a Mongo Atlas as database. For public access, the Kubernetes Service is configured as ClusterIP, and traffic is routed to a custom domain using a Cloudflare tunnel, avoiding the need for a public IP on the cluster.
 <br />
-http://go-hexagonal-api-postgres-dev.westeurope.cloudapp.azure.com/swagger/index.html
+Check the Swagger at:
+https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
+
 
 ## ✍️ Author
 Sergi Canet Vela
