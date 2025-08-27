@@ -66,5 +66,5 @@ jobs:
       - name: Deploy to GKE
         run: |
           kubectl apply -f build/k8s/manifest-cloudflared.yml
-          kubectt rollout restart deployment cloudflared
+          kubectl rollout restart deployment cloudflared
           kubectl rollout status deployment cloudflared
