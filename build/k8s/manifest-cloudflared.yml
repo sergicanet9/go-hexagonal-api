@@ -37,10 +37,6 @@ spec:
             - "tunnel"
             - "--no-autoupdate"
             - "run"
-          resources:
-            limits:
-              memory: "256Mi"
-              cpu: "100m"
           volumeMounts:
             - name: config
               mountPath: /etc/cloudflared/config
