@@ -55,7 +55,7 @@ jobs:
           sed -i "s|__tunnel__|${{ secrets.CLOUDFLARED_TUNNEL_ID }}|g" build/k8s/manifest-cloudflared.yml
 
           ESCAPED_MONGO_SERVICE=$(echo "${{ inputs.MONGO_SERVICE }}" | sed 's/[&/|]/\\&/g')
-          sed -i "s|__mongoservice__|$ESCAPED_MONGO_SERVICE|g" build/k8s/cloudflared-manifest.yml
+          sed -i "s|__mongoservice__|$ESCAPED_MONGO_SERVICE|g" build/k8s/manifest-cloudflared.yml
 
       - name: Create cloudflared secret
         run: |
