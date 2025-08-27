@@ -1,15 +1,16 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cloudflared-config
-data:
-  config.yaml: |
-    tunnel: __tunnel__
-    ingress:
-      - hostname: __mongohostname__
-        service: __mongoservice__
-      - service: http_status:404
----
+# TODO: Add back?
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: cloudflared-config
+# data:
+#   config.yaml: |
+#     tunnel: __tunnel__
+#     ingress:
+#       - hostname: __mongohostname__
+#         service: __mongoservice__
+#       - service: http_status:404
+# ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,10 +39,14 @@ spec:
             - "--no-autoupdate"
             - "run"
             - "--no-tls-verify"
-          volumeMounts:
-            - name: config
-              mountPath: /etc/cloudflared/config
-      volumes:
-        - name: config
-          configMap:
-            name: cloudflared-config
+            - "--hostname" #TODO remove?
+            - "mongo-prod.go-hexagonal-api.cfargotunnel.com"
+            - "--url"
+            - "http://go-hexagonal-api-mongo-prod.default.svc.cluster.local:80"
+      #     volumeMounts:
+      #       - name: config
+      #         mountPath: /etc/cloudflared/config
+      # volumes:
+      #   - name: config
+      #     configMap:
+      #       name: cloudflared-config
