@@ -35,6 +35,13 @@ spec:
               value: "__database__"
             - name: dsn
               value: "__dsn__"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
 ---
 apiVersion: v1
 kind: Service
