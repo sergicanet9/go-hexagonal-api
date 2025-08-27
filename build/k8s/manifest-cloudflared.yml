@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+data:
+  config.yaml: |
+    tunnel: __tunnel__
+    ingress:
+      - hostname: __mongohostname__
+        service: __mongoservice__
+      - service: http_status:404
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflared-credentials
+                  key: token
+          args:
+            - "tunnel"
+            - "--no-autoupdate"
+            - "run"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared/config
+      volumes:
+        - name: config
+          configMap:
+            name: cloudflared-config

@@ -1,4 +1,4 @@
-name: deployment
+name: deployment-api
 on:
   workflow_call:
     inputs:
@@ -15,9 +15,6 @@ on:
         required: true
         type: string
       PORT:
-        required: true
-        type: number
-      NODEPORT:
         required: true
         type: number
       DATABASE:
@@ -66,19 +63,19 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Replace params and environment data in manifest file
+      - name: Replace params and environment data in manifest-api file
         run: |
-          sed -i "s|__ghcr__|${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}/${{ github.repository }}|g" build/k8s/manifest.yml
-          sed -i "s|__version__|${{ inputs.VERSION }}|g" build/k8s/manifest.yml
-          sed -i "s|__environment__|${{ inputs.ENVIRONMENT }}|g" build/k8s/manifest.yml
-          sed -i "s|__port__|${{ inputs.PORT }}|g" build/k8s/manifest.yml
-          sed -i "s|__nodeport__|${{ inputs.NODEPORT }}|g" build/k8s/manifest.yml
-          sed -i "s|__database__|${{ inputs.DATABASE }}|g" build/k8s/manifest.yml
+          sed -i "s|__ghcr__|${{ inputs.GITHUB_CONTAINERREGISTRY_URL }}/${{ github.repository }}|g" build/k8s/manifest-api.yml
+          sed -i "s|__version__|${{ inputs.VERSION }}|g" build/k8s/manifest-api.yml
+          sed -i "s|__environment__|${{ inputs.ENVIRONMENT }}|g" build/k8s/manifest-api.yml
+          sed -i "s|__port__|${{ inputs.PORT }}|g" build/k8s/manifest-api.yml
+          sed -i "s|__database__|${{ inputs.DATABASE }}|g" build/k8s/manifest-api.yml
 
           ESCAPED_DSN=$(echo "${{ secrets.DSN }}" | sed 's/[&/|]/\\&/g')
-          sed -i "s|__dsn__|$ESCAPED_DSN|g" build/k8s/manifest.yml
+          sed -i "s|__dsn__|$ESCAPED_DSN|g" build/k8s/manifest-api.yml
 
       - name: Deploy to GKE
         run: |
-          kubectl apply -f build/k8s/manifest.yml
+          kubectl apply -f build/k8s/manifest-api.yml
           kubectl rollout restart deployment go-hexagonal-api-${{ inputs.DATABASE }}-${{ inputs.ENVIRONMENT }}
+          kubectl rollout status deployment go-hexagonal-api-${{ inputs.DATABASE }}-${{ inputs.ENVIRONMENT }}

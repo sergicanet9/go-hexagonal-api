@@ -15,7 +15,7 @@ spec:
       labels:
         app: go-hexagonal-api-__database__-__environment__
     spec:
-      dnsPolicy: "None"
+      dnsPolicy: ClusterFirst
       dnsConfig:
         nameservers:
           - 8.8.8.8
@@ -41,11 +41,10 @@ kind: Service
 metadata:
   name: go-hexagonal-api-__database__-__environment__
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: go-hexagonal-api-__database__-__environment__
   ports:
     - name: http
       port: __port__
       targetPort: __port__
-      nodePort: __nodeport__

@@ -1,0 +1,70 @@
+name: deployment-cloudflared
+on:
+  workflow_call:
+    inputs:
+      GCP_CLUSTER_REGION:
+        required: true
+        type: string
+      GCP_CLUSTER_NAME:
+        required: true
+        type: string
+      MONGO_HOSTNAME:
+        required: true
+        type: string
+      MONGO_SERVICE:
+        required: true
+        type: string
+    secrets:
+      GCP_PROJECT_ID:
+        required: true
+      GCP_SA_KEY:
+        required: true
+      CLOUDFLARED_TUNNEL_ID:
+        required: true
+      CLOUDFLARED_TOKEN:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ENVIRONMENT }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ inputs.GCP_CLUSTER_NAME }}
+          location: ${{ inputs.GCP_CLUSTER_REGION }}
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Replace params and environment data in manifest-cloudflared file
+        run: |
+          sed -i "s|__mongohostname__|${{ inputs.MONGO_HOSTNAME }}|g" build/k8s/manifest-cloudflared.yml
+          sed -i "s|__tunnel__|${{ secrets.CLOUDFLARED_TUNNEL_ID }}|g" build/k8s/manifest-cloudflared.yml
+
+          ESCAPED_MONGO_SERVICE=$(echo "${{ inputs.MONGO_SERVICE }}" | sed 's/[&/|]/\\&/g')
+          sed -i "s|__mongoservice__|$ESCAPED_MONGO_SERVICE|g" build/k8s/cloudflared-manifest.yml
+
+      - name: Create cloudflared secret
+        run: |
+          kubectl create secret generic cloudflared-credentials \
+            --from-literal=token="${{ secrets.CLOUDFLARED_TOKEN }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to GKE
+        run: |
+          kubectl apply -f build/k8s/manifest-cloudflared.yml
+          kubectt rollout restart deployment cloudflared
+          kubectl rollout status deployment cloudflared

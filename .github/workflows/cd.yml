@@ -33,20 +33,33 @@ jobs:
       run: |
         docker build -f build/docker/Dockerfile --build-arg version=${{ steps.vars.outputs.tag }} -t ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} .
         docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }}
-
+      
   mongo-prod:
     needs: build-and-push
-    uses: ./.github/workflows/deployment.yml
+    uses: ./.github/workflows/deployment-api.yml
     with:
       GITHUB_CONTAINERREGISTRY_URL: ghcr.io
       GCP_CLUSTER_REGION: us-east1-b
       GCP_CLUSTER_NAME: scv-cluster
       ENVIRONMENT: prod
       PORT: 80
-      NODEPORT: 30001
       DATABASE: mongo
       VERSION: ${{ needs.build-and-push.outputs.tag }}
     secrets:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
       DSN: ${{ secrets.MONGO_DSN }}
+
+  cloudflared-prod:
+    needs: [build-and-push, mongo-prod]
+    uses: ./.github/workflows/deployment-cloudflared.yml
+    with:
+      GCP_CLUSTER_REGION: us-east1-b
+      GCP_CLUSTER_NAME: scv-cluster
+      MONGO_HOSTNAME: mongo-prod.go-hexagonal-api.cfargotunnel.com
+      MONGO_SERVICE: http:///go-hexagonal-api-mongo-prod:80
+    secrets:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+      CLOUDFLARED_TUNNEL_ID: ${{ secrets.CLOUDFLARED_TUNNEL_ID }}
+      CLOUDFLARED_TOKEN: ${{ secrets.CLOUDFLARED_TOKEN }}
