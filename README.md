@@ -140,7 +140,7 @@ Open the mongo-express URL printed after running `make up`.
 Log in with the username and password specified as `MONGO_EXPRESS_LOGIN_USERNAME`and `MONGO_EXPRESS_LOGIN_PASSWORD`in the [.env](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.env) file.
 
 ## ☁️ Live environment
-The API is deployed on a **Google Kubernetes Engine (GKE)** cluster, using a Mongo Atlas as database. For public access, the Kubernetes Service is configured as ClusterIP, and traffic is routed to a custom domain using a Cloudflare tunnel, avoiding the need for a public IP on the cluster.
+The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database. For public access, the Kubernetes Service is configured as ClusterIP, and traffic is routed to a custom domain using a Cloudflare tunnel, avoiding the need for a public IP on the cluster.
 <br />
 Check the Swagger at:
 https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
