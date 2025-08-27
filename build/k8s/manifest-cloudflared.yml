@@ -39,8 +39,8 @@ spec:
             - "--no-autoupdate"
             - "run"
             - "--no-tls-verify"
-            - "--hostname" #TODO remove?
-            - "mongo-prod.go-hexagonal-api.cfargotunnel.com"
+            # - "--hostname" #TODO remove?
+            # - "mongo-prod.go-hexagonal-api.cfargotunnel.com"
             - "--url"
             - "http://go-hexagonal-api-mongo-prod.default.svc.cluster.local:80"
       #     volumeMounts:
