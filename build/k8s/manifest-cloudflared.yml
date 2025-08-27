@@ -37,6 +37,7 @@ spec:
             - "tunnel"
             - "--no-autoupdate"
             - "run"
+            - "--no-tls-verify"
           volumeMounts:
             - name: config
               mountPath: /etc/cloudflared/config
