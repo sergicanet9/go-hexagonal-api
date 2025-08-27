@@ -36,11 +36,8 @@ spec:
             - name: dsn
               value: "__dsn__"
           resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
             limits:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "250m"
 ---
 apiVersion: v1

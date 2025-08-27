@@ -38,11 +38,8 @@ spec:
             - "--no-autoupdate"
             - "run"
           resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
             limits:
-              memory: "128Mi"
+              memory: "256Mi"
               cpu: "100m"
           volumeMounts:
             - name: config
