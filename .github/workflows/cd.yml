@@ -56,10 +56,8 @@ jobs:
     with:
       GCP_CLUSTER_REGION: us-east1-b
       GCP_CLUSTER_NAME: scv-gke-cluster
-      MONGO_HOSTNAME: mongo-prod-go-hexagonal-api.sergicanet.com
-      MONGO_SERVICE: http://go-hexagonal-api-mongo-prod.default.svc.cluster.local:80
     secrets:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      CLOUDFLARED_TUNNEL_ID: ${{ secrets.CLOUDFLARED_TUNNEL_ID }}
+      # CLOUDFLARED_TUNNEL_ID: ${{ secrets.CLOUDFLARED_TUNNEL_ID }} #TODO: remove?
       CLOUDFLARED_TOKEN: ${{ secrets.CLOUDFLARED_TOKEN }}

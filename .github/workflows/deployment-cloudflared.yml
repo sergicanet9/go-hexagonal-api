@@ -8,19 +8,14 @@ on:
       GCP_CLUSTER_NAME:
         required: true
         type: string
-      MONGO_HOSTNAME:
-        required: true
-        type: string
-      MONGO_SERVICE:
-        required: true
-        type: string
+
     secrets:
       GCP_PROJECT_ID:
         required: true
       GCP_SA_KEY:
         required: true
-      CLOUDFLARED_TUNNEL_ID:
-        required: true
+      # CLOUDFLARED_TUNNEL_ID: #TODO: remove?
+      #   required: true
       CLOUDFLARED_TOKEN:
         required: true
 
@@ -49,13 +44,9 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Replace params and environment data in manifest-cloudflared file
-        run: |
-          sed -i "s|__mongohostname__|${{ inputs.MONGO_HOSTNAME }}|g" build/k8s/manifest-cloudflared.yml
-          sed -i "s|__tunnel__|${{ secrets.CLOUDFLARED_TUNNEL_ID }}|g" build/k8s/manifest-cloudflared.yml
-
-          ESCAPED_MONGO_SERVICE=$(echo "${{ inputs.MONGO_SERVICE }}" | sed 's/[&/|]/\\&/g')
-          sed -i "s|__mongoservice__|$ESCAPED_MONGO_SERVICE|g" build/k8s/manifest-cloudflared.yml
+      # - name: Replace params and environment data in manifest-cloudflared file
+      #   run: |
+      #     sed -i "s|__tunnel__|${{ secrets.CLOUDFLARED_TUNNEL_ID }}|g" build/k8s/manifest-cloudflared.yml #TODO: remove and remove secret in github?
 
       - name: Create cloudflared secret
         run: |
