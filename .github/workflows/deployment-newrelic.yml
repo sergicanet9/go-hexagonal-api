@@ -53,5 +53,6 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy to GKE
-        run: |
+        run: | #TODO: remove delete
+          kubectl delete -f build/k8s/manifest-newrelic.yml
           kubectl apply -f build/k8s/manifest-newrelic.yml
