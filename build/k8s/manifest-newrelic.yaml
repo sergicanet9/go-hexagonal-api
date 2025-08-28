@@ -1,0 +1,2366 @@
+---
+# Source: nri-bundle/charts/kube-state-metrics/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:    
+    helm.sh/chart: kube-state-metrics-5.30.1
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "2.15.0"
+  name: nri-bundle-kube-state-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nri-bundle-kube-state-metrics
+subjects:
+- kind: ServiceAccount
+  name: nri-bundle-kube-state-metrics
+  namespace: default
+---
+# Source: nri-bundle/charts/kube-state-metrics/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nri-bundle-kube-state-metrics
+  namespace: default
+  labels:    
+    helm.sh/chart: kube-state-metrics-5.30.1
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "2.15.0"
+spec:
+  selector:
+    matchLabels:      
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/instance: nri-bundle
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 10
+  template:
+    metadata:
+      labels:        
+        helm.sh/chart: kube-state-metrics-5.30.1
+        app.kubernetes.io/component: metrics
+        app.kubernetes.io/part-of: kube-state-metrics
+        app.kubernetes.io/name: kube-state-metrics
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/version: "2.15.0"
+    spec:
+      automountServiceAccountToken: true
+      hostNetwork: false
+      serviceAccountName: nri-bundle-kube-state-metrics
+      securityContext:
+        fsGroup: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: kube-state-metrics
+        args:
+        - --port=8080
+        - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,leases,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
+        imagePullPolicy: IfNotPresent
+        image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.13.0
+        ports:
+        - containerPort: 8080
+          name: "http"
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            httpHeaders:
+            path: /livez
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            httpHeaders:
+            path: /readyz
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+---
+# Source: nri-bundle/charts/kube-state-metrics/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:    
+    helm.sh/chart: kube-state-metrics-5.30.1
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "2.15.0"
+  name: nri-bundle-kube-state-metrics
+rules:
+
+- apiGroups: ["certificates.k8s.io"]
+  resources:
+  - certificatesigningrequests
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - configmaps
+  verbs: ["list", "watch"]
+
+- apiGroups: ["batch"]
+  resources:
+  - cronjobs
+  verbs: ["list", "watch"]
+
+- apiGroups: ["extensions", "apps"]
+  resources:
+  - daemonsets
+  verbs: ["list", "watch"]
+
+- apiGroups: ["extensions", "apps"]
+  resources:
+  - deployments
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - endpoints
+  verbs: ["list", "watch"]
+
+- apiGroups: ["autoscaling"]
+  resources:
+  - horizontalpodautoscalers
+  verbs: ["list", "watch"]
+
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources:
+  - ingresses
+  verbs: ["list", "watch"]
+
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  verbs: ["list", "watch"]
+
+- apiGroups: ["coordination.k8s.io"]
+  resources:
+  - leases
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - limitranges
+  verbs: ["list", "watch"]
+
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources:
+    - mutatingwebhookconfigurations
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - namespaces
+  verbs: ["list", "watch"]
+
+- apiGroups: ["networking.k8s.io"]
+  resources:
+  - networkpolicies
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - nodes
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - persistentvolumeclaims
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - persistentvolumes
+  verbs: ["list", "watch"]
+
+- apiGroups: ["policy"]
+  resources:
+    - poddisruptionbudgets
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - pods
+  verbs: ["list", "watch"]
+
+- apiGroups: ["extensions", "apps"]
+  resources:
+  - replicasets
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - replicationcontrollers
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - resourcequotas
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - secrets
+  verbs: ["list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - services
+  verbs: ["list", "watch"]
+
+- apiGroups: ["apps"]
+  resources:
+  - statefulsets
+  verbs: ["list", "watch"]
+
+- apiGroups: ["storage.k8s.io"]
+  resources:
+    - storageclasses
+  verbs: ["list", "watch"]
+
+- apiGroups: ["admissionregistration.k8s.io"]
+  resources:
+    - validatingwebhookconfigurations
+  verbs: ["list", "watch"]
+
+- apiGroups: ["storage.k8s.io"]
+  resources:
+    - volumeattachments
+  verbs: ["list", "watch"]
+---
+# Source: nri-bundle/charts/kube-state-metrics/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nri-bundle-kube-state-metrics
+  namespace: default
+  labels:    
+    helm.sh/chart: kube-state-metrics-5.30.1
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "2.15.0"
+  annotations:
+    prometheus.io/scrape: 'true'
+spec:
+  type: "ClusterIP"
+  ports:
+  - name: "http"
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  
+  selector:    
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: nri-bundle
+---
+# Source: nri-bundle/charts/kube-state-metrics/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+automountServiceAccountToken: true
+metadata:
+  labels:    
+    helm.sh/chart: kube-state-metrics-5.30.1
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "2.15.0"
+  name: nri-bundle-kube-state-metrics
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-newrelic-infrastructure
+rules:
+  - apiGroups: [""]
+    resources:
+      - "nodes/metrics"
+      - "nodes/stats"
+      - "nodes/proxy"
+    verbs: ["get", "list"]
+  - apiGroups: [ "" ]
+    resources:
+      - "endpoints"
+      - "services"
+      - "nodes"
+      - "namespaces"
+      - "pods"
+    verbs: [ "get", "list", "watch" ]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-newrelic-infrastructure
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nri-bundle-newrelic-infrastructure
+subjects:
+- kind: ServiceAccount
+  name: nri-bundle-newrelic-infrastructure
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/agent-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-agent-controlplane
+data:
+  newrelic-infra.yml: |-
+    # This is the configuration file for the infrastructure agent. See:
+    # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+    custom_attributes:
+      clusterName: scv-gke-cluster
+    http_server_enabled: true
+    http_server_port: 8001
+    is_forward_only: true
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-controlplane
+rules:
+  - apiGroups: [""]
+    resources:
+      - "nodes/metrics"
+      - "nodes/stats"
+      - "nodes/proxy"
+    verbs: ["get", "list"]
+  - apiGroups: [ "" ]
+    resources:
+      - "pods"
+      - "nodes"
+    verbs: [ "get", "list", "watch" ]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get", "head"]
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-controlplane
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nri-bundle-nrk8s-controlplane
+subjects:
+  - kind: ServiceAccount
+    name: nri-bundle-nrk8s-controlplane
+    namespace: default
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+    mode: privileged
+  name: nri-bundle-nrk8s-controlplane
+spec:
+  updateStrategy: 
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nri-bundle
+      app.kubernetes.io/name: newrelic-infrastructure
+      app.kubernetes.io/component: controlplane
+  template:
+    metadata:
+      annotations:
+        checksum/nri-kubernetes: d7f78c5882ddbdc156992ec31d5cfaf7fd5039792065f3f756d023510e8968b2
+        checksum/agent-config: e774745f610b9823d17969476d64c414c9d7ac6d63871249d496ebe9772d0297
+        checksum/license-secret: afb06dd4559e067925fcda4710b9716ff4fca7824798bfdafe8a72f59496da25
+      labels:
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: newrelic-infrastructure
+        mode: privileged
+        app.kubernetes.io/component: controlplane
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      serviceAccountName: nri-bundle-nrk8s-controlplane
+      containers:
+        - name: controlplane
+          image: "newrelic/nri-kubernetes:3.44.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
+          env:
+            - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
+              value: "8001"
+            - name: "NRI_KUBERNETES_CLUSTERNAME"
+              value: scv-gke-cluster
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
+
+            - name: "NRI_KUBERNETES_NODENAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            - name: "NRI_KUBERNETES_NODEIP"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "status.hostIP"
+          volumeMounts:
+            - name: nri-kubernetes-config
+              mountPath: /etc/newrelic-infra/nri-kubernetes.yml
+              subPath: nri-kubernetes.yml
+          resources: 
+            limits:
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M
+        - name: forwarder
+          image: "newrelic/k8s-events-forwarder:1.66.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
+          ports:
+            - containerPort: 8001
+          env:
+            - name: "NRIA_LICENSE_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: nri-bundle-newrelic-infrastructure-license
+                  key: licenseKey
+
+            - name: "NRIA_DNS_HOSTNAME_RESOLUTION"
+              value: "false"
+
+            - name: "K8S_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+          volumeMounts:
+            - mountPath: /var/db/newrelic-infra/data
+              name: forwarder-tmpfs-data
+            - mountPath: /var/db/newrelic-infra/user_data
+              name: forwarder-tmpfs-user-data
+            - mountPath: /tmp
+              name: forwarder-tmpfs-tmp
+            - name: config
+              mountPath: /etc/newrelic-infra.yml
+              subPath: newrelic-infra.yml
+          resources: 
+            limits:
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M
+      volumes:
+        - name: nri-kubernetes-config
+          configMap:
+            name: nri-bundle-nrk8s-controlplane
+            items:
+              - key: nri-kubernetes.yml
+                path: nri-kubernetes.yml
+        - name: forwarder-tmpfs-data
+          emptyDir: {}
+        - name: forwarder-tmpfs-user-data
+          emptyDir: {}
+        - name: forwarder-tmpfs-tmp
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: nri-bundle-nrk8s-agent-controlplane
+            items:
+              - key: newrelic-infra.yml
+                path: newrelic-infra.yml
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+            - matchExpressions:
+              - key: node-role.kubernetes.io/controlplane
+                operator: Exists
+            - matchExpressions:
+              - key: node-role.kubernetes.io/etcd
+                operator: Exists
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/scraper-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-controlplane
+  namespace: default
+data:
+  nri-kubernetes.yml: |-
+    interval: 30s
+    namespaceSelector: {}
+    controlPlane:
+      retries: 3
+      timeout: 10s
+      enabled: true
+      etcd:
+        autodiscover:
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:4001
+          - url: http://localhost:2381
+          matchNode: true
+          namespace: kube-system
+          selector: tier=control-plane,component=etcd
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:4001
+          matchNode: true
+          namespace: kube-system
+          selector: k8s-app=etcd-manager-main
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:4001
+          matchNode: true
+          namespace: kube-system
+          selector: k8s-app=etcd
+        enabled: true
+      scheduler:
+        autodiscover:
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10259
+          matchNode: true
+          namespace: kube-system
+          selector: tier=control-plane,component=kube-scheduler
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10259
+          matchNode: true
+          namespace: kube-system
+          selector: k8s-app=kube-scheduler
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10259
+          matchNode: true
+          namespace: openshift-kube-scheduler
+          selector: app=openshift-kube-scheduler,scheduler=true
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10259
+          matchNode: true
+          namespace: kube-system
+          selector: app=openshift-kube-scheduler,scheduler=true
+        enabled: true
+      controllerManager:
+        autodiscover:
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10257
+          matchNode: true
+          namespace: kube-system
+          selector: tier=control-plane,component=kube-controller-manager
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10257
+          matchNode: true
+          namespace: kube-system
+          selector: k8s-app=kube-controller-manager
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10257
+          matchNode: true
+          namespace: openshift-kube-controller-manager
+          selector: app=kube-controller-manager,kube-controller-manager=true
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10257
+          matchNode: true
+          namespace: kube-system
+          selector: app=kube-controller-manager,kube-controller-manager=true
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:10257
+          matchNode: true
+          namespace: kube-system
+          selector: app=controller-manager,controller-manager=true
+        enabled: true
+      apiServer:
+        autodiscover:
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:8443
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:6443
+          - url: http://localhost:8080
+          matchNode: true
+          namespace: kube-system
+          selector: tier=control-plane,component=kube-apiserver
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:8443
+          - url: http://localhost:8080
+          matchNode: true
+          namespace: kube-system
+          selector: k8s-app=kube-apiserver
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:8443
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:6443
+          matchNode: true
+          namespace: openshift-kube-apiserver
+          selector: app=openshift-kube-apiserver,apiserver=true
+        - endpoints:
+          - auth:
+              type: bearer
+            insecureSkipVerify: true
+            url: https://localhost:8443
+          matchNode: true
+          namespace: kube-system
+          selector: app=openshift-kube-apiserver,apiserver=true
+        enabled: true
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-controlplane
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/ksm/agent-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-agent-ksm
+data:
+  newrelic-infra.yml: |-
+    # This is the configuration file for the infrastructure agent. See:
+    # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+    custom_attributes:
+      clusterName: scv-gke-cluster
+    http_server_enabled: true
+    http_server_port: 8002
+    is_forward_only: true
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/ksm/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+    mode: privileged
+  name: nri-bundle-nrk8s-ksm
+spec:
+  strategy: 
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nri-bundle
+      app.kubernetes.io/name: newrelic-infrastructure
+      app.kubernetes.io/component: ksm
+  template:
+    metadata:
+      annotations:
+        checksum/nri-kubernetes: f0418e2085de7d69d781acb1c3e11278ee9f4bdb53f671c1582846bc910f7c16
+        checksum/agent-config: ec876c057310cbccc3a4ed02385cfde2542e9f4b97ae56fd3847e032a13278ef
+        checksum/license-secret: afb06dd4559e067925fcda4710b9716ff4fca7824798bfdafe8a72f59496da25
+      labels:
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: newrelic-infrastructure
+        mode: privileged
+        app.kubernetes.io/component: ksm
+    spec:
+      serviceAccountName: nri-bundle-newrelic-infrastructure
+      hostNetwork: false
+      containers:
+        - name: ksm
+          image: "newrelic/nri-kubernetes:3.44.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
+          env:
+            - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
+              value: "8002"
+            - name: "NRI_KUBERNETES_CLUSTERNAME"
+              value: scv-gke-cluster
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
+
+            - name: "NRI_KUBERNETES_NODENAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+          volumeMounts:
+            - name: nri-kubernetes-config
+              mountPath: /etc/newrelic-infra/nri-kubernetes.yml
+              subPath: nri-kubernetes.yml
+          resources: 
+            limits:
+              memory: 850M
+            requests:
+              cpu: 100m
+              memory: 150M
+        - name: forwarder
+          image: "newrelic/k8s-events-forwarder:1.66.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
+          ports:
+            - containerPort: 8002
+          env:
+            - name: NRIA_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nri-bundle-newrelic-infrastructure-license
+                  key: licenseKey
+
+            - name: "NRIA_DNS_HOSTNAME_RESOLUTION"
+              value: "false"
+
+            - name: "K8S_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+          volumeMounts:
+            - mountPath: /var/db/newrelic-infra/data
+              name: forwarder-tmpfs-data
+            - mountPath: /var/db/newrelic-infra/user_data
+              name: forwarder-tmpfs-user-data
+            - mountPath: /tmp
+              name: forwarder-tmpfs-tmp
+            - name: config
+              mountPath: /etc/newrelic-infra.yml
+              subPath: newrelic-infra.yml
+          resources: 
+            limits:
+              memory: 850M
+            requests:
+              cpu: 100m
+              memory: 150M
+      volumes:
+        - name: nri-kubernetes-config
+          configMap:
+            name: nri-bundle-nrk8s-ksm
+            items:
+              - key: nri-kubernetes.yml
+                path: nri-kubernetes.yml
+        - name: forwarder-tmpfs-data
+          emptyDir: {}
+        - name: forwarder-tmpfs-user-data
+          emptyDir: {}
+        - name: forwarder-tmpfs-tmp
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: nri-bundle-nrk8s-agent-ksm
+            items:
+              - key: newrelic-infra.yml
+                path: newrelic-infra.yml
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: kube-state-metrics
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/ksm/scraper-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-ksm
+  namespace: default
+data:
+  nri-kubernetes.yml: |-
+    interval: 30s
+    namespaceSelector: {}
+    ksm:
+      enabled: true
+      retries: 3
+      scheme: http
+      selector: app.kubernetes.io/name=kube-state-metrics
+      timeout: 10s
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/kubelet/agent-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-agent-kubelet
+data:
+  newrelic-infra.yml: |-
+    # This is the configuration file for the infrastructure agent. See:
+    # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+    custom_attributes:
+      clusterName: scv-gke-cluster
+    features:
+      docker_enabled: false
+    http_server_enabled: true
+    http_server_port: 8003
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/kubelet/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+    mode: privileged
+  name: nri-bundle-nrk8s-kubelet
+spec:
+  updateStrategy: 
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nri-bundle
+      app.kubernetes.io/name: newrelic-infrastructure
+      app.kubernetes.io/component: kubelet
+  template:
+    metadata:
+      annotations:
+        checksum/nri-kubernetes: 74713a66301dfbecc2e4f7a792d0f55973bca22859de598aac8fdec946fbf0c8
+        checksum/agent-config: 52b10ced0897ff7fb8accf35e20becee37db517b392f9e0a7b5ce7847484263c
+        checksum/license-secret: afb06dd4559e067925fcda4710b9716ff4fca7824798bfdafe8a72f59496da25
+        checksum/integrations_config: 9dc614988a649c2efc6048b08b746903c15dd7cdd6644da500cc817765b8891a
+      labels:
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: newrelic-infrastructure
+        mode: privileged
+        app.kubernetes.io/component: kubelet
+    spec:
+      serviceAccountName: nri-bundle-newrelic-infrastructure
+      hostNetwork: false
+      containers:
+        - name: kubelet
+          image: "newrelic/nri-kubernetes:3.44.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
+          env:
+            - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
+              value: "8003"
+            - name: "NRI_KUBERNETES_CLUSTERNAME"
+              value: scv-gke-cluster
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
+
+            - name: "NRI_KUBERNETES_TESTCONNECTIONENDPOINT"
+              
+              value: /healthz
+              
+
+              
+
+            - name: "NRI_KUBERNETES_NODENAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            # Required to connect to the kubelet
+            - name: "NRI_KUBERNETES_NODEIP"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "status.hostIP"
+          volumeMounts:
+            - name: nri-kubernetes-config
+              mountPath: /etc/newrelic-infra/nri-kubernetes.yml
+              subPath: nri-kubernetes.yml
+          resources: 
+            limits:
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M
+        - name: agent
+          image: "newrelic/infrastructure-bundle:3.2.82"
+          args: [ "newrelic-infra" ]
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+            readOnlyRootFilesystem: true
+            runAsGroup: 0
+            runAsUser: 0
+          ports:
+            - containerPort: 8003
+          env:
+            - name: NRIA_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nri-bundle-newrelic-infrastructure-license
+                  key: licenseKey
+
+            - name: "NRIA_OVERRIDE_HOSTNAME_SHORT"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+
+            - name: "NRIA_OVERRIDE_HOSTNAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+
+            - name: "NRI_KUBERNETES_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            - name: "CLUSTER_NAME"
+              value: scv-gke-cluster
+            - name: "NRIA_PASSTHROUGH_ENVIRONMENT"
+              value: "CLUSTER_NAME"
+            - name: "NRIA_HOST"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "status.hostIP"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/newrelic-infra.yml
+              subPath: newrelic-infra.yml
+            - name: nri-integrations-cfg-volume
+              mountPath: /etc/newrelic-infra/integrations.d/
+            - name: dev
+              mountPath: /dev
+            - name: host-containerd-socket
+              mountPath: /run/containerd/containerd.sock
+            - name: host-docker-socket
+              mountPath: /var/run/docker.sock
+            - name: log
+              mountPath: /var/log
+            - name: host-volume
+              mountPath: /host
+              mountPropagation: HostToContainer
+              readOnly: true
+            - mountPath: /var/db/newrelic-infra/data
+              name: agent-tmpfs-data
+            - mountPath: /var/db/newrelic-infra/user_data
+              name: agent-tmpfs-user-data
+            - mountPath: /tmp
+              name: agent-tmpfs-tmp
+          resources: 
+            limits:
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: host-containerd-socket
+          hostPath:
+            path: /run/containerd/containerd.sock
+        - name: host-docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: log
+          hostPath:
+            path: /var/log
+        - name: host-volume
+          hostPath:
+            path: /
+        - name: agent-tmpfs-data
+          emptyDir: {}
+        - name: agent-tmpfs-user-data
+          emptyDir: {}
+        - name: agent-tmpfs-tmp
+          emptyDir: {}
+        - name: nri-kubernetes-config
+          configMap:
+            name: nri-bundle-nrk8s-kubelet
+            items:
+              - key: nri-kubernetes.yml
+                path: nri-kubernetes.yml
+        - name: config
+          configMap:
+            name: nri-bundle-nrk8s-agent-kubelet
+            items:
+              - key: newrelic-infra.yml
+                path: newrelic-infra.yml
+        - name: nri-integrations-cfg-volume
+          configMap:
+            name: nri-bundle-nrk8s-integrations-cfg
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/kubelet/integrations-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-integrations-cfg
+data:
+  # This ConfigMap holds config files for integrations. They should have the following format:
+  #redis-config.yml: |
+  #  # Run auto discovery to find pods with label "app=redis"
+  #  discovery:
+  #    command:
+  #      # Run discovery for Kubernetes. Use the following optional arguments:
+  #      # --namespaces: Comma separated list of namespaces to discover pods on
+  #      # --tls: Use secure (TLS) connection
+  #      # --port: Port used to connect to the kubelet. Default is 10255
+  #      exec: /var/db/newrelic-infra/nri-discovery-kubernetes --port PORT --tls
+  #      match:
+  #        label.app: redis
+  #  integrations:
+  #    - name: nri-redis
+  #      env:
+  #        # using the discovered IP as the hostname address
+  #        HOSTNAME: ${discovery.ip}
+  #        PORT: 6379
+  #        KEYS: '{"0":["<KEY_1>"],"1":["<KEY_2>"]}'
+  #        REMOTE_MONITORING: true
+  #      labels:
+  #        env: production
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/kubelet/scraper-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-nrk8s-kubelet
+  namespace: default
+data:
+  nri-kubernetes.yml: |
+    interval: 30s
+    namespaceSelector: {}
+    kubelet:
+      enabled: true
+      retries: 3
+      scraperMaxReruns: 4
+      timeout: 10s
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nri-bundle-newrelic-infrastructure-license
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+data:
+  licenseKey: ZXUwMXh4ZTdkOWE1YThlYzlkOTc5MTkxMjg1MzUzNWRGRkZGTlJBTA==
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.44.0
+    helm.sh/chart: newrelic-infrastructure-3.49.0
+  name: nri-bundle-newrelic-infrastructure
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:     
+    app: newrelic-logging
+    chart: newrelic-logging-1.31.0
+    release: nri-bundle
+    app.kubernetes.io/name: newrelic-logging
+  name: nri-bundle-newrelic-logging
+rules:
+  - apiGroups: [""]
+    resources:
+      - namespaces
+      - pods
+    verbs: ["get", "list", "watch"]
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:     
+    app: newrelic-logging
+    chart: newrelic-logging-1.31.0
+    release: nri-bundle
+    app.kubernetes.io/name: newrelic-logging
+  name: nri-bundle-newrelic-logging
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nri-bundle-newrelic-logging
+subjects:
+- kind: ServiceAccount
+  name: nri-bundle-newrelic-logging
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/configmap-lua.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default  
+  name: nri-bundle-newrelic-logging-lua
+data:
+  payload.lua: |-
+    function build_payload(tag, timestamp, record)
+        local payload = {{
+            metrics = {{
+                name = "fluentbit_build_info",
+                type = "count",
+                value = 0,
+                timestamp = os.time(),
+                attributes = {
+                    app = "fluent-bit",
+                    source = "kubernetes",
+                    version = record["fluentBitVersion"],
+                    namespace = os.getenv("NAMESPACE"),
+                    cluster_name = os.getenv("CLUSTER_NAME"),
+                    daemonset_name = os.getenv("DAEMONSET_NAME"),
+                    tier= os.getenv("FLUENTBIT_METRICS_TIER")            },
+                ["interval.ms"] = 10000
+            }}
+        }}
+        return 2, timestamp, payload
+    end
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: default
+  labels:     
+    app: newrelic-logging
+    chart: newrelic-logging-1.31.0
+    release: nri-bundle
+    app.kubernetes.io/name: newrelic-logging
+  name: nri-bundle-newrelic-logging-fluent-bit-config
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+        Flush         1
+        Log_Level     ${LOG_LEVEL}
+        Daemon        off
+        Parsers_File  parsers.conf
+        HTTP_Server   On
+        HTTP_Listen   0.0.0.0
+        HTTP_Port     2020
+    
+    [INPUT]
+        Name              tail
+        Alias             pod-logs-tailer
+        Tag               kube.*
+        Path              ${PATH}
+        multiline.parser  ${LOG_PARSER}
+        DB                ${FB_DB}
+        Mem_Buf_Limit     7MB
+        Skip_Long_Lines   On
+        Refresh_Interval  10
+    
+    [FILTER]
+        Name           kubernetes
+        Match          kube.*
+        Alias          kubernetes-enricher
+        # We need the full DNS suffix as Windows only supports resolving names with this suffix
+        # See: https://kubernetes.io/docs/setup/production-environment/windows/intro-windows-in-kubernetes/#dns-limitations
+        Kube_URL       https://kubernetes.default.svc.cluster.local:443
+        Buffer_Size    ${K8S_BUFFER_SIZE}
+        K8S-Logging.Exclude ${K8S_LOGGING_EXCLUDE}
+        Labels         Off
+        Annotations    Off
+    
+    [FILTER]
+        Name           nest
+        Match          *
+        Alias          kubernetes-attribute-lifter
+        Operation      lift
+        Nested_under   kubernetes
+    
+    [FILTER]
+        Name           record_modifier
+        Match          *
+        Alias          node-attributes-enricher-filter
+        Record         cluster_name "${CLUSTER_NAME}"
+        Allowlist_key  container_name
+        Allowlist_key  namespace_name
+        Allowlist_key  pod_name
+        Allowlist_key  stream
+        Allowlist_key  message
+        Allowlist_key  log
+    
+    [OUTPUT]
+        Name           newrelic
+        Match          *
+        Alias          newrelic-logs-forwarder
+        licenseKey     ${LICENSE_KEY}
+        endpoint       ${ENDPOINT}
+        lowDataMode    ${LOW_DATA_MODE}
+        sendMetrics    ${SEND_OUTPUT_PLUGIN_METRICS}
+        Retry_Limit    ${RETRY_LIMIT}
+    
+    
+    [INPUT]
+        Name   dummy
+        Tag    buildInfo
+        Dummy  {"message":"trigger for basic metric at every 10 minutes scrape_interval"}
+        Interval_Sec 600
+    [FILTER]
+        Name    modify
+        Match   buildInfo
+        Add     fluentBitVersion  ${FBVERSION}
+    [FILTER]
+        Name    lua
+        Match   buildInfo
+        script  /fluent-bit/scripts/payload.lua
+        call    build_payload
+    [OUTPUT]
+        Name    http
+        Match   buildInfo
+        Host    ${METRICS_HOST}
+        Port    443
+        URI     /metric/v1
+        Format  json
+        tls     On
+        Header  Api-Key ${LICENSE_KEY}
+        Header  Content-Type application/json
+        json_date_key false
+  parsers.conf: |
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: default
+  labels:     
+    app: newrelic-logging
+    chart: newrelic-logging-1.31.0
+    release: nri-bundle
+    app.kubernetes.io/name: newrelic-logging
+  name: nri-bundle-newrelic-logging
+  annotations:
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: newrelic-logging
+      release: nri-bundle
+  template:
+    metadata:
+      annotations:
+        checksum/fluent-bit-config: 49b896b3aad4bf316e06976898c1bc71ba188db7aba56fd85b4e3e9158857c22
+      labels:
+        app: newrelic-logging
+        release: nri-bundle
+        kubernetes.io/os: linux
+        app.kubernetes.io/name: newrelic-logging
+    spec:
+      serviceAccountName: nri-bundle-newrelic-logging
+      dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 10
+      initContainers:
+      containers:
+        - name: newrelic-logging
+          image: "newrelic/newrelic-fluentbit-output:2.4.0"
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: ENDPOINT
+              value: "https://log-api.eu.newrelic.com/log/v1"
+            - name: SOURCE
+              value:  "k8s"
+            - name: LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nri-bundle-newrelic-logging-config
+                  key: license
+            - name: CLUSTER_NAME
+              value: scv-gke-cluster
+            - name: LOG_LEVEL
+              value: "info"
+            - name: LOG_PARSER
+              value: "cri,docker"
+            # NODE_NAME needs to be defined before FB_DB, because FB_DB references NODE_NAME in its value when using persistentVolume
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: FB_DB
+              value: "/var/log/flb_kube.db"
+            - name: PATH
+              value: "/var/log/containers/*.log"
+            - name: K8S_BUFFER_SIZE
+              value: "32k"
+            - name: K8S_LOGGING_EXCLUDE
+              value: "false"
+            - name: LOW_DATA_MODE
+              value: "true"
+            - name: RETRY_LIMIT
+              value: "5"
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: SEND_OUTPUT_PLUGIN_METRICS
+              value: "false"
+            - name: METRICS_HOST
+              value: "metric-api.eu.newrelic.com"
+            
+            - name: FLUENTBIT_METRICS_TIER 
+              value: "basic"
+            - name: DAEMONSET_NAME
+              value: nri-bundle-newrelic-logging  
+            - name: NAMESPACE
+              value: default 
+          command:
+            - /fluent-bit/bin/fluent-bit
+            - -c
+            - /fluent-bit/etc/fluent-bit.conf
+            - -e
+            - /fluent-bit/bin/out_newrelic.so
+          volumeMounts:
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc
+            - name: logs
+              # We mount /var by default because container logs could be on /var/log or /var/lib/docker/containers (symlinked to /var/log)
+              mountPath: /var
+
+            - name: lua-scripts
+              mountPath: /fluent-bit/scripts
+              readOnly: true
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 250m
+              memory: 64Mi
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 2020
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: lua-scripts
+          configMap:
+            name: nri-bundle-newrelic-logging-lua
+        - name: fluent-bit-config
+          configMap:
+            name: nri-bundle-newrelic-logging-fluent-bit-config
+        - name: logs
+          hostPath:
+            path: /var
+      nodeSelector:
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: default
+  labels:     
+    app: newrelic-logging
+    chart: newrelic-logging-1.31.0
+    release: nri-bundle
+    app.kubernetes.io/name: newrelic-logging
+  name: nri-bundle-newrelic-logging-config
+type: Opaque
+data:
+  license: ZXUwMXh4ZTdkOWE1YThlYzlkOTc5MTkxMjg1MzUzNWRGRkZGTlJBTA==
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: newrelic-logging
+    chart: newrelic-logging-1.31.0
+    release: "nri-bundle"
+  name: nri-bundle-newrelic-logging
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-prometheus-agent/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nri-bundle-newrelic-prometheus-agent
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-prometheus-agent
+    app.kubernetes.io/version: v3.4.0
+    helm.sh/chart: newrelic-prometheus-agent-2.2.0
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - endpoints
+      - services
+      - pods
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - nonResourceURLs:
+      - "/metrics"
+    verbs:
+      - get
+---
+# Source: nri-bundle/charts/newrelic-prometheus-agent/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nri-bundle-newrelic-prometheus-agent
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-prometheus-agent
+    app.kubernetes.io/version: v3.4.0
+    helm.sh/chart: newrelic-prometheus-agent-2.2.0
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nri-bundle-newrelic-prometheus-agent
+subjects:
+- kind: ServiceAccount
+  name: nri-bundle-newrelic-prometheus-agent
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-prometheus-agent/templates/configmap.yaml
+kind: ConfigMap
+metadata:
+  name: nri-bundle-newrelic-prometheus-agent
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-prometheus-agent
+    app.kubernetes.io/version: v3.4.0
+    helm.sh/chart: newrelic-prometheus-agent-2.2.0
+apiVersion: v1
+data:
+  config.yaml: |-
+    # Configuration for newrelic-prometheus-configurator
+    newrelic_remote_write:
+      extra_write_relabel_configs:
+      - action: drop
+        regex: kube_.+|container_.+|machine_.+|cadvisor_.+
+        source_labels:
+        - __name__
+      - action: replace
+        regex: timeseries_write_(.*)
+        replacement: counter
+        separator: ;
+        source_labels:
+        - __name__
+        target_label: newrelic_metric_type
+      - action: replace
+        regex: sql_byte(.*)
+        replacement: counter
+        separator: ;
+        source_labels:
+        - __name__
+        target_label: newrelic_metric_type
+    static_targets:
+      jobs:
+      - extra_metric_relabel_config:
+        - action: keep
+          regex: prometheus_agent_active_series|prometheus_target_interval_length_seconds|prometheus_target_scrape_pool_targets|prometheus_remote_storage_samples_pending|prometheus_remote_storage_samples_in_total|prometheus_remote_storage_samples_retried_total|prometheus_agent_corruptions_total|prometheus_remote_storage_shards|prometheus_sd_kubernetes_events_total|prometheus_agent_checkpoint_creations_failed_total|prometheus_agent_checkpoint_deletions_failed_total|prometheus_remote_storage_samples_dropped_total|prometheus_remote_storage_samples_failed_total|prometheus_sd_kubernetes_http_request_total|prometheus_agent_truncate_duration_seconds_sum|prometheus_build_info|process_resident_memory_bytes|process_virtual_memory_bytes|process_cpu_seconds_total|prometheus_remote_storage_bytes_total
+          source_labels:
+          - __name__
+        job_name: self-metrics
+        skip_sharding: true
+        targets:
+        - localhost:9090
+    common:
+      external_labels:
+        cluster_name: scv-gke-cluster
+      scrape_interval: 30s
+    kubernetes:
+      jobs:
+      - fallback_scrape_protocol: PrometheusText0.0.4
+        job_name_prefix: default
+        target_discovery:
+          endpoints: true
+          filter:
+            annotations:
+              prometheus.io/scrape: true
+          pod: true
+      - fallback_scrape_protocol: PrometheusText0.0.4
+        integrations_filter:
+          enabled: false
+        job_name_prefix: newrelic
+        target_discovery:
+          endpoints: true
+          filter:
+            annotations:
+              newrelic.io/scrape: true
+          pod: true
+      integrations_filter:
+        app_values:
+        - redis
+        - traefik
+        - calico
+        - nginx
+        - coredns
+        - kube-dns
+        - etcd
+        - cockroachdb
+        - velero
+        - harbor
+        - argocd
+        enabled: false
+        source_labels:
+        - app.kubernetes.io/name
+        - app.newrelic.io/name
+        - k8s-app
+---
+# Source: nri-bundle/charts/newrelic-prometheus-agent/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nri-bundle-newrelic-prometheus-agent-license
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-prometheus-agent
+    app.kubernetes.io/version: v3.4.0
+    helm.sh/chart: newrelic-prometheus-agent-2.2.0
+data:
+  licenseKey: ZXUwMXh4ZTdkOWE1YThlYzlkOTc5MTkxMjg1MzUzNWRGRkZGTlJBTA==
+---
+# Source: nri-bundle/charts/newrelic-prometheus-agent/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-prometheus-agent
+    app.kubernetes.io/version: v3.4.0
+    helm.sh/chart: newrelic-prometheus-agent-2.2.0
+  name: nri-bundle-newrelic-prometheus-agent
+  namespace: default
+---
+# Source: nri-bundle/charts/newrelic-prometheus-agent/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-prometheus-agent
+    app.kubernetes.io/version: v3.4.0
+    helm.sh/chart: newrelic-prometheus-agent-2.2.0
+  name: nri-bundle-newrelic-prometheus-agent
+  namespace: default
+spec:
+  serviceName: nri-bundle-newrelic-prometheus-agent-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nri-bundle
+      app.kubernetes.io/name: newrelic-prometheus-agent
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        checksum/config: 804f6b18023e9480d386abe6545bbb828f750068d88fc74c50a79b295ddb6a70
+      labels:
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: newrelic-prometheus-agent
+    spec:
+
+      hostNetwork: false
+
+      serviceAccountName: nri-bundle-newrelic-prometheus-agent
+
+      initContainers:
+        - name: configurator
+          image: "newrelic/newrelic-prometheus-configurator:2.2.0"
+          imagePullPolicy: IfNotPresent
+          args:
+            - --input=/etc/configurator/config.yaml
+            - --output=/etc/prometheus/config/config.yaml
+          volumeMounts:
+            - name: configurator-config
+              mountPath: /etc/configurator/
+            - name: prometheus-config
+              mountPath: /etc/prometheus/config
+          env:
+            - name: NR_PROM_DATA_SOURCE_NAME
+              valueFrom: 
+                fieldRef: 
+                  fieldPath: metadata.name
+            - name: NR_PROM_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nri-bundle-newrelic-prometheus-agent-license
+                  key: licenseKey
+            - name: NR_PROM_CHART_VERSION
+              value: 2.2.0
+
+      containers:
+        - name: prometheus
+          image: "quay.io/prometheus/prometheus:v3.4.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 4
+            failureThreshold: 3
+            successThreshold: 1
+          args:
+            - --config.file=/etc/prometheus/config/config.yaml
+            - --agent
+            - --storage.agent.retention.max-time=30m
+            - --storage.agent.wal-truncate-frequency=30m
+            - --storage.agent.path=/etc/prometheus/storage
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus/config
+            - name: prometheus-storage
+              mountPath: /etc/prometheus/storage
+
+      volumes:
+        - name: configurator-config
+          configMap:
+            name: nri-bundle-newrelic-prometheus-agent
+        - name: prometheus-config
+          emptyDir: {}
+        - name: prometheus-storage
+          emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+# Source: nri-bundle/charts/nri-kube-events/templates/agent-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-kube-events
+    app.kubernetes.io/version: 2.15.0
+    helm.sh/chart: nri-kube-events-3.15.0
+  name: nri-bundle-nri-kube-events-agent-config
+  namespace: default
+data:
+  newrelic-infra.yml: |
+    is_forward_only: true
+    http_server_enabled: true
+    http_server_port: 8001
+---
+# Source: nri-bundle/charts/nri-kube-events/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-kube-events
+    app.kubernetes.io/version: 2.15.0
+    helm.sh/chart: nri-kube-events-3.15.0
+  name: nri-bundle-nri-kube-events
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  - namespaces
+  - nodes
+  - jobs
+  - persistentvolumes
+  - persistentvolumeclaims
+  - pods
+  - services
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  - deployments
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - watch
+  - list
+---
+# Source: nri-bundle/charts/nri-kube-events/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-kube-events
+    app.kubernetes.io/version: 2.15.0
+    helm.sh/chart: nri-kube-events-3.15.0
+  name: nri-bundle-nri-kube-events
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nri-bundle-nri-kube-events
+subjects:
+- kind: ServiceAccount
+  name: nri-bundle-nri-kube-events
+  namespace: default
+---
+# Source: nri-bundle/charts/nri-kube-events/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-kube-events
+    app.kubernetes.io/version: 2.15.0
+    helm.sh/chart: nri-kube-events-3.15.0
+  name: nri-bundle-nri-kube-events-config
+  namespace: default
+data:
+  config.yaml: |-
+    sinks:
+      - name: newRelicInfra
+        config:
+          agentEndpoint: http://localhost:8001/v1/data
+          clusterName: scv-gke-cluster
+          agentHTTPTimeout: 30s
+    captureDescribe: true
+    describeRefresh: 24h
+    captureEvents: true
+---
+# Source: nri-bundle/charts/nri-kube-events/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nri-bundle-nri-kube-events
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-kube-events
+    app.kubernetes.io/version: 2.15.0
+    helm.sh/chart: nri-kube-events-3.15.0
+  annotations:
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nri-kube-events
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: nri-kube-events
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: kube-events
+          image: newrelic/nri-kube-events:2.15.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          args: ["-config", "/app/config/config.yaml", "-loglevel", "debug"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+        - name: forwarder
+          image: newrelic/k8s-events-forwarder:1.66.1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 8001
+          env:
+            - name: NRIA_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nri-bundle-nri-kube-events-license
+                  key: licenseKey
+
+            - name: NRIA_OVERRIDE_HOSTNAME_SHORT
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+
+          volumeMounts:
+            - mountPath: /var/db/newrelic-infra/data
+              name: tmpfs-data
+            - mountPath: /var/db/newrelic-infra/user_data
+              name: tmpfs-user-data
+            - mountPath: /tmp
+              name: tmpfs-tmp
+            - name: config
+              mountPath: /etc/newrelic-infra.yml
+              subPath: newrelic-infra.yml
+      serviceAccountName: nri-bundle-nri-kube-events
+      volumes:
+        - name: config
+          configMap:
+            name: nri-bundle-nri-kube-events-agent-config
+            items:
+            - key: newrelic-infra.yml
+              path: newrelic-infra.yml
+        - name: config-volume
+          configMap:
+            name: nri-bundle-nri-kube-events-config
+        - name: tmpfs-data
+          emptyDir: {}
+        - name: tmpfs-user-data
+          emptyDir: {}
+        - name: tmpfs-tmp
+          emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        
+        
+      hostNetwork: false
+---
+# Source: nri-bundle/charts/nri-kube-events/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nri-bundle-nri-kube-events-license
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-kube-events
+    app.kubernetes.io/version: 2.15.0
+    helm.sh/chart: nri-kube-events-3.15.0
+data:
+  licenseKey: ZXUwMXh4ZTdkOWE1YThlYzlkOTc5MTkxMjg1MzUzNWRGRkZGTlJBTA==
+---
+# Source: nri-bundle/charts/nri-kube-events/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-kube-events
+    app.kubernetes.io/version: 2.15.0
+    helm.sh/chart: nri-kube-events-3.15.0
+  name: nri-bundle-nri-kube-events
+  namespace: default
+  annotations:
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+rules:
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingwebhookconfigurations
+    verbs:
+      - get
+      - update
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+    app: nri-metadata-injection-admission
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nri-bundle-nri-metadata-injection-admission
+subjects:
+  - kind: ServiceAccount
+    name: nri-bundle-nri-metadata-injection-admission
+    namespace: default
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-createSecret.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission-create
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission-create
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+spec:
+  template:
+    metadata:
+      name: nri-bundle-nri-metadata-injection-admission-create
+      labels:
+        app: nri-metadata-injection-admission-create
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: nri-metadata-injection
+        app.kubernetes.io/version: 1.35.0
+        helm.sh/chart: nri-metadata-injection-4.27.0
+    spec:
+      containers:
+        - name: create
+          image: "registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.4.3"
+          imagePullPolicy: IfNotPresent
+          args:
+            - create
+            - --host=nri-bundle-nri-metadata-injection,nri-bundle-nri-metadata-injection.default.svc
+            - --namespace=default
+            - --secret-name=nri-bundle-nri-metadata-injection-admission
+            - --cert-name=tls.crt
+            - --key-name=tls.key
+      restartPolicy: OnFailure
+      serviceAccountName: nri-bundle-nri-metadata-injection-admission
+      securityContext:
+        runAsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 2000
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission-patch
+  namespace: default
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission-patch
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+spec:
+  template:
+    metadata:
+      name: nri-bundle-nri-metadata-injection-admission-patch
+      labels:
+        app: nri-metadata-injection-admission-patch
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: nri-metadata-injection
+        app.kubernetes.io/version: 1.35.0
+        helm.sh/chart: nri-metadata-injection-4.27.0
+    spec:
+      containers:
+        - name: patch
+          image: "registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.4.3"
+          imagePullPolicy: IfNotPresent
+          args:
+            - patch
+            - --webhook-name=nri-bundle-nri-metadata-injection
+            - --namespace=default
+            - --secret-name=nri-bundle-nri-metadata-injection-admission
+            - --patch-failure-policy=Ignore
+            - --patch-validating=false
+      restartPolicy: OnFailure
+      serviceAccountName: nri-bundle-nri-metadata-injection-admission
+      securityContext:
+        runAsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 2000
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nri-bundle-nri-metadata-injection-admission
+subjects:
+  - kind: ServiceAccount
+    name: nri-bundle-nri-metadata-injection-admission
+    namespace: default
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission
+  namespace: default
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/mutatingWebhookConfiguration.yaml
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: nri-bundle-nri-metadata-injection
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+webhooks:
+- name: metadata-injection.newrelic.com
+  clientConfig:
+    service:
+      name: nri-bundle-nri-metadata-injection
+      namespace: default
+      path: "/mutate"
+    caBundle: ""
+  rules:
+  - operations: ["CREATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  failurePolicy: Ignore
+  timeoutSeconds: 28
+  sideEffects: None
+  admissionReviewVersions: ["v1", "v1beta1"]
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nri-bundle-nri-metadata-injection
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nri-metadata-injection
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: nri-metadata-injection
+    spec:
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsGroup: 1001
+      hostNetwork: false
+      containers:
+      - name: nri-metadata-injection
+        image: "newrelic/k8s-metadata-injection:1.35.0"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: clusterName
+          value: scv-gke-cluster
+        ports:
+          - containerPort: 8443
+            protocol: TCP
+        volumeMounts:
+        - name: tls-key-cert-pair
+          mountPath: /etc/tls-key-cert-pair
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 1
+          periodSeconds: 1
+        resources:
+          
+          limits:
+            memory: 80M
+          requests:
+            cpu: 100m
+            memory: 30M
+      volumes:
+      - name: tls-key-cert-pair
+        secret:
+          secretName: nri-bundle-nri-metadata-injection-admission
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nri-bundle-nri-metadata-injection
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.35.0
+    helm.sh/chart: nri-metadata-injection-4.27.0
+spec:
+  ports:
+  - port: 443
+    targetPort: 8443
+  selector:
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: nri-metadata-injection
