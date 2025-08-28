@@ -19,6 +19,7 @@ type Config struct {
 	Port        int
 	Database    string
 	DSN         string
+	NewRelicKey string
 
 	// set in json config files
 	config
@@ -34,13 +35,14 @@ type config struct {
 // ReadConfig from the project´s JSON config files.
 // Default values are specified in the default configuration file, config/config.json
 // and can be overrided with values specified in the environment configuration files, config/config.{env}.json.
-func ReadConfig(version, env string, port int, database, dsn, configPath string) (Config, error) {
+func ReadConfig(version, env string, port int, database, dsn, newrelicKey, configPath string) (Config, error) {
 	var c Config
 	c.Version = version
 	c.Environment = env
 	c.Port = port
 	c.Database = database
 	c.DSN = dsn
+	c.NewRelicKey = newrelicKey
 
 	var cfg config
 

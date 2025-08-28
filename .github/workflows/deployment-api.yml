@@ -30,6 +30,8 @@ on:
         required: true
       DSN:
         required: true
+      NEWRELIC_KEY:
+        required: false
 
 jobs:
   deploy:
@@ -70,6 +72,7 @@ jobs:
           sed -i "s|__environment__|${{ inputs.ENVIRONMENT }}|g" build/k8s/manifest-api.yml
           sed -i "s|__port__|${{ inputs.PORT }}|g" build/k8s/manifest-api.yml
           sed -i "s|__database__|${{ inputs.DATABASE }}|g" build/k8s/manifest-api.yml
+          sed -i "s|__nrkey__|${{ secrets.NEWRELIC_KEY }}|g" build/k8s/manifest-api.yml
 
           ESCAPED_DSN=$(echo "${{ secrets.DSN }}" | sed 's/[&/|]/\\&/g')
           sed -i "s|__dsn__|$ESCAPED_DSN|g" build/k8s/manifest-api.yml

@@ -25,6 +25,7 @@ func main() {
 		Port        int    `long:"port" description:"Running port" required:"true"`
 		Database    string `long:"db" description:"The database adapter to use" choice:"mongo" choice:"postgres" required:"true"`
 		DSN         string `long:"dsn" description:"DSN of the selected database" required:"true"`
+		NewRelicKey string `long:"nrkey" description:"New Relic Key" required:"false"`
 	}
 
 	args, err := flags.Parse(&opts)
@@ -32,7 +33,7 @@ func main() {
 		log.Fatal(fmt.Errorf("provided flags not valid: %s, %w", args, err))
 	}
 
-	cfg, err := config.ReadConfig(opts.Version, opts.Environment, opts.Port, opts.Database, opts.DSN, "config")
+	cfg, err := config.ReadConfig(opts.Version, opts.Environment, opts.Port, opts.Database, opts.DSN, opts.NewRelicKey, "config")
 	if err != nil {
 		log.Fatal(fmt.Errorf("cannot parse config file for env %s: %w", opts.Environment, err))
 	}

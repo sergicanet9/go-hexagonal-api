@@ -35,6 +35,8 @@ spec:
               value: "__database__"
             - name: dsn
               value: "__dsn__"
+            - name: nrkey
+              value: "__nrkey__"
 ---
 apiVersion: v1
 kind: Service
