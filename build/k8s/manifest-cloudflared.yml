@@ -34,9 +34,9 @@ spec:
             - "--no-autoupdate"
             - "run"
             - "--no-tls-verify"
-          volumeMounts:
-            - name: config
-              mountPath: /etc/cloudflared/config
+          # volumeMounts: #TODO: remove
+          #   - name: config
+          #     mountPath: /etc/cloudflared/config
       # volumes:
       #   - name: config
       #     configMap:
