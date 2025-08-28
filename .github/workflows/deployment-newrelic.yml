@@ -42,22 +42,13 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-      # - name: Create newrelic secrets # TODO: remove this and manifest file
-      #   run: |
-      #     kubectl create secret generic nri-bundle-newrelic-infrastructure-license \
-      #     --from-literal=licenseKey="${{ secrets.NRIA_LICENSE_KEY }}" \
-      #     --dry-run=client -o yaml | kubectl apply -f -
-
-      # - name: Deploy to GKE
-      #   run: |
-      #     kubectl apply -f build/k8s/manifest-newrelic.yml
+      - name: Create newrelic secrets
+        run: |
+          kubectl create secret generic nri-bundle-newrelic-infrastructure-license \
+          --from-literal=licenseKey="${{ secrets.NRIA_LICENSE_KEY }}" \
+          --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Deploy to GKE
         run: |
-          helm repo add newrelic https://helm-charts.newrelic.com
-          helm repo update
+          kubectl apply -f build/k8s/manifest-newrelic.yml
 
-          helm upgrade --install newrelic-release newrelic/nri-bundle \
-            --set global.licenseKey="${{ secrets.NRIA_LICENSE_KEY }}" \
-            --set global.cluster="${{ inputs.GCP_CLUSTER_NAME }}" \
-            --set newrelic-infrastructure.enabled=true \
