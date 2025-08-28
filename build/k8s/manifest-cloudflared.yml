@@ -1,11 +1,3 @@
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: cloudflared-config
-# data:
-#   config.yaml: |
-#     tunnel: __tunnel__
-# --- # TODO remove?
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,10 +26,3 @@ spec:
             - "--no-autoupdate"
             - "run"
             - "--no-tls-verify"
-          # volumeMounts: #TODO: remove
-          #   - name: config
-          #     mountPath: /etc/cloudflared/config
-      # volumes:
-      #   - name: config
-      #     configMap:
-      #       name: cloudflared-config

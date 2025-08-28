@@ -59,5 +59,4 @@ jobs:
     secrets:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      # CLOUDFLARED_TUNNEL_ID: ${{ secrets.CLOUDFLARED_TUNNEL_ID }} #TODO: remove?
       CLOUDFLARED_TOKEN: ${{ secrets.CLOUDFLARED_TOKEN }}
