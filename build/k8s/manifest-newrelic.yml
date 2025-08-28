@@ -145,7 +145,7 @@ spec:
       serviceAccountName: nri-bundle-newrelic-logging
       containers:
       - name: newrelic-logging
-        image: newrelic/logging-k8s-metrics:latest
+        image: newrelic/newrelic-fluentbit-output:latest
 
         env:
         - name: NRIA_LICENSE_KEY
