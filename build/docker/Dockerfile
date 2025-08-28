@@ -34,6 +34,4 @@ ENV dsn=$dsn
 ARG newrelicKey
 ENV nrkey=$newrelicKey
 
-# CMD ["sh", "-c", "bin/main --ver $v --env $env --port $p --db $db --dsn $dsn --nrkey $nrkey"]
 CMD ["sh", "-c", "bin/main --ver $v --env $env --port $p --db $db --dsn $dsn --nrkey \"$nrkey\""]
-# CMD ["bin/main", "--ver", "$v", "--env", "$env", "--port", "$p", "--db", "$db", "--dsn", "$dsn", "--nrkey", "$nrkey"]

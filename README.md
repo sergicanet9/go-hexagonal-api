@@ -38,14 +38,14 @@ make down
 ### Run it with command line
 Run a single API instance with command-line arguments with the following command:
 ```
-    go run cmd/main.go --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn}
+    go run cmd/main.go --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn} --nrkey={newrelic_key}
 ```
 or:
 ```
 go build cmd/main.go
- ./main --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn}
+ ./main --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn} --nrkey={newrelic_key}
 ```
-Provide the desired values for: `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`.
+Provide the desired values for: `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`. The `--nrkey` flag is optional and can be omitted if you do not want to configure New Relic observability.
 <br />
 Then open `http://localhost:{port}/swagger/index.html` to access the Swagger UI page.
 <br />
