@@ -146,7 +146,6 @@ spec:
       containers:
       - name: newrelic-logging
         image: newrelic/newrelic-fluentbit-output:latest
-
         env:
         - name: NRIA_LICENSE_KEY
           valueFrom:
@@ -155,6 +154,8 @@ spec:
               key: licenseKey
         - name: NRIA_CLUSTER_NAME
           value: "scv-gke-cluster"
+        - name: FLB_PATH
+          value: /var/log/containers/*.log
         volumeMounts:
         - name: varlog
           mountPath: /var/log
