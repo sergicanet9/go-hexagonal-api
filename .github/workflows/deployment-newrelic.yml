@@ -48,11 +48,6 @@ jobs:
           --from-literal=licenseKey="${{ secrets.NRIA_LICENSE_KEY }}" \
           --dry-run=client -o yaml | kubectl apply -f -
 
-          kubectl create secret generic nri-bundle-nri-kube-events-license \
-            --from-literal=licenseKey="${{ secrets.NRIA_LICENSE_KEY }}" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Deploy to GKE
-        run: | #TODO: remove delete
-          kubectl delete -f build/k8s/manifest-newrelic.yml
+        run: |
           kubectl apply -f build/k8s/manifest-newrelic.yml
