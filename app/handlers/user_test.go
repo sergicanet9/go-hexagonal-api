@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,7 +32,7 @@ func TestLoginUser_Ok(t *testing.T) {
 	userService.On(testutils.FunctionName(t, ports.UserService.Login), mock.Anything, mock.AnythingOfType("models.LoginUserReq")).Return(expectedResponse, nil).Once()
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -70,7 +69,7 @@ func TestLoginUser_InvalidRequest(t *testing.T) {
 	expectedError := map[string]string(map[string]string{"error": "invalid character 'i' looking for beginning of value"})
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, nil)
+	userHandler := NewUserHandler(cfg, nil)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -102,7 +101,7 @@ func TestLoginUser_LoginError(t *testing.T) {
 	userService.On(testutils.FunctionName(t, ports.UserService.Login), mock.Anything, mock.AnythingOfType("models.LoginUserReq")).Return(models.LoginUserResp{}, errors.New(expectedError)).Once()
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -143,7 +142,7 @@ func TestCreateUser_Ok(t *testing.T) {
 	userService.On(testutils.FunctionName(t, ports.UserService.Create), mock.Anything, mock.AnythingOfType("models.CreateUserReq")).Return(expectedResponse, nil).Once()
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -180,7 +179,7 @@ func TestCreateUser_InvalidRequest(t *testing.T) {
 	expectedError := map[string]string(map[string]string{"error": "invalid character 'i' looking for beginning of value"})
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, nil)
+	userHandler := NewUserHandler(cfg, nil)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -212,7 +211,7 @@ func TestCreateUser_CreateError(t *testing.T) {
 	userService.On(testutils.FunctionName(t, ports.UserService.Create), mock.Anything, mock.AnythingOfType("models.CreateUserReq")).Return(models.CreationResp{}, errors.New(expectedError)).Once()
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -253,7 +252,7 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 	userService.On(testutils.FunctionName(t, ports.UserService.CreateMany), mock.Anything, mock.AnythingOfType("[]models.CreateUserReq")).Return(expectedResponse, nil).Once()
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -292,7 +291,7 @@ func TestCreateManyUsers_InvalidRequest(t *testing.T) {
 	expectedError := map[string]string(map[string]string{"error": "invalid character 'i' looking for beginning of value"})
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, nil)
+	userHandler := NewUserHandler(cfg, nil)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -324,7 +323,7 @@ func TestCreateManyUsers_CreateManyError(t *testing.T) {
 	userService.On(testutils.FunctionName(t, ports.UserService.CreateMany), mock.Anything, mock.AnythingOfType("[]models.CreateUserReq")).Return(models.MultiCreationResp{}, errors.New(expectedError)).Once()
 
 	cfg := config.Config{}
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -370,7 +369,7 @@ func TestGetAllUsers_Ok(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -405,7 +404,7 @@ func TestGetAllUsers_GetAllError(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -442,7 +441,7 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -478,7 +477,7 @@ func TestGetUserByEmail_GetByEmailError(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -515,7 +514,7 @@ func TestGetUserByID_Ok(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -551,7 +550,7 @@ func TestGetUserByID_GetByIDError(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -586,7 +585,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -622,7 +621,7 @@ func TestUpdateUser_InvalidRequest(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, nil)
+	userHandler := NewUserHandler(cfg, nil)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -660,7 +659,7 @@ func TestUpdateUser_UpdateError(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -703,7 +702,7 @@ func TestDeleteUser_Ok(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -734,7 +733,7 @@ func TestDeleteUser_DeleteError(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()
@@ -771,7 +770,7 @@ func TestGetUserClaims_Ok(t *testing.T) {
 
 	cfg := config.Config{}
 	cfg.JWTSecret = "test-secret"
-	userHandler := NewUserHandler(context.Background(), cfg, userService)
+	userHandler := NewUserHandler(cfg, userService)
 	SetUserRoutes(r, userHandler)
 
 	rr := httptest.NewRecorder()

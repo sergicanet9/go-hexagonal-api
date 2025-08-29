@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -16,7 +15,7 @@ func TestHealthCheck_Ok(t *testing.T) {
 	r := mux.NewRouter()
 
 	cfg := config.Config{}
-	healthHandler := NewHealthHandler(context.Background(), cfg)
+	healthHandler := NewHealthHandler(cfg)
 	SetHealthRoutes(r, healthHandler)
 
 	rr := httptest.NewRecorder()

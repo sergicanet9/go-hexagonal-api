@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 	"strconv"
 
@@ -11,14 +10,12 @@ import (
 )
 
 type healthHandler struct {
-	ctx context.Context
 	cfg config.Config
 }
 
 // NewHealthHandler creates a new health handler
-func NewHealthHandler(ctx context.Context, cfg config.Config) healthHandler {
+func NewHealthHandler(cfg config.Config) healthHandler {
 	return healthHandler{
-		ctx: ctx,
 		cfg: cfg,
 	}
 }

@@ -17,15 +17,13 @@ import (
 )
 
 type userHandler struct {
-	ctx context.Context
 	cfg config.Config
 	svc ports.UserService
 }
 
 // NewUserHandler creates a new user handler
-func NewUserHandler(ctx context.Context, cfg config.Config, svc ports.UserService) userHandler {
+func NewUserHandler(cfg config.Config, svc ports.UserService) userHandler {
 	return userHandler{
-		ctx: ctx,
 		cfg: cfg,
 		svc: svc,
 	}
@@ -64,7 +62,7 @@ func SetUserRoutes(router *mux.Router, u userHandler) {
 // @Failure 500 {object} object
 // @Router /v1/users/login [post]
 func (u *userHandler) loginUser(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	body, err := io.ReadAll(r.Body)
@@ -98,7 +96,7 @@ func (u *userHandler) loginUser(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/users [post]
 func (u *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	body, err := io.ReadAll(r.Body)
@@ -132,7 +130,7 @@ func (u *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/users/many [post]
 func (u *userHandler) createManyUsers(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	body, err := io.ReadAll(r.Body)
@@ -167,7 +165,7 @@ func (u *userHandler) createManyUsers(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/users [get]
 func (u *userHandler) getAllUsers(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	users, err := u.svc.GetAll(ctx)
@@ -190,7 +188,7 @@ func (u *userHandler) getAllUsers(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/users/email/{email} [get]
 func (u *userHandler) getUserByEmail(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	var params = mux.Vars(r)
@@ -214,7 +212,7 @@ func (u *userHandler) getUserByEmail(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/users/{id} [get]
 func (u *userHandler) getUserByID(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	var params = mux.Vars(r)
@@ -239,7 +237,7 @@ func (u *userHandler) getUserByID(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/users/{id} [patch]
 func (u *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	body, err := io.ReadAll(r.Body)
@@ -275,7 +273,7 @@ func (u *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/claims [get]
 func (u *userHandler) getUserClaims(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	claims := u.svc.GetUserClaims(ctx)
@@ -294,7 +292,7 @@ func (u *userHandler) getUserClaims(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} object
 // @Router /v1/users/{id} [delete]
 func (u *userHandler) deleteUser(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	ctx, cancel := context.WithTimeout(r.Context(), u.cfg.Timeout.Duration)
 	defer cancel()
 
 	var params = mux.Vars(r)
