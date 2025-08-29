@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
@@ -192,11 +193,15 @@ func New(t *testing.T, database string) config.Config {
 	if err != nil {
 		t.Fatal(err)
 	}
+	nrApp, _ := newrelic.NewApplication(
+		newrelic.ConfigAppName("go-new-relic-test"),
+		newrelic.ConfigLicense("0123456789012345678901234567890123456789"),
+	)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
-	a := api.New(ctx, cfg)
+	a := api.New(ctx, cfg, nrApp)
 	run := a.Run(ctx, cancel)
 	go run()
 

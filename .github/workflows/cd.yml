@@ -62,13 +62,3 @@ jobs:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
       CLOUDFLARED_TOKEN: ${{ secrets.CLOUDFLARED_TOKEN }}
 
-  newrelic-prod:
-    needs: cloudflared-prod
-    uses: ./.github/workflows/deployment-newrelic.yml
-    with:
-      GCP_CLUSTER_REGION: us-east1-b
-      GCP_CLUSTER_NAME: scv-gke-cluster
-    secrets:
-      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      NRIA_LICENSE_KEY: ${{ secrets.NRIA_LICENSE_KEY }}

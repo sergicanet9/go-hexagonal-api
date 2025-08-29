@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/jessevdk/go-flags"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/app/async"
 	"github.com/sergicanet9/go-hexagonal-api/config"
+	"github.com/sergicanet9/scv-go-tools/v3/observability"
 )
 
 // @title Go Hexagonal API
@@ -30,18 +31,27 @@ func main() {
 
 	args, err := flags.Parse(&opts)
 	if err != nil {
-		log.Fatal(fmt.Errorf("provided flags not valid: %s, %w", args, err))
+		observability.Logger().Fatal(fmt.Errorf("provided flags not valid: %s, %w", args, err))
 	}
 
 	cfg, err := config.ReadConfig(opts.Version, opts.Environment, opts.Port, opts.Database, opts.DSN, opts.NewRelicKey, "config")
 	if err != nil {
-		log.Fatal(fmt.Errorf("cannot parse config file for env %s: %w", opts.Environment, err))
+		observability.Logger().Fatal(fmt.Errorf("cannot parse config file for env %s: %w", opts.Environment, err))
+	}
+
+	var newrelicApp *newrelic.Application
+	if cfg.NewRelicKey != "" {
+		appName := fmt.Sprintf("go-hexagonal-api-%s-%s", cfg.Database, cfg.Environment)
+		newrelicApp, err = observability.SetupNewRelic(appName, cfg.NewRelicKey)
+		if err != nil {
+			observability.Logger().Fatalf("could not set up new relic: %s", err)
+		}
 	}
 
 	var g multierror.Group
 	ctx, cancel := context.WithCancel(context.Background())
 
-	a := api.New(ctx, cfg)
+	a := api.New(ctx, cfg, newrelicApp)
 	g.Go(a.Run(ctx, cancel))
 
 	if cfg.Async.Run {
@@ -50,6 +60,6 @@ func main() {
 	}
 
 	if err := g.Wait().ErrorOrNil(); err != nil {
-		log.Fatal(err)
+		observability.Logger().Fatal(err)
 	}
 }

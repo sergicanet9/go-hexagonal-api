@@ -13,7 +13,7 @@ require (
 	github.com/newrelic/go-agent/v3 v3.40.1
 	github.com/newrelic/go-agent/v3/integrations/nrgorilla v1.2.5
 	github.com/ory/dockertest/v3 v3.9.1
-	github.com/sergicanet9/scv-go-tools/v3 v3.9.0
+	github.com/sergicanet9/scv-go-tools/v3 v3.10.0
 	github.com/stretchr/testify v1.11.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.6
@@ -50,6 +50,8 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
+	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter v1.0.3 // indirect
+	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
 	github.com/opencontainers/runc v1.1.4 // indirect

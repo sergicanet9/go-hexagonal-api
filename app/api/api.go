@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"path/filepath"
 	"runtime"
@@ -19,12 +18,14 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/mongo"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/postgres"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
+	"github.com/sergicanet9/scv-go-tools/v3/observability"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type api struct {
-	config   config.Config
-	services svs
+	config      config.Config
+	services    svs
+	newrelicApp *newrelic.Application
 }
 
 type svs struct {
@@ -32,37 +33,38 @@ type svs struct {
 }
 
 // New creates a new API
-func New(ctx context.Context, cfg config.Config) (a api) {
+func New(ctx context.Context, cfg config.Config, nrApp *newrelic.Application) (a api) {
 	a.config = cfg
+	a.newrelicApp = nrApp
 
 	var userRepo ports.UserRepository
 	switch a.config.Database {
 	case "mongo":
 		db, err := infrastructure.ConnectMongoDB(ctx, a.config.DSN)
 		if err != nil {
-			log.Fatal(err)
+			observability.Logger().Fatal(err)
 		}
 
 		userRepo, err = mongo.NewUserRepository(ctx, db)
 		if err != nil {
-			log.Fatal(err)
+			observability.Logger().Fatal(err)
 		}
 	case "postgres":
 		db, err := infrastructure.ConnectPostgresDB(ctx, a.config.DSN)
 		if err != nil {
-			log.Fatal(err)
+			observability.Logger().Fatal(err)
 		}
 
 		_, filePath, _, _ := runtime.Caller(0)
 		migrationsDir := filepath.Join(filePath, "../../..", cfg.PostgresMigrationsDir)
 		err = infrastructure.MigratePostgresDB(db, migrationsDir)
 		if err != nil {
-			log.Fatal(err)
+			observability.Logger().Fatal(err)
 		}
 
 		userRepo = postgres.NewUserRepository(db)
 	default:
-		log.Fatalf("database flag %s not valid", a.config.Database)
+		observability.Logger().Fatalf("database flag %s not valid", a.config.Database)
 	}
 
 	a.services.user = services.NewUserService(a.config, userRepo)
@@ -75,14 +77,7 @@ func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 		defer cancel()
 
 		router := mux.NewRouter()
-
-		fmt.Printf("value of new relic key: %s\n", a.config.NewRelicKey) //TODO: remove
-		if a.config.NewRelicKey != "" {
-			err := setupObservability(router, a.config)
-			if err != nil {
-				log.Fatalf("could not set up observability: %s", err)
-			}
-		}
+		router.Use(nrgorilla.Middleware(a.newrelicApp))
 
 		healthHandler := handlers.NewHealthHandler(ctx, a.config)
 		handlers.SetHealthRoutes(router, healthHandler)
@@ -92,10 +87,10 @@ func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 
 		router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
 
-		log.Printf("Version: %s", a.config.Version)
-		log.Printf("Environment: %s", a.config.Environment)
-		log.Printf("Database: %s", a.config.Database)
-		log.Printf("Listening on port %d", a.config.Port)
+		observability.Logger().Printf("Version: %s", a.config.Version)
+		observability.Logger().Printf("Environment: %s", a.config.Environment)
+		observability.Logger().Printf("Database: %s", a.config.Database)
+		observability.Logger().Printf("Listening on port %d", a.config.Port)
 
 		server := &http.Server{
 			Addr:    fmt.Sprintf(":%d", a.config.Port),
@@ -106,24 +101,8 @@ func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 	}
 }
 
-func setupObservability(router *mux.Router, config config.Config) error {
-	appName := fmt.Sprintf("go-hexagonal-api-%s-%s", config.Database, config.Environment)
-
-	newrelicApp, err := newrelic.NewApplication(
-		newrelic.ConfigAppName(appName),
-		newrelic.ConfigLicense(config.NewRelicKey),
-		newrelic.ConfigAppLogForwardingEnabled(true),
-	)
-	if err != nil {
-		return err
-	}
-
-	router.Use(nrgorilla.Middleware(newrelicApp))
-	return nil
-}
-
 func shutdown(ctx context.Context, server *http.Server) {
 	<-ctx.Done()
-	log.Printf("Shutting down API gracefully...")
+	observability.Logger().Printf("Shutting down API gracefully...")
 	server.Shutdown(ctx)
 }

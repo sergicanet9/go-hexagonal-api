@@ -2,9 +2,10 @@ package healthchecker
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/sergicanet9/scv-go-tools/v3/observability"
 )
 
 const contentType = "application/json"
@@ -13,7 +14,7 @@ func Run(ctx context.Context, cancel context.CancelFunc, url string, interval ti
 	defer cancel()
 	defer func() {
 		if rec := recover(); rec != nil {
-			log.Print("recovered panic in async process: %w", rec)
+			observability.Logger().Print("recovered panic in async process: %w", rec)
 		}
 	}()
 
@@ -24,7 +25,7 @@ func Run(ctx context.Context, cancel context.CancelFunc, url string, interval ti
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {
-			log.Printf("async process failure, error: %s", err)
+			observability.Logger().Printf("async process failure, error: %s", err)
 			continue
 		}
 
@@ -32,16 +33,16 @@ func Run(ctx context.Context, cancel context.CancelFunc, url string, interval ti
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			log.Printf("async process failure, error: %s", err)
+			observability.Logger().Printf("async process failure, error: %s", err)
 			continue
 		}
 
 		if resp.StatusCode != http.StatusOK {
-			log.Printf("async process failure, error: expected status code 200 but got %d", resp.StatusCode)
+			observability.Logger().Printf("async process failure, error: expected status code 200 but got %d", resp.StatusCode)
 			continue
 		}
 
 		elapsed := time.Since(start)
-		log.Printf("Health Check complete, time elapsed: %s", elapsed)
+		observability.Logger().Printf("Health Check complete, time elapsed: %s", elapsed)
 	}
 }

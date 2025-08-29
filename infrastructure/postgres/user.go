@@ -129,7 +129,7 @@ func (r *userRepository) Update(ctx context.Context, ID string, user interface{}
 
 	rows, err := result.RowsAffected()
 	if err != nil {
-		fmt.Println("RowsAffected Error", err)
+		return err
 	}
 	if rows < 1 {
 		return wrappers.NewNonExistentErr(sql.ErrNoRows)
