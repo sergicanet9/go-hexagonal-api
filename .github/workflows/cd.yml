@@ -40,7 +40,7 @@ jobs:
     with:
       GITHUB_CONTAINERREGISTRY_URL: ghcr.io
       GCP_CLUSTER_REGION: us-east1-b
-      GCP_CLUSTER_NAME: scv-gke-cluster
+      GCP_CLUSTER_NAME: scv-cluster
       ENVIRONMENT: prod
       PORT: 80
       DATABASE: mongo
@@ -56,7 +56,7 @@ jobs:
     uses: ./.github/workflows/deployment-cloudflared.yml
     with:
       GCP_CLUSTER_REGION: us-east1-b
-      GCP_CLUSTER_NAME: scv-gke-cluster
+      GCP_CLUSTER_NAME: scv-cluster
     secrets:
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
