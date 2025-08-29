@@ -13,9 +13,9 @@ The API is designed to work seamlessly with either a MongoDB or PostgreSQL datab
 - **Database Agnostic**: Decoupled repository adapters allow switching between MongoDB and PostgreSQL storage without changing core logic.
 - **Authentication & Authorization**: Implements JWT authentication and claim-based authorization for secure endpoints for user management.
 - **Asyncronous Process**: Go routines management with an included process for periodically health checking the application.
-- **Lifecycle Management**: Multi-environment support with config files, dockerfile and docker-compose, kubernetes deployment files and CI/CD pipelines with GitHub Actions.
 - **Testing**: Comprehensive unit tests with code coverage and integration tests for the happy path.
 - **Developer Experience**: Built-in Makefile, Swagger UI for API documentation and management UIs for each database (pgAdmin and mongo-express).
+- **Lifecycle Management**: Multi-environment support with config files, dockerfile and docker-compose, CI/CD pipelines with GitHub Actions, Kubernetes deployment and New Relic observability.
 
 ## 🏁 Getting Started
 ### Run it with Docker
@@ -45,7 +45,9 @@ or:
 go build cmd/main.go
  ./main --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn} --nrkey={newrelic_key}
 ```
-Provide the desired values for: `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`. The `--nrkey` flag is optional and can be omitted if you do not want to configure New Relic observability.
+Provide the desired values for: `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`.
+<br />
+The `--nrkey` flag is optional and can be omitted if you do not want to configure New Relic observability.
 <br />
 Then open `http://localhost:{port}/swagger/index.html` to access the Swagger UI page.
 <br />
