@@ -17,11 +17,9 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/core/services"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/mongo"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/postgres"
-	"github.com/sergicanet9/go-hexagonal-api/middlewares"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/sergicanet9/scv-go-tools/v3/observability"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"go.mongodb.org/mongo-driver/event"
 )
 
 type api struct {
@@ -42,11 +40,7 @@ func New(ctx context.Context, cfg config.Config, nrApp *newrelic.Application) (a
 	var userRepo ports.UserRepository
 	switch a.config.Database {
 	case "mongo":
-		var mongoMonitor *event.CommandMonitor
-		if nrApp != nil {
-			mongoMonitor = observability.NewRelicMongoMonitor()
-		}
-		db, err := infrastructure.ConnectMongoDB(ctx, a.config.DSN, mongoMonitor)
+		db, err := infrastructure.ConnectMongoDB(ctx, a.config.DSN)
 		if err != nil {
 			observability.Logger().Fatal(err)
 		}
@@ -83,13 +77,12 @@ func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 		defer cancel()
 
 		router := mux.NewRouter()
-		router.Use(middlewares.SetRequestContext(ctx))
 		router.Use(nrgorilla.Middleware(a.newrelicApp))
 
-		healthHandler := handlers.NewHealthHandler(a.config)
+		healthHandler := handlers.NewHealthHandler(ctx, a.config)
 		handlers.SetHealthRoutes(router, healthHandler)
 
-		userHandler := handlers.NewUserHandler(a.config, a.services.user)
+		userHandler := handlers.NewUserHandler(ctx, a.config, a.services.user)
 		handlers.SetUserRoutes(router, userHandler)
 
 		router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
