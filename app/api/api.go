@@ -20,6 +20,7 @@ import (
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/sergicanet9/scv-go-tools/v3/observability"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"go.mongodb.org/mongo-driver/event"
 )
 
 type api struct {
@@ -40,7 +41,11 @@ func New(ctx context.Context, cfg config.Config, nrApp *newrelic.Application) (a
 	var userRepo ports.UserRepository
 	switch a.config.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(ctx, a.config.DSN)
+		var mongoMonitor *event.CommandMonitor
+		if nrApp != nil {
+			mongoMonitor = observability.NewRelicMongoMonitor()
+		}
+		db, err := infrastructure.ConnectMongoDB(ctx, a.config.DSN, mongoMonitor)
 		if err != nil {
 			observability.Logger().Fatal(err)
 		}

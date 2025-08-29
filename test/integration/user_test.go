@@ -439,7 +439,7 @@ func getNewTestUser() entities.User {
 func insertUser(u *entities.User, cfg config.Config) error {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN, nil)
 		if err != nil {
 			return err
 		}
@@ -475,7 +475,7 @@ func insertUser(u *entities.User, cfg config.Config) error {
 func findUser(ID string, cfg config.Config) (entities.User, error) {
 	switch cfg.Database {
 	case "mongo":
-		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN)
+		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN, nil)
 		if err != nil {
 			return entities.User{}, err
 		}

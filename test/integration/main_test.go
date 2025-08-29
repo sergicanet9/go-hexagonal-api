@@ -115,7 +115,7 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
 	pool.MaxWait = 10 * time.Second
 	err = pool.Retry(func() error {
-		_, err = infrastructure.ConnectMongoDB(context.Background(), dsn)
+		_, err = infrastructure.ConnectMongoDB(context.Background(), dsn, nil)
 		return err
 	})
 	if err != nil {
