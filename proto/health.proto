@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package health.v1;
+
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/v1";
+
+import "google/api/annotations.proto";
+
+// HealthService defines the gRPC service for health checks.
+service HealthService {
+  // HealthCheck runs a health check and returns the status of the API.
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/v1/health"
+    };
+  }
+}
+
+// HealthCheckRequest is the request for the health check.
+message HealthCheckRequest {}
+
+// HealthCheckResponse is the response from the health check.
+message HealthCheckResponse {
+  string version = 1;
+  string environment = 2;
+  string database = 3;
+  int32 port = 4;
+}
