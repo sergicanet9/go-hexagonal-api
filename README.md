@@ -4,7 +4,7 @@
 ![Coverage](https://img.shields.io/badge/Coverage-80.8%25-brightgreen)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergicanet9/go-hexagonal-api.svg)](https://pkg.go.dev/github.com/sergicanet9/go-hexagonal-api)
 
-A robust REST API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) pattern. It makes use of own [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) package.
+A robust API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) pattern. It makes use of own [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) package.
 <br />
 The API is designed to work seamlessly with either a MongoDB or PostgreSQL database instance, using the same business logic and handlers.
 
