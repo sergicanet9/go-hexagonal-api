@@ -150,14 +150,6 @@ For public access, the Kubernetes Service is configured as ClusterIP, and traffi
 <br />
 Check the Swagger at:
 https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
-<br/>
-<br/>
-NOTES:
-<br/>
-To minimize costs when the API is not in use, the cluster is configured to scale to zero nodes. This means that:
-- The first access to the API after a period of inactivity may take a few minutes. This delay is due to GKE needing to provision and start a new virtual machine node to host the API.
-- Once the node is active, the API will respond quickly to subsequent requests.
-
 
 ## ✍️ Author
 Sergi Canet Vela
