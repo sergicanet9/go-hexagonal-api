@@ -5,7 +5,6 @@ package health;
 option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/protogen";
 
 import "google/api/annotations.proto";
-import "google/api/http.proto";
 
 // HealthService defines the gRPC service for health checks.
 service HealthService {
