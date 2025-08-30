@@ -52,7 +52,9 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	a := api.New(ctx, cfg, newrelicApp)
-	g.Go(a.Run(ctx, cancel))
+	// g.Go(a.Run(ctx, cancel))
+	g.Go(a.RunGRPC(ctx, cancel))
+	g.Go(a.RunGRPCGateway(ctx, cancel))
 
 	if cfg.Async.Run {
 		async := async.New(cfg)

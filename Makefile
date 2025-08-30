@@ -33,7 +33,9 @@ protos:
 	curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/annotations.proto -o proto/google/api/annotations.proto
 	curl -sSL https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto -o proto/google/api/http.proto
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
-# 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
-# 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.16
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.16
 	cd proto && protoc --go_out=protogen --go_opt=paths=source_relative \
+	--go-grpc_out=protogen --go-grpc_opt=paths=source_relative \
+	--grpc-gateway_out=protogen --grpc-gateway_opt=paths=source_relative \
 	./*.proto

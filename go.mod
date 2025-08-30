@@ -7,18 +7,22 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/gorilla/mux v1.8.1
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/lib/pq v1.10.9
 	github.com/newrelic/go-agent/v3 v3.40.1
 	github.com/newrelic/go-agent/v3/integrations/nrgorilla v1.2.5
 	github.com/ory/dockertest/v3 v3.9.1
-	github.com/sergicanet9/scv-go-tools/v3 v3.12.0
+	github.com/sergicanet9/scv-go-tools/v3 v3.12.1
 	github.com/stretchr/testify v1.11.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.6
 	go.mongodb.org/mongo-driver v1.17.4
 	golang.org/x/crypto v0.41.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20250826171959-ef028d996bc1
+	google.golang.org/grpc v1.75.0
+	google.golang.org/protobuf v1.36.8
 )
 
 require (
@@ -50,9 +54,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
-	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter v1.0.3 // indirect
-	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.0 // indirect
-	github.com/newrelic/go-agent/v3/integrations/nrmongo v1.1.5 // indirect
+	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
 	github.com/opencontainers/runc v1.1.4 // indirect
@@ -77,10 +79,7 @@ require (
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/tools v0.36.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250826171959-ef028d996bc1 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250818200422-3122310a409c // indirect
-	google.golang.org/grpc v1.71.0 // indirect
-	google.golang.org/protobuf v1.36.8 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
