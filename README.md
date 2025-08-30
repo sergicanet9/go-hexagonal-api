@@ -47,7 +47,7 @@ go build cmd/main.go
 ```
 Provide the desired values for: `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`.
 <br />
-The `--nrkey` flag is optional and can be omitted if you do not want to configure New Relic observability.
+The `--nrkey` flag and is value `{newrelic_key}` are optional and can be omitted if you do not want to configure New Relic observability.
 <br />
 Then open `http://localhost:{port}/swagger/index.html` to access the Swagger UI page.
 <br />
