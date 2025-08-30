@@ -9,8 +9,8 @@ A robust REST API for user management built with **Go** and implementing the **H
 The API is designed to work seamlessly with either a MongoDB or PostgreSQL database instance, using the same business logic and handlers.
 
 ## 🚀 Features
-- **Hexagonal Architecture**: Clear separation of concerns with domain, application and infrastructure layers.
-- **Database Agnostic**: Decoupled repository adapters allow switching between MongoDB and PostgreSQL storage without changing core logic.
+- **Hexagonal Architecture**: Clear separation of concerns with transport, business logic and repository layers.
+- **Database Agnostic**: Decoupled repository adapters allow injecting a MongoDB or PostgreSQL storage without changing core logic.
 - **Authentication & Authorization**: Implements JWT authentication and claim-based authorization for secure endpoints for user management.
 - **Asyncronous Process**: Go routines management with an included process for periodically health checking the application.
 - **Testing**: Comprehensive unit tests with code coverage and integration tests for the happy path.
