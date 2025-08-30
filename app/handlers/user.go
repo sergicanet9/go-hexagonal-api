@@ -33,8 +33,6 @@ func NewUserHandler(ctx context.Context, cfg config.Config, svc ports.UserServic
 
 // SetUserRoutes creates user routes
 func SetUserRoutes(router *mux.Router, u userHandler) {
-	router.Use(middlewares.Recover)
-
 	router.HandleFunc("/v1/users/login", u.loginUser).Methods(http.MethodPost)
 	router.HandleFunc("/v1/users", u.createUser).Methods(http.MethodPost)
 	router.HandleFunc("/v1/users/many", u.createManyUsers).Methods(http.MethodPost)

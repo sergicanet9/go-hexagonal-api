@@ -17,6 +17,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/core/services"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/mongo"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/postgres"
+	"github.com/sergicanet9/scv-go-tools/v3/api/middlewares"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/sergicanet9/scv-go-tools/v3/observability"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -77,6 +78,7 @@ func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 		defer cancel()
 
 		router := mux.NewRouter()
+		router.Use(middlewares.Recover)
 		router.Use(nrgorilla.Middleware(a.newrelicApp))
 
 		healthHandler := handlers.NewHealthHandler(ctx, a.config)
