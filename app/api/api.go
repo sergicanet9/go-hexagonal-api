@@ -113,7 +113,7 @@ func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServer
 
 func shutdownGRPC(ctx context.Context, server *grpc.Server) {
 	<-ctx.Done()
-	observability.Logger().Printf("Shutting down GRPC API gracefully...")
+	observability.Logger().Printf("Shutting down gRPC API gracefully...")
 	server.GracefulStop()
 }
 
