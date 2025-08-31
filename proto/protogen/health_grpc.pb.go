@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HealthServiceClient interface {
-	// HealthCheck runs a health check and returns the status of the API.
+	// HealthCheck returns basic runtime information of the API when the service is up.
 	HealthCheck(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
 
@@ -48,7 +48,7 @@ func (c *healthServiceClient) HealthCheck(ctx context.Context, in *emptypb.Empty
 // All implementations must embed UnimplementedHealthServiceServer
 // for forward compatibility
 type HealthServiceServer interface {
-	// HealthCheck runs a health check and returns the status of the API.
+	// HealthCheck returns basic runtime information of the API when the service is up.
 	HealthCheck(context.Context, *emptypb.Empty) (*HealthCheckResponse, error)
 	mustEmbedUnimplementedHealthServiceServer()
 }

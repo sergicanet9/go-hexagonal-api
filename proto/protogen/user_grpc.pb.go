@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
-	// GetAllUsers gets all existing users
+	// GetAllUsers gets all existing users.
 	GetAllUsers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (UserService_GetAllUsersClient, error)
 }
 
@@ -71,7 +71,7 @@ func (x *userServiceGetAllUsersClient) Recv() (*UserResponse, error) {
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
-	// GetAllUsers gets all existing users
+	// GetAllUsers gets all existing users.
 	GetAllUsers(*emptypb.Empty, UserService_GetAllUsersServer) error
 	mustEmbedUnimplementedUserServiceServer()
 }

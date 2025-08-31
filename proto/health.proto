@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 service HealthService {
-  // HealthCheck runs a health check and returns the status of the API.
+  // HealthCheck returns basic runtime information of the API when the service is up.
   rpc HealthCheck(google.protobuf.Empty) returns (HealthCheckResponse) {
     option (google.api.http) = {
       get: "/health"

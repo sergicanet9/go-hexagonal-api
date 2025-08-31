@@ -21,7 +21,7 @@
   "paths": {
     "/health": {
       "get": {
-        "summary": "HealthCheck runs a health check and returns the status of the API.",
+        "summary": "HealthCheck returns basic runtime information of the API when the service is up.",
         "operationId": "HealthService_HealthCheck",
         "responses": {
           "200": {
@@ -44,7 +44,7 @@
     },
     "/v1/users": {
       "get": {
-        "summary": "GetAllUsers gets all existing users",
+        "summary": "GetAllUsers gets all existing users.",
         "operationId": "UserService_GetAllUsers",
         "responses": {
           "200": {
@@ -149,7 +149,7 @@
           }
         }
       },
-      "title": "UserResponse is the response for a single user"
+      "description": "UserResponse is the response for a single user."
     }
   }
 }

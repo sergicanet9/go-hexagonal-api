@@ -4,14 +4,24 @@ package users;
 
 option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/protogen";
 
-import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 service UserService {
 // GetAllUsers gets all existing users.
     rpc GetAllUsers(google.protobuf.Empty) returns (stream UserResponse) {
         option (google.api.http) = {
             get: "/v1/users"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all users"
+            description: "Returns the list of all registered users"
+            security: {
+                security_requirement: {
+                    key: "BearerAuth"
+                    value: {}
+                }
+            }
         };
     }
 }

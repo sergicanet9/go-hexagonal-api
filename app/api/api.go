@@ -16,7 +16,7 @@ import (
 
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/newrelic/go-agent/v3/integrations/nrgrpc"
-	grpcHandlers "github.com/sergicanet9/go-hexagonal-api/app/grpc/handlers"
+	"github.com/sergicanet9/go-hexagonal-api/app/grpc/handlers"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/go-hexagonal-api/core/services"
@@ -93,8 +93,13 @@ func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServer
 			grpc.UnaryInterceptor(nrgrpc.UnaryServerInterceptor(a.newrelicApp)),
 			grpc.StreamInterceptor(nrgrpc.StreamServerInterceptor(a.newrelicApp)),
 		)
-		healthHander := grpcHandlers.NewHealthHandler(ctx, a.config)
+
+		healthHander := handlers.NewHealthHandler(ctx, a.config)
 		pb.RegisterHealthServiceServer(server, healthHander)
+
+		userHandler := handlers.NewUserHandler(ctx, a.config, a.services.user)
+		pb.RegisterUserServiceServer(server, userHandler)
+
 		reflection.Register(server)
 
 		close(grpcServerReady)
@@ -121,11 +126,17 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		grpcServerAddr := fmt.Sprintf(":%d", a.config.GRPCPort)
 
 		gmux := grpcRuntime.NewServeMux()
-		gopts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+		opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-		err := pb.RegisterHealthServiceHandlerFromEndpoint(ctx, gmux, grpcServerAddr, gopts)
+		err := pb.RegisterHealthServiceHandlerFromEndpoint(ctx, gmux, grpcServerAddr, opts)
 		if err != nil {
-			observability.Logger().Fatalf("failed to register gateway: %s", err)
+			observability.Logger().Fatalf("failed to register health handler gateway: %s", err)
+		}
+
+		err = pb.RegisterUserServiceHandlerFromEndpoint(ctx, gmux, grpcServerAddr, opts)
+		if err != nil {
+			observability.Logger().Fatalf("failed to register user handler gateway: %s", err)
+
 		}
 
 		httpRouter := mux.NewRouter()
