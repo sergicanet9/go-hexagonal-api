@@ -11,9 +11,11 @@ import (
 
 	"github.com/fullstorydev/grpcui/standalone"
 	"github.com/gorilla/mux"
+	"github.com/newrelic/go-agent/v3/integrations/nrgorilla"
 	"github.com/newrelic/go-agent/v3/newrelic"
 
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/newrelic/go-agent/v3/integrations/nrgrpc"
 	grpcHandlers "github.com/sergicanet9/go-hexagonal-api/app/grpc/handlers"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
@@ -78,37 +80,6 @@ func New(ctx context.Context, cfg config.Config, nrApp *newrelic.Application) (a
 	return a
 }
 
-// // Run API
-// func (a *api) Run(ctx context.Context, cancel context.CancelFunc) func() error {
-// 	return func() error {
-// 		defer cancel()
-
-// 		router := mux.NewRouter()
-// 		router.Use(middlewares.Recover)
-// 		router.Use(nrgorilla.Middleware(a.newrelicApp))
-
-// 		healthHandler := handlers.NewHealthHandler(ctx, a.config)
-// 		handlers.SetHealthRoutes(router, healthHandler)
-
-// 		userHandler := handlers.NewUserHandler(ctx, a.config, a.services.user)
-// 		handlers.SetUserRoutes(router, userHandler)
-
-// 		router.PathPrefix("/swagger").HandlerFunc(httpSwagger.WrapHandler)
-
-// 		observability.Logger().Printf("Version: %s", a.config.Version)
-// 		observability.Logger().Printf("Environment: %s", a.config.Environment)
-// 		observability.Logger().Printf("Database: %s", a.config.Database)
-// 		observability.Logger().Printf("Listening on port %d", a.config.Port)
-
-// 		server := &http.Server{
-// 			Addr:    fmt.Sprintf(":%d", a.config.Port),
-// 			Handler: router,
-// 		}
-// 		go shutdownGRPCGateway(ctx, server)
-// 		return server.ListenAndServe()
-// 	}
-// }
-
 func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServerReady chan struct{}) func() error {
 	return func() error {
 		defer cancel()
@@ -118,7 +89,10 @@ func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServer
 			log.Fatalf("failed to listen on gRPC port: %s", err)
 		}
 
-		server := grpc.NewServer()
+		server := grpc.NewServer(
+			grpc.UnaryInterceptor(nrgrpc.UnaryServerInterceptor(a.newrelicApp)),
+			grpc.StreamInterceptor(nrgrpc.StreamServerInterceptor(a.newrelicApp)),
+		)
 		healthHander := grpcHandlers.NewHealthHandler(ctx, a.config)
 		pb.RegisterHealthServiceServer(server, healthHander)
 		reflection.Register(server)
@@ -155,6 +129,8 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		}
 
 		httpRouter := mux.NewRouter()
+		// router.Use(middlewares.Recover) #TODO remove?
+		httpRouter.Use(nrgorilla.Middleware(a.newrelicApp))
 
 		conn, err := grpc.NewClient(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
