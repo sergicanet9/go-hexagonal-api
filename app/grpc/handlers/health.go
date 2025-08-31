@@ -21,12 +21,19 @@ func NewHealthHandler(ctx context.Context, cfg config.Config) *healthHandler {
 	}
 }
 
-// TODO:
+// HealthCheck .
 func (h *healthHandler) HealthCheck(_ context.Context, req *pb.HealthCheckRequest) (*pb.HealthCheckResponse, error) {
-	return &pb.HealthCheckResponse{
+	response := &pb.HealthCheckResponse{
 		Version:     h.cfg.Version,
 		Environment: h.cfg.Environment,
 		Database:    h.cfg.Database,
-		Port:        int32(h.cfg.Port),
-	}, nil
+		HttpPort:    int32(h.cfg.HTTPPort),
+		GrpcPort:    int32(h.cfg.GRPCPort),
+		Dsn:         "***FILTERED***",
+	}
+	if h.cfg.Environment == "local" {
+		response.Dsn = h.cfg.DSN
+	}
+
+	return response, nil
 }

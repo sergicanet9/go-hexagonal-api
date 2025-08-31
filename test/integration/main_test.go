@@ -212,7 +212,7 @@ func New(t *testing.T, database string) config.Config {
 func testConfig(t *testing.T, database string) (c config.Config, err error) {
 	c.Version = "Integration tests"
 	c.Environment = "Integration tests"
-	c.Port = testutils.FreePort(t)
+	c.HTTPPort = testutils.FreePort(t)
 	c.Database = database
 	switch database {
 	case "mongo":

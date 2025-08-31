@@ -7,10 +7,15 @@ up:
 	openssl rand -base64 24 > mongo.keyfile
 	chmod 400 mongo.keyfile
 	docker-compose up -d --build
-	@echo "Mongo API Swagger:    http://localhost:${HOST_PORT_MONGOAPI}/swagger/index.html"
-	@echo "Postgres API Swagger: http://localhost:${HOST_PORT_POSTGRESAPI}/swagger/index.html"
-	@echo "Mongo Express:        http://localhost:${MONGO_EXPRESS_HOST_PORT}"
-	@echo "PgAdmin:              http://localhost:${PGADMIN_HOST_PORT}"
+	@echo ""
+	@echo "👉 Mongo API Swagger:    http://localhost:${HOST_HTTP_PORT_MONGOAPI}/swagger/index.html"
+	@echo "👉 Mongo API gRPC UI: 	 http://localhost:${HOST_HTTP_PORT_MONGOAPI}/grpcui/"
+	@echo "👉 Mongo Express:        http://localhost:${MONGO_EXPRESS_HOST_PORT}"
+	@echo ""
+	@echo "👉 Postgres API Swagger: http://localhost:${HOST_HTTP_PORT_POSTGRESAPI}/swagger/index.html"
+	@echo "👉 Postgres API gRPC UI: http://localhost:${HOST_HTTP_PORT_POSTGRESAPI}/grpcui/"
+	@echo "👉 PgAdmin:              http://localhost:${PGADMIN_HOST_PORT}"
+	@echo ""
 down:
 	docker-compose down
 test-unit:
@@ -35,7 +40,12 @@ protos:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.16
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.16
 	cd proto && protoc --go_out=protogen --go_opt=paths=source_relative \
 	--go-grpc_out=protogen --go-grpc_opt=paths=source_relative \
 	--grpc-gateway_out=protogen --grpc-gateway_opt=paths=source_relative \
+	--openapiv2_out=protogen/swagger \
+	--openapiv2_opt=allow_merge=true,merge_file_name=docs \
 	./*.proto
+
+

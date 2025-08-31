@@ -62,14 +62,15 @@ services:
       dockerfile: build/docker/Dockerfile
     environment:
       - env=$ENV
-      - p=$CONTAINER_PORT
+      - hp=$CONTAINER_HTTP_PORT
+      - gp=$CONTAINER_GRPC_PORT
       - db=mongo
       - dsn=$MONGO_DSN
     depends_on:
       - mongo
     ports:
-      - $HOST_PORT_MONGOAPI:$CONTAINER_PORT
-      - 50052:50051 # TODO: remove from here
+      - $HOST_HTTP_PORT_MONGOAPI:$CONTAINER_HTTP_PORT
+      - $HOST_GRPC_PORT_MONGOAPI:$CONTAINER_GRPC_PORT
   api-postgres:
     image: go-hexagonal-api:$VERSION
     container_name: go-hexagonal-api-postgres-$ENV
@@ -80,11 +81,12 @@ services:
       dockerfile: build/docker/Dockerfile
     environment:
       - env=$ENV
-      - p=$CONTAINER_PORT
+      - hp=$CONTAINER_HTTP_PORT
+      - gp=$CONTAINER_GRPC_PORT
       - db=postgres
       - dsn=$POSTGRES_DSN
     depends_on:
       - postgres
     ports:
-      - $HOST_PORT_POSTGRESAPI:$CONTAINER_PORT
-      - 50053:50051 # TODO: remove from here
+      - $HOST_HTTP_PORT_POSTGRESAPI:$CONTAINER_HTTP_PORT
+      - $HOST_GRPC_PORT_POSTGRESAPI:$CONTAINER_GRPC_PORT

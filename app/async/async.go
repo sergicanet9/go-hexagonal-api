@@ -21,7 +21,7 @@ func New(cfg config.Config) async {
 
 func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 	return func() error {
-		go healthchecker.Run(ctx, cancel, fmt.Sprintf("http://:%d/health", a.config.Port), a.config.Async.Interval.Duration)
+		go healthchecker.Run(ctx, cancel, fmt.Sprintf("http://:%d/health", a.config.HTTPPort), a.config.Async.Interval.Duration)
 
 		for ctx.Err() == nil {
 			<-time.After(1 * time.Second)

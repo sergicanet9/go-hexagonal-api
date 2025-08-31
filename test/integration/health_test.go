@@ -13,7 +13,7 @@ func TestHealthCheck_Ok(t *testing.T) {
 		cfg := New(t, database)
 
 		// Act
-		url := fmt.Sprintf("http://:%d/health", cfg.Port)
+		url := fmt.Sprintf("http://:%d/health", cfg.HTTPPort)
 
 		req, err := http.NewRequest(http.MethodGet, url, http.NoBody)
 		if err != nil {

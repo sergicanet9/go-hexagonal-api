@@ -38,7 +38,7 @@ func SetHealthRoutes(router *mux.Router, h healthHandler) {
 func (h *healthHandler) healthCheck(w http.ResponseWriter, r *http.Request) {
 	r.Header.Add("Version", h.cfg.Version)
 	r.Header.Add("Environment", h.cfg.Environment)
-	r.Header.Add("Port", strconv.Itoa(h.cfg.Port))
+	r.Header.Add("Port", strconv.Itoa(h.cfg.HTTPPort))
 	r.Header.Add("Database", h.cfg.Database)
 
 	if h.cfg.Environment == "local" {

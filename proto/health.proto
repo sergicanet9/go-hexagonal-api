@@ -11,7 +11,7 @@ service HealthService {
   // HealthCheck runs a health check and returns the status of the API.
   rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse) {
     option (google.api.http) = {
-      get: "/v1/health"
+      get: "/health"
     };
   }
 }
@@ -24,5 +24,7 @@ message HealthCheckResponse {
   string version = 1;
   string environment = 2;
   string database = 3;
-  int32 port = 4;
+  int32 httpPort = 4;
+  int32 grpcPort = 5;
+  string dsn = 6;
 }

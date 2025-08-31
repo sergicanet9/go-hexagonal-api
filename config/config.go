@@ -16,7 +16,8 @@ type Config struct {
 	// set in flags
 	Version     string
 	Environment string
-	Port        int
+	HTTPPort    int
+	GRPCPort    int
 	Database    string
 	DSN         string
 	NewRelicKey string
@@ -35,11 +36,12 @@ type config struct {
 // ReadConfig from the project´s JSON config files.
 // Default values are specified in the default configuration file, config/config.json
 // and can be overrided with values specified in the environment configuration files, config/config.{env}.json.
-func ReadConfig(version, env string, port int, database, dsn, newrelicKey, configPath string) (Config, error) {
+func ReadConfig(version, env string, httpPort, grpcPort int, database, dsn, newrelicKey, configPath string) (Config, error) {
 	var c Config
 	c.Version = version
 	c.Environment = env
-	c.Port = port
+	c.HTTPPort = httpPort
+	c.GRPCPort = grpcPort
 	c.Database = database
 	c.DSN = dsn
 	c.NewRelicKey = newrelicKey

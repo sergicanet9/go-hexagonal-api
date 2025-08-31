@@ -13,6 +13,7 @@ FROM alpine:latest
 COPY --from=builder /opt/go-hexagonal-api/bin/main /opt/go-hexagonal-api/bin/main
 COPY --from=builder /opt/go-hexagonal-api/config/*.json /opt/go-hexagonal-api/config/
 COPY --from=builder /opt/go-hexagonal-api/infrastructure/postgres/migrations/*.sql /opt/go-hexagonal-api/infrastructure/postgres/migrations/
+COPY --from=builder /opt/go-hexagonal-api/proto/protogen/swagger/*.json /opt/go-hexagonal-api/proto/protogen/swagger/
 
 WORKDIR /opt/go-hexagonal-api
 
@@ -22,8 +23,11 @@ ENV v=$version
 ARG environment
 ENV env=$environment
 
-ARG port
-ENV p=$port
+ARG httpPort
+ENV hp=$httpPort
+
+ARG grpcPort
+ENV gp=$grpcPort
 
 ARG database
 ENV db=$database
@@ -34,4 +38,4 @@ ENV dsn=$dsn
 ARG newrelicKey
 ENV nrkey=$newrelicKey
 
-CMD ["sh", "-c", "bin/main --ver $v --env $env --port $p --db $db --dsn $dsn --nrkey \"$nrkey\""]
+CMD ["sh", "-c", "bin/main --ver $v --env $env --hport $hp --gport $gp --db $db --dsn $dsn --nrkey \"$nrkey\""]
