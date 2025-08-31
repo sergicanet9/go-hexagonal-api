@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
 service UserService {
-// GetAllUsers gets all existing users
+// GetAllUsers gets all existing users.
     rpc GetAllUsers(google.protobuf.Empty) returns (stream UserResponse) {
         option (google.api.http) = {
             get: "/v1/users"
@@ -16,7 +16,7 @@ service UserService {
     }
 }
 
-// UserResponse is the response for a single user
+// UserResponse is the response for a single user.
 message UserResponse {
     string id = 1;
     string name = 2;
