@@ -7,6 +7,9 @@
   "tags": [
     {
       "name": "HealthService"
+    },
+    {
+      "name": "UserService"
     }
   ],
   "consumes": [
@@ -36,6 +39,38 @@
         },
         "tags": [
           "HealthService"
+        ]
+      }
+    },
+    "/v1/users": {
+      "get": {
+        "summary": "GetAllUsers gets all existing users",
+        "operationId": "UserService_GetAllUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/usersUserResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/rpcStatus"
+                }
+              },
+              "title": "Stream result of usersUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
         ]
       }
     }
@@ -94,6 +129,27 @@
           }
         }
       }
+    },
+    "usersUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "UserResponse is the response for a single user"
     }
   }
 }

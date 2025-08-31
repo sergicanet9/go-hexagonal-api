@@ -5,11 +5,11 @@ package health;
 option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/protogen";
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
-// HealthService defines the gRPC service for health checks.
 service HealthService {
   // HealthCheck runs a health check and returns the status of the API.
-  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse) {
+  rpc HealthCheck(google.protobuf.Empty) returns (HealthCheckResponse) {
     option (google.api.http) = {
       get: "/health"
     };

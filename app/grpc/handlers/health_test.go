@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	pb "github.com/sergicanet9/go-hexagonal-api/proto/protogen"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // TestHealthCheck_WhenEnvironmentIsNotLocal_DSNFiltered checks that healthCheck handler does return the expected response filtering the DSN
@@ -21,7 +21,7 @@ func TestHealthCheck_WhenEnvironmentIsNotLocal_DSNIsFiltered(t *testing.T) {
 		DSN:         "test-dsn",
 	}
 	healthHandler := NewHealthHandler(context.Background(), cfg)
-	req := &pb.HealthCheckRequest{}
+	var req *emptypb.Empty
 	expectedDSN := "***FILTERED***"
 
 	// Act
@@ -49,7 +49,7 @@ func TestHealthCheck_WhenEnvironmentIsLocal_DSNIsNotFiltered(t *testing.T) {
 		DSN:         "test-dsn",
 	}
 	healthHandler := NewHealthHandler(context.Background(), cfg)
-	req := &pb.HealthCheckRequest{}
+	var req *emptypb.Empty
 
 	// Act
 	resp, err := healthHandler.HealthCheck(context.Background(), req)

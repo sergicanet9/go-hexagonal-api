@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/protogen";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+service UserService {
+// GetAllUsers gets all existing users
+    rpc GetAllUsers(google.protobuf.Empty) returns (stream UserResponse) {
+        option (google.api.http) = {
+            get: "/v1/users"
+        };
+    }
+}
+
+// UserResponse is the response for a single user
+message UserResponse {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    repeated string roles = 4;
+}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	pb "github.com/sergicanet9/go-hexagonal-api/proto/protogen"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type healthHandler struct {
@@ -22,7 +23,7 @@ func NewHealthHandler(ctx context.Context, cfg config.Config) *healthHandler {
 }
 
 // HealthCheck .
-func (h *healthHandler) HealthCheck(_ context.Context, req *pb.HealthCheckRequest) (*pb.HealthCheckResponse, error) {
+func (h *healthHandler) HealthCheck(_ context.Context, _ *emptypb.Empty) (*pb.HealthCheckResponse, error) {
 	response := &pb.HealthCheckResponse{
 		Version:     h.cfg.Version,
 		Environment: h.cfg.Environment,

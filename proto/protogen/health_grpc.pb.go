@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HealthServiceClient interface {
 	// HealthCheck runs a health check and returns the status of the API.
-	HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
+	HealthCheck(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
 
 type healthServiceClient struct {
@@ -34,7 +35,7 @@ func NewHealthServiceClient(cc grpc.ClientConnInterface) HealthServiceClient {
 	return &healthServiceClient{cc}
 }
 
-func (c *healthServiceClient) HealthCheck(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+func (c *healthServiceClient) HealthCheck(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
 	out := new(HealthCheckResponse)
 	err := c.cc.Invoke(ctx, "/health.HealthService/HealthCheck", in, out, opts...)
 	if err != nil {
@@ -48,7 +49,7 @@ func (c *healthServiceClient) HealthCheck(ctx context.Context, in *HealthCheckRe
 // for forward compatibility
 type HealthServiceServer interface {
 	// HealthCheck runs a health check and returns the status of the API.
-	HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
+	HealthCheck(context.Context, *emptypb.Empty) (*HealthCheckResponse, error)
 	mustEmbedUnimplementedHealthServiceServer()
 }
 
@@ -56,7 +57,7 @@ type HealthServiceServer interface {
 type UnimplementedHealthServiceServer struct {
 }
 
-func (UnimplementedHealthServiceServer) HealthCheck(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+func (UnimplementedHealthServiceServer) HealthCheck(context.Context, *emptypb.Empty) (*HealthCheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
 func (UnimplementedHealthServiceServer) mustEmbedUnimplementedHealthServiceServer() {}
@@ -73,7 +74,7 @@ func RegisterHealthServiceServer(s grpc.ServiceRegistrar, srv HealthServiceServe
 }
 
 func _HealthService_HealthCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HealthCheckRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -85,7 +86,7 @@ func _HealthService_HealthCheck_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/health.HealthService/HealthCheck",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HealthServiceServer).HealthCheck(ctx, req.(*HealthCheckRequest))
+		return srv.(HealthServiceServer).HealthCheck(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
