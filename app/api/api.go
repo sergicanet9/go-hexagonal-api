@@ -11,11 +11,15 @@ import (
 
 	"github.com/fullstorydev/grpcui/standalone"
 	"github.com/gorilla/mux"
-	"github.com/newrelic/go-agent/v3/integrations/nrgorilla"
-	"github.com/newrelic/go-agent/v3/newrelic"
-
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/newrelic/go-agent/v3/integrations/nrgorilla"
 	"github.com/newrelic/go-agent/v3/integrations/nrgrpc"
+	"github.com/newrelic/go-agent/v3/newrelic"
+	httpSwagger "github.com/swaggo/http-swagger"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
+
 	"github.com/sergicanet9/go-hexagonal-api/app/grpc/handlers"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
@@ -23,12 +27,10 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/mongo"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/postgres"
 	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/interceptors"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/middlewares"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/sergicanet9/scv-go-tools/v3/observability"
-	httpSwagger "github.com/swaggo/http-swagger"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/reflection"
 )
 
 type api struct {
@@ -90,8 +92,19 @@ func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServer
 		}
 
 		server := grpc.NewServer(
-			grpc.UnaryInterceptor(nrgrpc.UnaryServerInterceptor(a.newrelicApp)),
-			grpc.StreamInterceptor(nrgrpc.StreamServerInterceptor(a.newrelicApp)),
+			grpc.ChainUnaryInterceptor(
+				interceptors.UnaryLogger(),
+				interceptors.UnaryRecover(),
+				nrgrpc.UnaryServerInterceptor(a.newrelicApp),
+				//interceptors.UnaryJWT()
+			),
+			grpc.ChainStreamInterceptor(
+				interceptors.StreamLogger(),
+				interceptors.StreamRecover(),
+				nrgrpc.StreamServerInterceptor(a.newrelicApp),
+				//interceptors.StreamJWT()
+
+			),
 		)
 
 		healthHander := handlers.NewHealthHandler(ctx, a.config)
@@ -140,7 +153,8 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		}
 
 		httpRouter := mux.NewRouter()
-		// router.Use(middlewares.Recover) #TODO remove or reimplement?
+		httpRouter.Use(middlewares.Logger("/swagger", "/grpcui"))
+		httpRouter.Use(middlewares.Recover)
 		httpRouter.Use(nrgorilla.Middleware(a.newrelicApp))
 
 		conn, err := grpc.NewClient(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
