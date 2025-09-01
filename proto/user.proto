@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package handlers;
+package user;
 
-option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/handlers";
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb";
 
 import "google/api/annotations.proto";
 import "google/api/http.proto";

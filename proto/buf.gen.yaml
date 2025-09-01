@@ -1,20 +1,20 @@
 version: v1
 plugins:
   - name: go
-    out: gen/go
+    out: gen/go/pb
     opt:
       - paths=source_relative
   - name: go-grpc
-    out: gen/go
+    out: gen/go/pb
     opt:
       - paths=source_relative
   - name: grpc-gateway
-    out: gen/go
+    out: gen/go/pb
     opt:
       - paths=source_relative
 
   - name: openapiv2
-    out: gen/openapiv2
+    out: gen/openapi
     opt:
       - allow_merge=true
       - merge_file_name=docs

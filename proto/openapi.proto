@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package openapi;
+
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb";
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// Configuración global de OpenAPI/Swagger
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Go Hexagonal API"
+    version: "v1"
+    description: "User management API.\n Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools"
+  }
+  // schemes: HTTPS
+  // security_definitions: {
+  //   key: "BearerAuth"
+  //   value {
+  //     type: "apiKey"
+  //     name: "Authorization"
+  //     in: "header"
+  //     description: "Bearer token authentication"
+  //   }
+  // }
+};

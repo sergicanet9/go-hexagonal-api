@@ -22,7 +22,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/core/services"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/mongo"
 	"github.com/sergicanet9/go-hexagonal-api/infrastructure/postgres"
-	pb "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/handlers"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/sergicanet9/scv-go-tools/v3/observability"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -156,7 +156,7 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		httpRouter.PathPrefix("/grpcui/").Handler(http.StripPrefix("/grpcui", grpcuiHandler))
 
 		swaggerHandler := httpSwagger.Handler(httpSwagger.URL("/docs.swagger.json"))
-		httpRouter.PathPrefix("/docs.swagger.json").Handler(http.FileServer(http.Dir("proto/gen/openapiv2")))
+		httpRouter.PathPrefix("/docs.swagger.json").Handler(http.FileServer(http.Dir("proto/gen/openapi")))
 		httpRouter.PathPrefix("/swagger").Handler(swaggerHandler)
 
 		httpRouter.PathPrefix("/").Handler(gmux)

@@ -6,7 +6,7 @@ import (
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
-	pb "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/handlers"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

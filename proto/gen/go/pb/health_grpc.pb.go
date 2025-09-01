@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: handlers/health.proto
+// source: health.proto
 
-package handlers
+package pb
 
 import (
 	context "context"
@@ -37,7 +37,7 @@ func NewHealthServiceClient(cc grpc.ClientConnInterface) HealthServiceClient {
 
 func (c *healthServiceClient) HealthCheck(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
 	out := new(HealthCheckResponse)
-	err := c.cc.Invoke(ctx, "/handlers.HealthService/HealthCheck", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/health.HealthService/HealthCheck", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func _HealthService_HealthCheck_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/handlers.HealthService/HealthCheck",
+		FullMethod: "/health.HealthService/HealthCheck",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(HealthServiceServer).HealthCheck(ctx, req.(*emptypb.Empty))
@@ -95,7 +95,7 @@ func _HealthService_HealthCheck_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var HealthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "handlers.HealthService",
+	ServiceName: "health.HealthService",
 	HandlerType: (*HealthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -104,5 +104,5 @@ var HealthService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "handlers/health.proto",
+	Metadata: "health.proto",
 }

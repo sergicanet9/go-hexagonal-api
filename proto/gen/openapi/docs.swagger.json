@@ -1,8 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "handlers/health.proto",
-    "version": "version not set"
+    "title": "Go Hexagonal API",
+    "description": "User management API.\n Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools",
+    "version": "v1"
   },
   "tags": [
     {
@@ -27,7 +28,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/handlersHealthCheckResponse"
+              "$ref": "#/definitions/healthHealthCheckResponse"
             }
           },
           "default": {
@@ -54,13 +55,13 @@
               "type": "object",
               "properties": {
                 "result": {
-                  "$ref": "#/definitions/handlersUserResponse"
+                  "$ref": "#/definitions/userUserResponse"
                 },
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 }
               },
-              "title": "Stream result of handlersUserResponse"
+              "title": "Stream result of userUserResponse"
             }
           },
           "default": {
@@ -82,7 +83,7 @@
     }
   },
   "definitions": {
-    "handlersHealthCheckResponse": {
+    "healthHealthCheckResponse": {
       "type": "object",
       "properties": {
         "version": {
@@ -107,27 +108,6 @@
         }
       },
       "description": "HealthCheckResponse is the response from the health check."
-    },
-    "handlersUserResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "description": "UserResponse is the response for a single user."
     },
     "protobufAny": {
       "type": "object",
@@ -156,6 +136,27 @@
           }
         }
       }
+    },
+    "userUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "UserResponse is the response for a single user."
     }
   }
 }
