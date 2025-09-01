@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/jessevdk/go-flags"
@@ -13,12 +14,6 @@ import (
 	"github.com/sergicanet9/scv-go-tools/v3/observability"
 )
 
-// @title Go Hexagonal API
-// @description Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools
-
-// @securityDefinitions.apikey Bearer
-// @in header
-// @name Authorization
 func main() {
 	var opts struct {
 		Version     string `long:"ver" description:"Version" required:"true"`
@@ -66,7 +61,19 @@ func main() {
 		g.Go(async.Run(ctx, cancel))
 	}
 
-	if err := g.Wait().ErrorOrNil(); err != nil {
-		observability.Logger().Fatal(err)
+	<-ctx.Done()
+	observability.Logger().Printf("context canceled, the application will terminate...")
+
+	done := make(chan struct{})
+	go func() {
+		g.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		observability.Logger().Printf("application terminated gracefully")
+	case <-time.After(10 * time.Second):
+		observability.Logger().Fatalf("some processes did not terminate gracefully, application termination forced")
 	}
 }

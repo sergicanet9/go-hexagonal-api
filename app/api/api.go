@@ -113,7 +113,7 @@ func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServer
 
 func shutdownGRPC(ctx context.Context, server *grpc.Server) {
 	<-ctx.Done()
-	observability.Logger().Printf("Shutting down gRPC API gracefully...")
+	observability.Logger().Printf("Shutting down gRPC server gracefully...")
 	server.GracefulStop()
 }
 
@@ -140,7 +140,7 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		}
 
 		httpRouter := mux.NewRouter()
-		// router.Use(middlewares.Recover) #TODO remove?
+		// router.Use(middlewares.Recover) #TODO remove or reimplement?
 		httpRouter.Use(nrgorilla.Middleware(a.newrelicApp))
 
 		conn, err := grpc.NewClient(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -174,6 +174,6 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 
 func shutdownHTTP(ctx context.Context, server *http.Server) {
 	<-ctx.Done()
-	observability.Logger().Printf("Shutting down API gracefully...")
+	observability.Logger().Printf("Shutting down HTTP server gracefully...")
 	server.Shutdown(ctx)
 }
