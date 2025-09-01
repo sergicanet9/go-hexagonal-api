@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Go Hexagonal API",
-    "description": "User management API.\n Powered by scv-go-tools - https://github.com/sergicanet9/scv-go-tools",
+    "description": "User management API",
     "version": "v1"
   },
   "tags": [
@@ -22,7 +22,8 @@
   "paths": {
     "/health": {
       "get": {
-        "summary": "HealthCheck returns basic runtime information of the API when the service is up.",
+        "summary": "Health check",
+        "description": "Returns basic runtime information of the API when the service is up",
         "operationId": "HealthService_HealthCheck",
         "responses": {
           "200": {
@@ -76,7 +77,7 @@
         ],
         "security": [
           {
-            "BearerAuth": []
+            "Bearer": []
           }
         ]
       }
@@ -107,7 +108,7 @@
           "type": "string"
         }
       },
-      "description": "HealthCheckResponse is the response from the health check."
+      "title": "HealthCheckResponse is the response from the health check"
     },
     "protobufAny": {
       "type": "object",
@@ -158,5 +159,17 @@
       },
       "description": "UserResponse is the response for a single user."
     }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "description": "JWT token authentication",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "externalDocs": {
+    "description": "Powered by scv-go-tools",
+    "url": "https://github.com/sergicanet9/scv-go-tools"
   }
 }

@@ -10,7 +10,6 @@ import "google/protobuf/empty.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 service UserService {
-// GetAll gets all existing users.
     rpc GetAll(google.protobuf.Empty) returns (stream UserResponse) {
         option (google.api.http) = {
             get: "/v1/users"
@@ -20,7 +19,7 @@ service UserService {
             description: "Returns the list of all registered users"
             security: {
                 security_requirement: {
-                    key: "BearerAuth"
+                    key: "Bearer"
                     value: {}
                 }
             }
