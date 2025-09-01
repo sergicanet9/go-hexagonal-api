@@ -1,10 +1,11 @@
 syntax = "proto3";
 
-package health;
+package handlers;
 
-option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/protogen";
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/handlers";
 
 import "google/api/annotations.proto";
+import "google/api/http.proto";
 import "google/protobuf/empty.proto";
 
 service HealthService {

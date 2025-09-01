@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "health.proto",
+    "title": "handlers/health.proto",
     "version": "version not set"
   },
   "tags": [
@@ -27,7 +27,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/healthHealthCheckResponse"
+              "$ref": "#/definitions/handlersHealthCheckResponse"
             }
           },
           "default": {
@@ -44,8 +44,9 @@
     },
     "/v1/users": {
       "get": {
-        "summary": "GetAllUsers gets all existing users.",
-        "operationId": "UserService_GetAllUsers",
+        "summary": "Get all users",
+        "description": "Returns the list of all registered users",
+        "operationId": "UserService_GetAll",
         "responses": {
           "200": {
             "description": "A successful response.(streaming responses)",
@@ -53,13 +54,13 @@
               "type": "object",
               "properties": {
                 "result": {
-                  "$ref": "#/definitions/usersUserResponse"
+                  "$ref": "#/definitions/handlersUserResponse"
                 },
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 }
               },
-              "title": "Stream result of usersUserResponse"
+              "title": "Stream result of handlersUserResponse"
             }
           },
           "default": {
@@ -71,12 +72,17 @@
         },
         "tags": [
           "UserService"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ]
       }
     }
   },
   "definitions": {
-    "healthHealthCheckResponse": {
+    "handlersHealthCheckResponse": {
       "type": "object",
       "properties": {
         "version": {
@@ -101,6 +107,27 @@
         }
       },
       "description": "HealthCheckResponse is the response from the health check."
+    },
+    "handlersUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "UserResponse is the response for a single user."
     },
     "protobufAny": {
       "type": "object",
@@ -129,27 +156,6 @@
           }
         }
       }
-    },
-    "usersUserResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "description": "UserResponse is the response for a single user."
     }
   }
 }

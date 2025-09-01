@@ -6,7 +6,7 @@ import (
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
-	pb "github.com/sergicanet9/go-hexagonal-api/proto/protogen"
+	pb "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/handlers"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -26,6 +26,6 @@ func NewUserHandler(ctx context.Context, cfg config.Config, svc ports.UserServic
 	}
 }
 
-func (h *userHandler) GetAll(_ context.Context, _ *emptypb.Empty) (*pb.UserService_GetAllUsersServer, error) {
-	return nil, errors.New("not implemented")
+func (h *userHandler) GetAll(_ *emptypb.Empty, stream pb.UserService_GetAllServer) error {
+	return errors.New("not implementesssd")
 }

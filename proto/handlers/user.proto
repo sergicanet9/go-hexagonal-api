@@ -1,15 +1,17 @@
 syntax = "proto3";
 
-package users;
+package handlers;
 
-option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/protogen";
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/handlers";
 
+import "google/api/annotations.proto";
+import "google/api/http.proto";
 import "google/protobuf/empty.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 service UserService {
-// GetAllUsers gets all existing users.
-    rpc GetAllUsers(google.protobuf.Empty) returns (stream UserResponse) {
+// GetAll gets all existing users.
+    rpc GetAll(google.protobuf.Empty) returns (stream UserResponse) {
         option (google.api.http) = {
             get: "/v1/users"
         };

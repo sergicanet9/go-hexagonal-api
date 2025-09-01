@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	pb "github.com/sergicanet9/go-hexagonal-api/proto/protogen"
+	pb "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/handlers"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
