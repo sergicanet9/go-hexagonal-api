@@ -137,7 +137,7 @@ message UserResponse {
     string name = 2;
     string surnames = 3;
     string email = 4;
-    repeated int64 claims = 5;
+    repeated int64 claims = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {example: "[0]"}];
     google.protobuf.Timestamp created_at = 6;
     google.protobuf.Timestamp updated_at = 7;
 }
@@ -147,7 +147,7 @@ message CreateUserRequest {
     string surnames = 2;
     string email = 3;
     string password = 4;
-    repeated int64 claims = 5;
+    repeated int64 claims = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {example: "[0]"}];
 }
 
 message CreateUserResponse {
@@ -177,7 +177,7 @@ message UpdateUserRequest {
     string email = 4;
     string old_password = 5;
     string new_password = 6;
-    repeated int64 claims = 7;
+    repeated int64 claims = 7 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {example: "[0]"}];
 }
 
 message GetAllUsersResponse {
@@ -185,9 +185,10 @@ message GetAllUsersResponse {
 }
 
 message GetClaimsResponse {
-    repeated int64 claims = 1;
+    repeated int64 claims = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {example: "[0]"}];
 }
 
 message DeleteUserRequest {
     string id = 1;
 }
+

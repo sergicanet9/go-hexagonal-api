@@ -360,6 +360,9 @@
                 },
                 "claims": {
                   "type": "array",
+                  "example": [
+                    0
+                  ],
                   "items": {
                     "type": "string",
                     "format": "int64"
@@ -474,6 +477,9 @@
         },
         "claims": {
           "type": "array",
+          "example": [
+            0
+          ],
           "items": {
             "type": "string",
             "format": "int64"
@@ -506,6 +512,9 @@
       "properties": {
         "claims": {
           "type": "array",
+          "example": [
+            0
+          ],
           "items": {
             "type": "string",
             "format": "int64"
@@ -552,6 +561,9 @@
         },
         "claims": {
           "type": "array",
+          "example": [
+            0
+          ],
           "items": {
             "type": "string",
             "format": "int64"
