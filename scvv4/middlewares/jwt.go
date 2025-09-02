@@ -21,13 +21,13 @@ func JWT(jwtSecret string, requiredClaims ...string) func(http.Handler) http.Han
 
 			authorization := r.Header.Get("Authorization")
 			if authorization == "" {
-				utils.ErrorResponse(w, http.StatusUnauthorized, "authorization token is not provided")
+				utils.ErrorResponse(w, http.StatusUnauthorized, fmt.Errorf("authorization token is not provided"))
 				return
 			}
 
 			bearerToken := strings.Split(authorization, " ")
 			if len(bearerToken) != 2 || bearerToken[0] != "Bearer" {
-				utils.ErrorResponse(w, http.StatusUnauthorized, "invalid token format, should be Bearer + {token}")
+				utils.ErrorResponse(w, http.StatusUnauthorized, fmt.Errorf("invalid token format, should be Bearer + {token}"))
 				return
 			}
 			tokenString := bearerToken[1]
@@ -41,13 +41,13 @@ func JWT(jwtSecret string, requiredClaims ...string) func(http.Handler) http.Han
 			})
 
 			if err != nil || !token.Valid {
-				utils.ErrorResponse(w, http.StatusUnauthorized, fmt.Sprintf("invalid token. %v", err))
+				utils.ErrorResponse(w, http.StatusUnauthorized, fmt.Errorf("invalid token: %v", err))
 				return
 			}
 
 			for _, requiredClaim := range requiredClaims {
 				if _, ok := claims[requiredClaim]; !ok {
-					utils.ErrorResponse(w, http.StatusForbidden, fmt.Sprintf("insufficient permissions: required claim '%s' not found or incorrect", requiredClaim))
+					utils.ErrorResponse(w, http.StatusForbidden, fmt.Errorf("insufficient permissions: required claim '%s' not found", requiredClaim))
 					return
 				}
 			}

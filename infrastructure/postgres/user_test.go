@@ -217,7 +217,7 @@ func TestGetByID_ResourceNotFound(t *testing.T) {
 	assert.Equal(t, wrappers.NewNonExistentErr(sql.ErrNoRows), err)
 }
 
-// TestUpdate_OK checks that Update does not return an error when the received ID has a valid format
+// TestUpdate_Ok checks that Update does not return an error when the received ID has a valid format
 func TestUpdate_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
@@ -281,7 +281,7 @@ func TestUpdate_NotUpdatedError(t *testing.T) {
 	assert.Equal(t, wrappers.NewNonExistentErr(sql.ErrNoRows), err)
 }
 
-// TestDelete_OK checks that Delete does not return an error when the received ID has a valid format
+// TestDelete_Ok checks that Delete does not return an error when the received ID has a valid format
 func TestDelete_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)

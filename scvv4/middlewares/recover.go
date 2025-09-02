@@ -12,7 +12,7 @@ func Recover(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
-				message := fmt.Sprintf("recovered from panic during HTTP call %s %s, Panic: %v", r.Method, r.URL.Path, err)
+				message := fmt.Errorf("recovered from panic during HTTP call %s %s, Panic: %v", r.Method, r.URL.Path, err)
 				utils.ErrorResponse(w, http.StatusInternalServerError, message)
 			}
 		}()

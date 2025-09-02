@@ -105,7 +105,7 @@ func jwtValidator(ctx context.Context, jwtSecret string, requiredClaims []string
 	})
 
 	if err != nil || !token.Valid {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid token")
+		return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
 	}
 
 	for _, requiredClaim := range requiredClaims {
