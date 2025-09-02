@@ -1,93 +1,186 @@
 package utils
 
 import (
-	"encoding/json"
-	"errors"
-	"net/http"
-	"net/http/httptest"
+	"fmt"
+	"os"
+	"path/filepath"
+	"runtime"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-// TestSuccessResponse_Ok checks that SuccessResponse returns the expected response when everything goes as expected
-func TestSuccessResponse_Ok(t *testing.T) {
-	// Arrange
-	var url = "http://testing"
-	rr := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	expectedResponse := map[string]string{"response": "test-response"}
-
-	handlerToTest := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		SuccessResponse(w, http.StatusOK, expectedResponse)
-	})
-
-	// Act
-	handlerToTest.ServeHTTP(rr, req)
-
-	// Assert
-	if want, got := http.StatusOK, rr.Code; want != got {
-		t.Fatalf("unexpected http status code: want=%d but got=%d", want, got)
-	}
-
-	var response map[string]string
-	if err := json.NewDecoder(rr.Body).Decode(&response); err != nil {
-		t.Fatalf("unexpected error parsing the response: %s", err)
-	}
-	assert.Equal(t, expectedResponse, response)
+type targetType struct {
+	TestDuration1 Duration
+	TestDuration2 Duration
 }
 
-// TestErrorResponse_Ok checks that ErrorRespnse returns the expected error response when everything goes as expected
-func TestErrorResponse_Ok(t *testing.T) {
+// TestLoadJSON_Ok checks that LoadJSON returns the expected response and parses Duration object properly when everything goes as expected
+func TestLoadJSON_Ok(t *testing.T) {
 	// Arrange
-	var url = "http://testing"
-	rr := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	expectedResponse := map[string]string{"error": "test-error-response"}
+	target := targetType{}
 
-	handlerToTest := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ErrorResponse(w, http.StatusOK, errors.New("test-error-response"))
-	})
+	_, filePath, _, _ := runtime.Caller(0)
+	dir, err := os.MkdirTemp(filepath.Join(filePath, "../../.."), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	file, err := os.CreateTemp(dir, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(file.Name())
+
+	bytes := []byte(`{"TestDuration1":10,"TestDuration2":"10s"}`)
+	err = os.WriteFile(file.Name(), bytes, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedDuration1 := Duration{time.Duration(10)}
+	duration2, _ := time.ParseDuration("10s")
+	expectedDuration2 := Duration{duration2}
 
 	// Act
-	handlerToTest.ServeHTTP(rr, req)
+	err = LoadJSON(file.Name(), &target)
 
 	// Assert
-	if want, got := http.StatusOK, rr.Code; want != got {
-		t.Fatalf("unexpected http status code: want=%d but got=%d", want, got)
-	}
-
-	var response map[string]string
-	if err := json.NewDecoder(rr.Body).Decode(&response); err != nil {
-		t.Fatalf("unexpected error parsing the response: %s", err)
-	}
-	assert.Equal(t, expectedResponse, response)
+	assert.Nil(t, err)
+	assert.Equal(t, expectedDuration1, target.TestDuration1)
+	assert.Equal(t, expectedDuration2, target.TestDuration2)
 }
 
-// TestResponseJSON_PayloadNotMarshalled checks that responseJSON returns the expected response when the response cannot be marshalled
-func TestResponseJSON_PayloadNotMarshalled(t *testing.T) {
+// TestLoadJSON_NonExistentFile checks that LoadJSON returns an error when the specified file does not exist
+func TestLoadJSON_NonExistentFile(t *testing.T) {
 	// Arrange
-	var url = "http://testing"
-	rr := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, url, nil)
-	notMarshableResponse := map[string]interface{}{"response": make(chan int)}
-	expectedResponse := map[string]string(map[string]string{"error": "failed to marshal the response: json: unsupported type: chan int"})
-
-	handlerToTest := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		responseJSON(w, http.StatusOK, notMarshableResponse)
-	})
+	target := targetType{}
+	expectedError := "ignoring config file : stat : no such file or directory"
 
 	// Act
-	handlerToTest.ServeHTTP(rr, req)
+	err := LoadJSON("", &target)
 
 	// Assert
-	if want, got := http.StatusInternalServerError, rr.Code; want != got {
-		t.Fatalf("unexpected http status code: want=%d but got=%d", want, got)
+	assert.Equal(t, expectedError, err.Error())
+}
+
+// TestLoadJSON_FileNotAccessible checks that LoadJSON returns an error when the specified file is not accessible
+func TestLoadJSON_FileNotAccessible(t *testing.T) {
+	// Arrange
+	target := targetType{}
+
+	_, filePath, _, _ := runtime.Caller(0)
+	dir, err := os.MkdirTemp(filepath.Join(filePath, "../../.."), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	file, err := os.CreateTemp(dir, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(file.Name())
+
+	err = file.Chmod(os.ModeExclusive)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	var response map[string]string
-	if err := json.NewDecoder(rr.Body).Decode(&response); err != nil {
-		t.Fatalf("unexpected error parsing the response: %s", err)
+	expectedError := fmt.Sprintf("error opening file %s: open %s: permission denied", file.Name(), file.Name())
+
+	// Act
+	err = LoadJSON(file.Name(), &target)
+
+	// Assert
+	assert.Equal(t, expectedError, err.Error())
+}
+
+// TestLoadJSON_FileIsADirectory checks that LoadJSON returns an error when the specified file is a directory
+func TestLoadJSON_FileIsADirectory(t *testing.T) {
+	// Arrange
+	target := targetType{}
+
+	_, filePath, _, _ := runtime.Caller(0)
+	dir, err := os.MkdirTemp(filepath.Join(filePath, "../../.."), "")
+	if err != nil {
+		t.Fatal(err)
 	}
-	assert.Equal(t, expectedResponse, response)
+	defer os.RemoveAll(dir)
+
+	expectedError := fmt.Sprintf("error reading file %s: read %s: is a directory", dir, dir)
+
+	// Act
+	err = LoadJSON(dir, &target)
+
+	// Assert
+	assert.Equal(t, expectedError, err.Error())
+}
+
+// TestLoadJSON_InvalidDurationStringFormat checks that LoadJSON returns an error when the file contains a string that cannot be parsed to a Duration object
+func TestLoadJSON_InvalidDurationStringFormat(t *testing.T) {
+	// Arrange
+	target := targetType{}
+
+	_, filePath, _, _ := runtime.Caller(0)
+	dir, err := os.MkdirTemp(filepath.Join(filePath, "../../.."), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	file, err := os.CreateTemp(dir, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(file.Name())
+
+	bytes := []byte(`{"TestDuration1":"10secs"}`)
+	err = os.WriteFile(file.Name(), bytes, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedError := fmt.Sprintf("error unmarshaling file %s: time: unknown unit \"secs\" in duration \"10secs\"", file.Name())
+
+	// Act
+	err = LoadJSON(file.Name(), &target)
+
+	// Assert
+	assert.Equal(t, expectedError, err.Error())
+}
+
+// TestLoadJSON_InvalidDurationType checks that LoadJSON returns an error when the file contains a type that cannot be parsed to a Duration object
+func TestLoadJSON_InvalidDurationType(t *testing.T) {
+	// Arrange
+	target := targetType{}
+
+	_, filePath, _, _ := runtime.Caller(0)
+	dir, err := os.MkdirTemp(filepath.Join(filePath, "../../.."), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	file, err := os.CreateTemp(dir, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(file.Name())
+
+	bytes := []byte(`{"TestDuration1":{"Test":1}}`)
+	err = os.WriteFile(file.Name(), bytes, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedError := fmt.Sprintf("error unmarshaling file %s: invalid duration", file.Name())
+
+	// Act
+	err = LoadJSON(file.Name(), &target)
+
+	// Assert
+	assert.Equal(t, expectedError, err.Error())
 }

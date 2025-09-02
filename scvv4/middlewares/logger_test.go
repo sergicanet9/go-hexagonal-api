@@ -47,7 +47,7 @@ func TestLogger_HandlerError(t *testing.T) {
 	expectedResponse := map[string]string{"error": "test-error"}
 
 	handlerFunc := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		utils.ErrorResponse(w, http.StatusInternalServerError, errors.New("test-error"))
+		utils.ErrorResponse(w, errors.New("test-error"))
 	})
 	handlerToTest := Logger()(handlerFunc)
 

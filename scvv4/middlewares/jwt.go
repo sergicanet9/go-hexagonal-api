@@ -2,12 +2,15 @@ package middlewares
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/sergicanet9/go-hexagonal-api/scvv4/utils"
+	wrappersv4 "github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
+	"github.com/sergicanet9/scv-go-tools/v3/wrappers"
 )
 
 type claimsCtxKey string
@@ -21,13 +24,13 @@ func JWT(jwtSecret string, requiredClaims ...string) func(http.Handler) http.Han
 
 			authorization := r.Header.Get("Authorization")
 			if authorization == "" {
-				utils.ErrorResponse(w, http.StatusUnauthorized, fmt.Errorf("authorization token is not provided"))
+				utils.ErrorResponse(w, wrappers.NewUnauthorizedErr(errors.New("authorization token is not provided")))
 				return
 			}
 
 			bearerToken := strings.Split(authorization, " ")
 			if len(bearerToken) != 2 || bearerToken[0] != "Bearer" {
-				utils.ErrorResponse(w, http.StatusUnauthorized, fmt.Errorf("invalid token format, should be Bearer + {token}"))
+				utils.ErrorResponse(w, wrappers.NewUnauthorizedErr(errors.New("invalid token format, should be Bearer + {token}")))
 				return
 			}
 			tokenString := bearerToken[1]
@@ -41,13 +44,13 @@ func JWT(jwtSecret string, requiredClaims ...string) func(http.Handler) http.Han
 			})
 
 			if err != nil || !token.Valid {
-				utils.ErrorResponse(w, http.StatusUnauthorized, fmt.Errorf("invalid token: %v", err))
+				utils.ErrorResponse(w, wrappers.NewUnauthorizedErr(fmt.Errorf("invalid token: %v", err)))
 				return
 			}
 
 			for _, requiredClaim := range requiredClaims {
 				if _, ok := claims[requiredClaim]; !ok {
-					utils.ErrorResponse(w, http.StatusForbidden, fmt.Errorf("insufficient permissions: required claim '%s' not found", requiredClaim))
+					utils.ErrorResponse(w, wrappersv4.NewUnauthenticatedErr(fmt.Errorf("insufficient permissions: required claim '%s' not found", requiredClaim)))
 					return
 				}
 			}

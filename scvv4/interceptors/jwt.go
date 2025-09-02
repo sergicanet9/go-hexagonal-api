@@ -2,14 +2,16 @@ package interceptors
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/utils"
+	wrappersv4 "github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
+	"github.com/sergicanet9/scv-go-tools/v3/wrappers"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 type claimsCtxKey string
@@ -51,7 +53,7 @@ func StreamJWT(jwtSecret string, methods []MethodPolicy) grpc.StreamServerInterc
 		if err != nil {
 			return err
 		}
-		wrappedStream := wrappers.NewGRPCServerStream(newCtx)
+		wrappedStream := wrappersv4.NewGRPCServerStream(newCtx)
 		wrappedStream.ServerStream = ss
 
 		return handler(srv, wrappedStream)
@@ -70,36 +72,36 @@ func findMethodPolicy(methods []MethodPolicy, fullMethod string) (MethodPolicy, 
 func jwtValidator(ctx context.Context, jwtSecret string, requiredClaims []string) (context.Context, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
+		return nil, utils.ToGRPC(wrappers.NewUnauthorizedErr(errors.New("metadata is not provided")))
 	}
 
 	tokens := md.Get("authorization")
 	if len(tokens) == 0 {
-		return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+		return nil, utils.ToGRPC(wrappers.NewUnauthorizedErr(errors.New("authorization token is not provided")))
 	}
 	authorization := tokens[0]
 
 	bearerToken := strings.Split(authorization, " ")
 	if len(bearerToken) != 2 || bearerToken[0] != "Bearer" {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid token format, should be Bearer + {token}")
+		return nil, utils.ToGRPC(wrappers.NewUnauthorizedErr(errors.New("invalid token format, should be Bearer + {token}")))
 	}
 	tokenString := bearerToken[1]
 
 	claims := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, status.Errorf(codes.Unauthenticated, "signin method not valid")
+			return nil, utils.ToGRPC(wrappers.NewUnauthorizedErr(errors.New("signin method not valid")))
 		}
 		return []byte(jwtSecret), nil
 	})
 
 	if err != nil || !token.Valid {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
+		return nil, utils.ToGRPC(wrappers.NewUnauthorizedErr(fmt.Errorf("invalid token: %v", err)))
 	}
 
 	for _, requiredClaim := range requiredClaims {
 		if _, ok := claims[requiredClaim]; !ok {
-			return nil, status.Errorf(codes.PermissionDenied, "insufficient permissions: required claim '%s' not found", requiredClaim)
+			return nil, utils.ToGRPC(wrappersv4.NewUnauthenticatedErr(fmt.Errorf("insufficient permissions: required claim '%s' not found", requiredClaim)))
 		}
 	}
 

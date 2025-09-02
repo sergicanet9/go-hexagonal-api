@@ -2,10 +2,10 @@ package interceptors
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/utils"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // UnaryRecover is a gRPC unary interceptor that recovers from panics and returns a gRPC error for the incomming call.
@@ -33,5 +33,5 @@ func StreamRecover() grpc.StreamServerInterceptor {
 }
 
 func recoverFromPanic(methodName string, r interface{}) error {
-	return status.Errorf(codes.Internal, "recovered from a panic during gRPC call for method: %s, Panic: %v", methodName, r)
+	return utils.ToGRPC(fmt.Errorf("recovered from a panic during gRPC call for method: %s, Panic: %v", methodName, r))
 }

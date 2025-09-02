@@ -2,8 +2,10 @@ package interceptors
 
 import (
 	"context"
+	"errors"
 	"testing"
 
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/utils"
 	"github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
@@ -33,7 +35,7 @@ func TestUnaryLogger_HandlerError(t *testing.T) {
 	method := "/TestService/TestMethod"
 
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return nil, status.Error(codes.Internal, "test error")
+		return nil, utils.ToGRPC(errors.New("test error"))
 	}
 
 	interceptor := UnaryLogger()
@@ -65,7 +67,7 @@ func TestStreamLogger_HandlerOk(t *testing.T) {
 func TestStreamLogger_HandlerError(t *testing.T) {
 	method := "/TestService/TestStreamMethod"
 	handler := func(srv interface{}, ss grpc.ServerStream) error {
-		return status.Error(codes.Internal, "test error")
+		return utils.ToGRPC(errors.New("test error"))
 	}
 
 	interceptor := StreamLogger()

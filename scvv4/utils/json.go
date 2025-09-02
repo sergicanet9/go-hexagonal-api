@@ -3,27 +3,56 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
+	"io"
+	"os"
+	"time"
 )
 
-// ErrorResponse sets the HTTP status code and writes a JSON-encoded payload to the client.
-func SuccessResponse(w http.ResponseWriter, statusCode int, payload interface{}) {
-	responseJSON(w, statusCode, payload)
-}
-
-// ErrorResponse sets the HTTP status code, and writes a JSON-encoded error message to the client.
-func ErrorResponse(w http.ResponseWriter, statusCode int, err error) {
-	payload := map[string]string{"error": err.Error()}
-	responseJSON(w, statusCode, payload)
-}
-
-func responseJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	response, err := json.Marshal(payload)
-	if err != nil {
-		response, _ = json.Marshal(map[string]string{"error": fmt.Sprintf("failed to marshal the response: %v", err)})
-		statusCode = http.StatusInternalServerError
+// LoadJSON opens the specified file and unmarshals its JSON content in the received struct
+func LoadJSON(filePath string, target interface{}) error {
+	if _, err := os.Stat(filePath); err != nil {
+		return fmt.Errorf("ignoring config file %v: %w", filePath, err)
 	}
-	w.WriteHeader(statusCode)
-	w.Write(response)
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("error opening file %v: %w", filePath, err)
+	}
+	defer file.Close()
+
+	byteValue, err := io.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("error reading file %v: %w", filePath, err)
+	}
+
+	err = json.Unmarshal(byteValue, target)
+	if err != nil {
+		return fmt.Errorf("error unmarshaling file %v: %w", filePath, err)
+	}
+
+	return nil
+}
+
+// Duration allows to unmarshal time into time.Duration
+type Duration struct {
+	time.Duration
+}
+
+func (d *Duration) UnmarshalJSON(b []byte) (err error) {
+	var v interface{}
+	json.Unmarshal(b, &v)
+
+	switch value := v.(type) {
+	case float64:
+		d.Duration = time.Duration(value)
+	case string:
+		d.Duration, err = time.ParseDuration(value)
+		if err != nil {
+			return err
+		}
+		return nil
+	default:
+		return fmt.Errorf("invalid duration")
+	}
+	return nil
 }
