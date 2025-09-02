@@ -5,32 +5,189 @@ package user;
 option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb";
 
 import "google/api/annotations.proto";
-import "google/api/http.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 service UserService {
-    rpc GetAll(google.protobuf.Empty) returns (stream UserResponse) {
+    rpc Login(LoginUserRequest) returns (LoginUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/users/login"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Login user"
+            description: "Logs in a user"
+        };
+    }
+
+    rpc Create(CreateUserRequest) returns (CreateUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/users"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create user"
+            description: "Creates a new user"
+        };
+    }
+
+    rpc CreateMany(CreateManyUsersRequest) returns (CreateManyUsersResponse) {
+        option (google.api.http) = {
+            post: "/v1/users/many"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create many users"
+            description: "Creates multiple users atomically"
+        };
+    }
+
+    rpc GetAll(google.protobuf.Empty) returns (GetAllUsersResponse) {
         option (google.api.http) = {
             get: "/v1/users"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get all users"
-            description: "Returns the list of all registered users"
+            description: "Gets all the users"
             security: {
-                security_requirement: {
-                    key: "Bearer"
-                    value: {}
-                }
+                security_requirement: { key: "Bearer" value: {} }
+            }
+        };
+    }
+
+    rpc GetByEmail(GetUserByEmailRequest) returns (UserResponse) {
+        option (google.api.http) = {
+            get: "/v1/users/email/{email}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get user by email"
+            description: "Gets a user by email"
+            security: {
+                security_requirement: { key: "Bearer" value: {} }
+            }
+        };
+    }
+
+    rpc GetByID(GetUserByIDRequest) returns (UserResponse) {
+        option (google.api.http) = {
+            get: "/v1/users/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get user by ID"
+            description: "Gets a user by ID"
+            security: {
+                security_requirement: { key: "Bearer" value: {} }
+            }
+        };
+    }
+
+    rpc Update(UpdateUserRequest) returns (UserResponse) {
+        option (google.api.http) = {
+            patch: "/v1/users/{id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update user"
+            description: "Updates a user"
+            security: {
+                security_requirement: { key: "Bearer" value: {} }
+            }
+        };
+    }
+
+    rpc GetClaims(google.protobuf.Empty) returns (GetClaimsResponse) {
+        option (google.api.http) = {
+            get: "/v1/claims"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get user claims"
+            description: "Gets all claims"
+            security: {
+                security_requirement: { key: "Bearer" value: {} }
+            }
+        };
+    }
+
+    rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/users/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete user"
+            description: "Deletes a user"
+            security: {
+                security_requirement: { key: "Bearer" value: {} }
             }
         };
     }
 }
 
-// UserResponse is the response for a single user.
+message LoginUserRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginUserResponse {
+    UserResponse user = 1;
+    string token = 2;
+}
 message UserResponse {
     string id = 1;
     string name = 2;
+    string surnames = 3;
+    string email = 4;
+    repeated int64 claims = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
+
+message CreateUserRequest {
+    string name = 1;
+    string surnames = 2;
     string email = 3;
-    repeated string roles = 4;
+    string password = 4;
+    repeated int64 claims = 5;
+}
+
+message CreateUserResponse {
+    string id = 1;
+}
+
+message CreateManyUsersRequest {
+    repeated CreateUserRequest users = 1;
+}
+
+message CreateManyUsersResponse {
+    repeated string ids = 1;
+}
+
+message GetUserByEmailRequest {
+    string email = 1;
+}
+
+message GetUserByIDRequest {
+    string id = 1;
+}
+
+message UpdateUserRequest {
+    string id = 1;
+    string name = 2;
+    string surnames = 3;
+    string email = 4;
+    string old_password = 5;
+    string new_password = 6;
+    repeated int64 claims = 7;
+}
+
+message GetAllUsersResponse {
+    repeated UserResponse users = 1;
+}
+
+message GetClaimsResponse {
+    repeated int64 claims = 1;
+}
+
+message DeleteUserRequest {
+    string id = 1;
 }

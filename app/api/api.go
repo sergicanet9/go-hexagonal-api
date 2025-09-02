@@ -20,7 +20,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/sergicanet9/go-hexagonal-api/app/grpc/handlers"
+	"github.com/sergicanet9/go-hexagonal-api/app/handlers"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/go-hexagonal-api/core/services"

@@ -21,10 +21,8 @@ service HealthService {
   }
 }
 
-// HealthCheckRequest is the request for the health check
 message HealthCheckRequest {}
 
-// HealthCheckResponse is the response from the health check
 message HealthCheckResponse {
   string version = 1;
   string environment = 2;

@@ -44,25 +44,16 @@
         ]
       }
     },
-    "/v1/users": {
+    "/v1/claims": {
       "get": {
-        "summary": "Get all users",
-        "description": "Returns the list of all registered users",
-        "operationId": "UserService_GetAll",
+        "summary": "Get user claims",
+        "description": "Gets all claims",
+        "operationId": "UserService_GetClaims",
         "responses": {
           "200": {
-            "description": "A successful response.(streaming responses)",
+            "description": "A successful response.",
             "schema": {
-              "type": "object",
-              "properties": {
-                "result": {
-                  "$ref": "#/definitions/userUserResponse"
-                },
-                "error": {
-                  "$ref": "#/definitions/rpcStatus"
-                }
-              },
-              "title": "Stream result of userUserResponse"
+              "$ref": "#/definitions/userGetClaimsResponse"
             }
           },
           "default": {
@@ -72,6 +63,312 @@
             }
           }
         },
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/users": {
+      "get": {
+        "summary": "Get all users",
+        "description": "Gets all the users",
+        "operationId": "UserService_GetAll",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userGetAllUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create user",
+        "description": "Creates a new user",
+        "operationId": "UserService_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userCreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userCreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/users/email/{email}": {
+      "get": {
+        "summary": "Get user by email",
+        "description": "Gets a user by email",
+        "operationId": "UserService_GetByEmail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/v1/users/login": {
+      "post": {
+        "summary": "Login user",
+        "description": "Logs in a user",
+        "operationId": "UserService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userLoginUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userLoginUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/users/many": {
+      "post": {
+        "summary": "Create many users",
+        "description": "Creates multiple users atomically",
+        "operationId": "UserService_CreateMany",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userCreateManyUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userCreateManyUsersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/users/{id}": {
+      "get": {
+        "summary": "Get user by ID",
+        "description": "Gets a user by ID",
+        "operationId": "UserService_GetByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete user",
+        "description": "Deletes a user",
+        "operationId": "UserService_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Update user",
+        "description": "Updates a user",
+        "operationId": "UserService_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "surnames": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "oldPassword": {
+                  "type": "string"
+                },
+                "newPassword": {
+                  "type": "string"
+                },
+                "claims": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          }
+        ],
         "tags": [
           "UserService"
         ],
@@ -107,8 +404,7 @@
         "dsn": {
           "type": "string"
         }
-      },
-      "title": "HealthCheckResponse is the response from the health check"
+      }
     },
     "protobufAny": {
       "type": "object",
@@ -138,6 +434,107 @@
         }
       }
     },
+    "userCreateManyUsersRequest": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userCreateUserRequest"
+          }
+        }
+      }
+    },
+    "userCreateManyUsersResponse": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "userCreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "surnames": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "userCreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "userGetAllUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/userUserResponse"
+          }
+        }
+      }
+    },
+    "userGetClaimsResponse": {
+      "type": "object",
+      "properties": {
+        "claims": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "userLoginUserRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "userLoginUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userUserResponse"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
     "userUserResponse": {
       "type": "object",
       "properties": {
@@ -147,17 +544,28 @@
         "name": {
           "type": "string"
         },
+        "surnames": {
+          "type": "string"
+        },
         "email": {
           "type": "string"
         },
-        "roles": {
+        "claims": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "format": "int64"
           }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
-      },
-      "description": "UserResponse is the response for a single user."
+      }
     }
   },
   "securityDefinitions": {

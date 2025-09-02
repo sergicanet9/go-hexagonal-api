@@ -23,7 +23,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// HealthCheckRequest is the request for the health check
 type HealthCheckRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -62,7 +61,6 @@ func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
 	return file_health_proto_rawDescGZIP(), []int{0}
 }
 
-// HealthCheckResponse is the response from the health check
 type HealthCheckResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
