@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/sergicanet9/go-hexagonal-api/scvv4/mocks"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -61,7 +61,7 @@ func TestStreamJWT(t *testing.T) {
 				md.Set("authorization", tc.jwtToken)
 			}
 			ctx := metadata.NewIncomingContext(context.Background(), md)
-			stream := &mocks.MockGRPCServerStream{Ctx: ctx}
+			stream := wrappers.NewGRPCServerStream(ctx)
 
 			interceptor := StreamJWT(secret, []MethodPolicy{
 				{MethodName: method, RequiredClaims: tc.requiredClaims},

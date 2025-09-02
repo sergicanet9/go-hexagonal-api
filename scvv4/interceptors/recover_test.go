@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/sergicanet9/go-hexagonal-api/scvv4/mocks"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -56,7 +56,7 @@ func TestStreamRecover_NoPanic(t *testing.T) {
 	}
 
 	// Act
-	err := interceptor("srv", &mocks.MockGRPCServerStream{}, &grpc.StreamServerInfo{FullMethod: "/test.Service/Stream"}, handler)
+	err := interceptor("srv", wrappers.NewGRPCServerStream(context.Background()), &grpc.StreamServerInfo{FullMethod: "/test.Service/Stream"}, handler)
 
 	// Assert
 	assert.Nil(t, err)
@@ -71,7 +71,7 @@ func TestStreamRecover_Panic(t *testing.T) {
 	}
 
 	// Act
-	err := interceptor("srv", &mocks.MockGRPCServerStream{}, &grpc.StreamServerInfo{FullMethod: "/test.Service/Stream"}, handler)
+	err := interceptor("srv", wrappers.NewGRPCServerStream(context.Background()), &grpc.StreamServerInfo{FullMethod: "/test.Service/Stream"}, handler)
 
 	// Assert
 	assert.Error(t, err)

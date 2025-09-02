@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/sergicanet9/go-hexagonal-api/scvv4/mocks"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -55,7 +55,7 @@ func TestStreamLogger_HandlerOk(t *testing.T) {
 	}
 
 	interceptor := StreamLogger()
-	stream := &mocks.MockGRPCServerStream{Ctx: context.Background()}
+	stream := wrappers.NewGRPCServerStream(context.Background())
 	err := interceptor(nil, stream, &grpc.StreamServerInfo{FullMethod: method}, handler)
 
 	assert.Nil(t, err)
@@ -69,7 +69,7 @@ func TestStreamLogger_HandlerError(t *testing.T) {
 	}
 
 	interceptor := StreamLogger()
-	stream := &mocks.MockGRPCServerStream{Ctx: context.Background()}
+	stream := wrappers.NewGRPCServerStream(context.Background())
 	err := interceptor(nil, stream, &grpc.StreamServerInfo{FullMethod: method}, handler)
 
 	status, _ := status.FromError(err)

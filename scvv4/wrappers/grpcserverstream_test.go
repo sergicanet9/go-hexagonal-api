@@ -1,4 +1,4 @@
-package mocks
+package wrappers
 
 import (
 	"context"
@@ -7,13 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestContext_Ok that the MockGRPCServerStream correctly returns the context it was initialized with
+// TestContext_Ok that the GRPCServerStream correctly returns the context it was initialized with
 func TestContext_Ok(t *testing.T) {
 	// Arrange
 	expectedCtx := context.WithValue(context.Background(), "key", "value")
-	ss := &MockGRPCServerStream{
-		Ctx: expectedCtx,
-	}
+	ss := NewGRPCServerStream(expectedCtx)
 
 	// Act
 	actualCtx := ss.Context()

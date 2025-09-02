@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/wrappers"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -18,15 +19,6 @@ const ClaimsKey claimsCtxKey = "claims"
 type MethodPolicy struct {
 	MethodName     string
 	RequiredClaims []string
-}
-
-type wrappedServerStream struct {
-	grpc.ServerStream
-	newCtx context.Context
-}
-
-func (w *wrappedServerStream) Context() context.Context {
-	return w.newCtx
 }
 
 // UnaryJWT is a configurable gRPC unary interceptor that validates the JWT tokens and its claims for the incomming call
@@ -59,11 +51,8 @@ func StreamJWT(jwtSecret string, methods []MethodPolicy) grpc.StreamServerInterc
 		if err != nil {
 			return err
 		}
-
-		wrappedStream := &wrappedServerStream{
-			ServerStream: ss,
-			newCtx:       newCtx,
-		}
+		wrappedStream := wrappers.NewGRPCServerStream(newCtx)
+		wrappedStream.ServerStream = ss
 
 		return handler(srv, wrappedStream)
 	}

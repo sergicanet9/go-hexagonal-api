@@ -91,26 +91,28 @@ func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServer
 			log.Fatalf("failed to listen on gRPC port: %s", err)
 		}
 
+		healthHander := handlers.NewHealthHandler(ctx, a.config)
+		userHandler := handlers.NewUserHandler(ctx, a.config, a.services.user)
+
+		methodPolicies := []interceptors.MethodPolicy{}
+		methodPolicies = append(methodPolicies, userHandler.JWTMethodPolicies()...)
+
 		server := grpc.NewServer(
 			grpc.ChainUnaryInterceptor(
 				interceptors.UnaryLogger(),
 				interceptors.UnaryRecover(),
 				nrgrpc.UnaryServerInterceptor(a.newrelicApp),
-				//interceptors.UnaryJWT()
+				interceptors.UnaryJWT(a.config.JWTSecret, methodPolicies),
 			),
 			grpc.ChainStreamInterceptor(
 				interceptors.StreamLogger(),
 				interceptors.StreamRecover(),
 				nrgrpc.StreamServerInterceptor(a.newrelicApp),
-				//interceptors.StreamJWT()
-
+				interceptors.StreamJWT(a.config.JWTSecret, methodPolicies),
 			),
 		)
 
-		healthHander := handlers.NewHealthHandler(ctx, a.config)
 		pb.RegisterHealthServiceServer(server, healthHander)
-
-		userHandler := handlers.NewUserHandler(ctx, a.config, a.services.user)
 		pb.RegisterUserServiceServer(server, userHandler)
 
 		reflection.Register(server)
