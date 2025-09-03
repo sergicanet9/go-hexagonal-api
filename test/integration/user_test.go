@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"testing"
@@ -13,12 +13,13 @@ import (
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/entities"
-	"github.com/sergicanet9/go-hexagonal-api/core/models"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // TestLoginUser_Ok checks that Login endpoint returns the expected response when everything goes as expected
@@ -33,11 +34,11 @@ func TestLoginUser_Ok(t *testing.T) {
 		}
 
 		// Act
-		body := models.LoginUserReq{
+		body := &pb.LoginUserRequest{
 			Email:    testUser.Email,
 			Password: password,
 		}
-		b, err := json.Marshal(body)
+		b, err := protojson.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -62,11 +63,17 @@ func TestLoginUser_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.LoginUserResp
-		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+
+		var response pb.LoginUserResponse
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unexpected error reading the response while calling %s: %s", resp.Request.URL, err)
+		}
+		if err := protojson.Unmarshal(bodyBytes, &response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
-		assert.Equal(t, testUser.ID, response.User.ID)
+
+		assert.Equal(t, testUser.ID, response.User.Id)
 		assert.NotEmpty(t, response.Token)
 	})
 }
@@ -80,7 +87,7 @@ func TestCreateUser_Ok(t *testing.T) {
 
 		// Act
 		body := mapUserToCreateUserReq(testUser, password)
-		b, err := json.Marshal(body)
+		b, err := protojson.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -102,23 +109,31 @@ func TestCreateUser_Ok(t *testing.T) {
 		defer resp.Body.Close()
 
 		// Assert
-		if want, got := http.StatusCreated, resp.StatusCode; want != got {
+		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.CreateUserResp
-		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+
+		var response pb.CreateUserResponse
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unexpected error reading the response while calling %s: %s", resp.Request.URL, err)
+		}
+		if err := protojson.Unmarshal(bodyBytes, &response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
-		assert.NotEmpty(t, response.InsertedID)
-		createdUser, err := findUser(response.InsertedID, cfg)
+
+		assert.NotEmpty(t, response.Id)
+		createdUser, err := findUser(response.Id, cfg)
 		if err != nil {
 			t.Fatalf("unexpected error while finding the created user: %s", err)
 		}
 		assert.Equal(t, testUser.Name, createdUser.Name)
 		assert.Equal(t, testUser.Surnames, createdUser.Surnames)
 		assert.Equal(t, testUser.Email, createdUser.Email)
-		assert.Equal(t, testUser.PasswordHash, createdUser.PasswordHash)
+		assert.NotNil(t, createdUser.PasswordHash)
 		assert.Equal(t, testUser.ClaimIDs, createdUser.ClaimIDs)
+		assert.NotNil(t, testUser.CreatedAt)
+		assert.NotNil(t, testUser.UpdatedAt)
 	})
 }
 
@@ -132,11 +147,14 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 		users := []entities.User{user1, user2}
 
 		// Act
-		body := []models.CreateUserReq{
-			mapUserToCreateUserReq(user1, password1),
-			mapUserToCreateUserReq(user2, password2),
+		body := &pb.CreateManyUsersRequest{
+			Users: []*pb.CreateUserRequest{
+				mapUserToCreateUserReq(user1, password1),
+				mapUserToCreateUserReq(user2, password2),
+			},
 		}
-		b, err := json.Marshal(body)
+
+		b, err := protojson.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -158,15 +176,20 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 		defer resp.Body.Close()
 
 		// Assert
-		if want, got := http.StatusCreated, resp.StatusCode; want != got {
+		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.CreateManyUserResp
-		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		var response pb.CreateManyUsersResponse
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unexpected error reading the response while calling %s: %s", resp.Request.URL, err)
+		}
+		if err := protojson.Unmarshal(bodyBytes, &response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
-		assert.Equal(t, 2, len(response.InsertedIDs))
-		for i, id := range response.InsertedIDs {
+
+		assert.Equal(t, 2, len(response.Ids))
+		for i, id := range response.Ids {
 			createdUser, err := findUser(id, cfg)
 			if err != nil {
 				t.Fatalf("unexpected error while finding the created user: %s", err)
@@ -174,8 +197,10 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 			assert.Equal(t, users[i].Name, createdUser.Name)
 			assert.Equal(t, users[i].Surnames, createdUser.Surnames)
 			assert.Equal(t, users[i].Email, createdUser.Email)
-			assert.Equal(t, users[i].PasswordHash, createdUser.PasswordHash)
+			assert.NotNil(t, users[i].PasswordHash)
 			assert.Equal(t, users[i].ClaimIDs, createdUser.ClaimIDs)
+			assert.NotNil(t, users[i].CreatedAt)
+			assert.NotNil(t, users[i].UpdatedAt)
 		}
 	})
 }
@@ -185,6 +210,11 @@ func TestGetAllUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
+		testUser, _ := getNewTestUser()
+		err := insertUser(&testUser, cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		// Act
 		url := fmt.Sprintf("http://:%d/v1/users", cfg.HTTPPort)
@@ -208,11 +238,25 @@ func TestGetAllUsers_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response []models.GetUserResp
-		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+
+		var response pb.GetAllUsersResponse
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unexpected error reading the response while calling %s: %s", resp.Request.URL, err)
+		}
+		if err := protojson.Unmarshal(bodyBytes, &response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
-		assert.NotEmpty(t, response)
+
+		assert.Equal(t, 1, len(response.Users))
+		assert.Equal(t, testUser.Name, response.Users[0].Name)
+		assert.Equal(t, testUser.Surnames, response.Users[0].Surnames)
+		assert.Equal(t, testUser.Email, response.Users[0].Email)
+		assert.Equal(t, testUser.ClaimIDs, response.Users[0].ClaimIds)
+		assert.True(t, testUser.CreatedAt.Truncate(time.Second).Equal(response.Users[0].CreatedAt.AsTime().Truncate(time.Second)))
+		assert.True(t, testUser.UpdatedAt.Truncate(time.Second).Equal(response.Users[0].UpdatedAt.AsTime().Truncate(time.Second)))
+		assert.Equal(t, testUser.CreatedAt, response.Users[0].CreatedAt)
+		assert.Equal(t, testUser.UpdatedAt, response.Users[0].UpdatedAt)
 	})
 }
 
@@ -249,15 +293,22 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.GetUserResp
-		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+
+		var response pb.GetUserResponse
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unexpected error reading the response while calling %s: %s", resp.Request.URL, err)
+		}
+		if err := protojson.Unmarshal(bodyBytes, &response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
+
 		assert.Equal(t, testUser.Name, response.Name)
 		assert.Equal(t, testUser.Surnames, response.Surnames)
 		assert.Equal(t, testUser.Email, response.Email)
-		assert.Equal(t, testUser.PasswordHash, response.PasswordHash)
-		assert.Equal(t, testUser.ClaimIDs, response.ClaimIDs)
+		assert.Equal(t, testUser.ClaimIDs, response.ClaimIds)
+		assert.True(t, testUser.CreatedAt.Truncate(time.Second).Equal(response.CreatedAt.AsTime().Truncate(time.Second)))
+		assert.True(t, testUser.UpdatedAt.Truncate(time.Second).Equal(response.UpdatedAt.AsTime().Truncate(time.Second)))
 	})
 }
 
@@ -294,15 +345,22 @@ func TestGetUserByID_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.GetUserResp
-		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+
+		var response pb.GetUserResponse
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unexpected error reading the response while calling %s: %s", resp.Request.URL, err)
+		}
+		if err := protojson.Unmarshal(bodyBytes, &response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
+
 		assert.Equal(t, testUser.Name, response.Name)
 		assert.Equal(t, testUser.Surnames, response.Surnames)
 		assert.Equal(t, testUser.Email, response.Email)
-		assert.Equal(t, testUser.PasswordHash, response.PasswordHash)
-		assert.Equal(t, testUser.ClaimIDs, response.ClaimIDs)
+		assert.Equal(t, testUser.ClaimIDs, response.ClaimIds)
+		assert.True(t, testUser.CreatedAt.Truncate(time.Second).Equal(response.CreatedAt.AsTime().Truncate(time.Second)))
+		assert.True(t, testUser.UpdatedAt.Truncate(time.Second).Equal(response.UpdatedAt.AsTime().Truncate(time.Second)))
 	})
 }
 
@@ -320,11 +378,11 @@ func TestUpdateUser_Ok(t *testing.T) {
 		// Act
 		testUser.Name = "modified"
 		testUser.Surnames = "modified"
-		body := models.UpdateUserReq{
-			Name:     &testUser.Name,
-			Surnames: &testUser.Surnames,
+		body := &pb.UpdateUserRequest{
+			Name:     testUser.Name,
+			Surnames: testUser.Surnames,
 		}
-		b, err := json.Marshal(body)
+		b, err := protojson.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -357,8 +415,10 @@ func TestUpdateUser_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Name, updatedUser.Name)
 		assert.Equal(t, testUser.Surnames, updatedUser.Surnames)
 		assert.Equal(t, testUser.Email, updatedUser.Email)
-		assert.Equal(t, testUser.PasswordHash, updatedUser.PasswordHash)
+		assert.NotNil(t, updatedUser.PasswordHash)
 		assert.Equal(t, testUser.ClaimIDs, updatedUser.ClaimIDs)
+		assert.Equal(t, testUser.CreatedAt, updatedUser.CreatedAt)
+		assert.Equal(t, testUser.UpdatedAt, updatedUser.UpdatedAt)
 	})
 }
 
@@ -429,33 +489,43 @@ func TestGetUserClaims_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response map[int]string
-		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
+
+		var response pb.GetClaimsResponse
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unexpected error reading the response while calling %s: %s", resp.Request.URL, err)
+		}
+		if err := protojson.Unmarshal(bodyBytes, &response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
-		assert.NotEmpty(t, response)
+
+		assert.NotEmpty(t, response.Claims)
 	})
 }
 
 // HELP FUNCTIONS
-
-func getNewTestUser() (entities.User, string) {
-	return entities.User{
+func getNewTestUser() (u entities.User, pwd string) {
+	u = entities.User{
 		Name:         "test",
 		Surnames:     "test",
 		Email:        fmt.Sprintf("test%d@test.com", rand.Int()),
-		PasswordHash: "$2a$10$Q71DDcyvQhzt2K1EbRp1cOh4ToUh9de9ETsixwXGOVeRorTh8tjN2",
-	}, "test"
+		PasswordHash: "$2a$10$Cr1oVDUOUoCT3ZSbLanruO5oIdu9YIqoXWFD7iaR8uKvWjgIoSnqa",
+	}
+	pwd = "test"
+	return
 }
 
 func insertUser(u *entities.User, cfg config.Config) error {
+	now := time.Now()
+
 	switch cfg.Database {
 	case "mongo":
 		db, err := infrastructure.ConnectMongoDB(context.Background(), cfg.DSN)
 		if err != nil {
 			return err
 		}
-
+		u.CreatedAt = now
+		u.UpdatedAt = now
 		result, err := db.Collection(entities.EntityNameUser).InsertOne(context.Background(), u)
 		u.ID = result.InsertedID.(primitive.ObjectID).Hex()
 		return err
@@ -473,7 +543,7 @@ func insertUser(u *entities.User, cfg config.Config) error {
 		`
 
 		row := db.QueryRowContext(
-			context.Background(), q, u.Name, u.Surnames, u.Email, u.PasswordHash, time.Now().UTC(), time.Now().UTC(),
+			context.Background(), q, u.Name, u.Surnames, u.Email, u.PasswordHash, now, now,
 		)
 
 		err = row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, &u.CreatedAt, &u.UpdatedAt)
@@ -523,13 +593,13 @@ func findUser(ID string, cfg config.Config) (entities.User, error) {
 	}
 }
 
-func mapUserToCreateUserReq(user entities.User, password string) models.CreateUserReq {
-	return models.CreateUserReq{
+func mapUserToCreateUserReq(user entities.User, password string) *pb.CreateUserRequest {
+	return &pb.CreateUserRequest{
 		Name:     user.Name,
 		Surnames: user.Surnames,
 		Email:    user.Email,
 		Password: password,
-		ClaimIDs: user.ClaimIDs,
+		ClaimIds: user.ClaimIDs,
 	}
 
 }
