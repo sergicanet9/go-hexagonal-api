@@ -155,7 +155,7 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		}
 
 		httpRouter := mux.NewRouter()
-		httpRouter.Use(middlewares.Logger("/swagger", "/grpcui"))
+		httpRouter.Use(middlewares.Logger("/swagger", "/docs.swagger.json", "/grpcui"))
 		httpRouter.Use(middlewares.Recover)
 		httpRouter.Use(nrgorilla.Middleware(a.newrelicApp))
 
