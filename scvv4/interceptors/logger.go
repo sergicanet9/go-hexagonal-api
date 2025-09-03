@@ -16,7 +16,7 @@ func UnaryLogger() grpc.UnaryServerInterceptor {
 
 		resp, err = handler(ctx, req)
 
-		logResult(info.FullMethod, start, err, req, resp)
+		logResult("Unary", info.FullMethod, start, err, req, resp)
 
 		return resp, err
 	}
@@ -29,21 +29,21 @@ func StreamLogger() grpc.StreamServerInterceptor {
 
 		err := handler(srv, ss)
 
-		logResult(info.FullMethod, start, err, nil, nil)
+		logResult("Stream", info.FullMethod, start, err, nil, nil)
 
 		return err
 	}
 }
 
-func logResult(fullMethod string, start time.Time, err error, req interface{}, resp interface{}) {
+func logResult(callType, fullMethod string, start time.Time, err error, req interface{}, resp interface{}) {
 	latency := time.Since(start)
 
 	if err != nil {
 		s, _ := status.FromError(err)
-		observability.Logger().Printf("gRPC Call: %s - Request: %v - Status: %s - Latency: %s - Error: %v",
-			fullMethod, req, s.Code(), latency, err)
+		observability.Logger().Printf("gRPC %s Call: %s - Request: %v - Status: %s - Latency: %s - Error: %v",
+			callType, fullMethod, req, s.Code(), latency, err)
 	} else {
-		observability.Logger().Printf("gRPC Call: %s - Request: %v - Status: OK - Latency: %s - Response: %v",
-			fullMethod, req, latency, resp)
+		observability.Logger().Printf("gRPC %s Call: %s - Request: %v - Status: OK - Latency: %s - Response: %v",
+			callType, fullMethod, req, latency, resp)
 	}
 }
