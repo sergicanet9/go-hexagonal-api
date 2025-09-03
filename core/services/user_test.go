@@ -508,9 +508,9 @@ func TestUpdate_Ok(t *testing.T) {
 	testParam := "test"
 	testEmail := "test@test.com"
 	testClaims := []int32{0}
+	id := "test-id"
 
 	req := models.UpdateUserReq{
-		ID:          "test-id",
 		Name:        &testParam,
 		Surnames:    &testParam,
 		Email:       &testEmail,
@@ -524,8 +524,8 @@ func TestUpdate_Ok(t *testing.T) {
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), req.ID).Return(&existingUser, nil).Once()
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Update), context.Background(), req.ID, mock.AnythingOfType("entities.User")).Return(nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), id).Return(&existingUser, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Update), context.Background(), id, mock.AnythingOfType("entities.User")).Return(nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -533,7 +533,7 @@ func TestUpdate_Ok(t *testing.T) {
 	}
 
 	// Act
-	err := service.Update(context.Background(), req.ID, req)
+	err := service.Update(context.Background(), id, req)
 
 	// Assert
 	assert.Nil(t, err)
@@ -567,9 +567,9 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 	// Arrange
 	newPassword := "new-password"
 	incorrectOldPassword := "incorrect-password"
+	id := "test-id"
 
 	req := models.UpdateUserReq{
-		ID:          "test-id",
 		NewPassword: &newPassword,
 		OldPassword: &incorrectOldPassword,
 	}
@@ -581,7 +581,7 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 	expectedError := "password incorrect"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), req.ID).Return(&existingUser, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), id).Return(&existingUser, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -589,7 +589,7 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 	}
 
 	// Act
-	err := service.Update(context.Background(), req.ID, req)
+	err := service.Update(context.Background(), id, req)
 
 	// Assert
 	assert.NotEmpty(t, err)
@@ -601,16 +601,16 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 func TestUpdate_InvalidClaims(t *testing.T) {
 	// Arrange
 	invalidClaims := []int32{3}
+	id := "test-id"
 
 	req := models.UpdateUserReq{
-		ID:       "test-id",
 		ClaimIDs: &invalidClaims,
 	}
 
 	expectedError := "claim 3 is not valid"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), req.ID).Return(&entities.User{}, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), id).Return(&entities.User{}, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -618,7 +618,7 @@ func TestUpdate_InvalidClaims(t *testing.T) {
 	}
 
 	// Act
-	err := service.Update(context.Background(), req.ID, req)
+	err := service.Update(context.Background(), id, req)
 
 	// Assert
 	assert.NotEmpty(t, err)
