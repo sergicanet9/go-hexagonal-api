@@ -11,6 +11,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/scvv4/interceptors"
 	"github.com/sergicanet9/go-hexagonal-api/scvv4/utils"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type userHandler struct {
@@ -58,24 +59,50 @@ func (u *userHandler) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.Lo
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	loginReq := &models.LoginUserReq{
+	loginReq := models.LoginUserReq{
 		Email:    req.Email,
 		Password: req.Password,
 	}
-	resp, err := u.svc.Login(ctx, *loginReq)
+	resp, err := u.svc.Login(ctx, loginReq)
 	if err != nil {
 		return nil, utils.ToGRPC(err)
 	}
 
 	loginResp := &pb.LoginUserResponse{
-		User:  &pb.GetUserResponse{},
+		User: &pb.GetUserResponse{
+			Id:        resp.User.ID,
+			Name:      resp.User.Name,
+			Surnames:  resp.User.Surnames,
+			Email:     resp.User.Email,
+			Claims:    resp.User.Claims,
+			CreatedAt: timestamppb.New(resp.User.CreatedAt),
+			UpdatedAt: timestamppb.New(resp.User.UpdatedAt),
+		},
 		Token: resp.Token,
 	}
 	return loginResp, nil
 }
 
 func (u *userHandler) Create(_ context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	return nil, errors.New("not implemented")
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	createReq := models.CreateUserReq{
+		Name:     req.Name,
+		Surnames: req.Surnames,
+		Email:    req.Email,
+		Password: req.Password,
+		Claims:   req.Claims,
+	}
+	resp, err := u.svc.Create(ctx, createReq)
+	if err != nil {
+		return nil, utils.ToGRPC(err)
+	}
+
+	createResp := &pb.CreateUserResponse{
+		Id: resp.InsertedID,
+	}
+	return createResp, nil
 }
 
 func (u *userHandler) CreateMany(_ context.Context, req *pb.CreateManyUsersRequest) (*pb.CreateManyUsersResponse, error) {
@@ -83,7 +110,31 @@ func (u *userHandler) CreateMany(_ context.Context, req *pb.CreateManyUsersReque
 }
 
 func (u *userHandler) GetAll(_ context.Context, _ *emptypb.Empty) (*pb.GetAllUsersResponse, error) {
-	return nil, errors.New("not implemented")
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	resp, err := u.svc.GetAll(ctx)
+	if err != nil {
+		return nil, utils.ToGRPC(err)
+	}
+
+	var getAllRespList []*pb.GetUserResponse
+	for _, user := range resp {
+		getAllRespList = append(getAllRespList, &pb.GetUserResponse{
+			Id:        user.ID,
+			Name:      user.Name,
+			Surnames:  user.Surnames,
+			Email:     user.Email,
+			Claims:    user.Claims,
+			CreatedAt: timestamppb.New(user.CreatedAt),
+			UpdatedAt: timestamppb.New(user.UpdatedAt),
+		})
+	}
+
+	getAllResp := &pb.GetAllUsersResponse{
+		Users: getAllRespList,
+	}
+	return getAllResp, nil
 }
 
 func (u *userHandler) GetByEmail(_ context.Context, req *pb.GetUserByEmailRequest) (*pb.GetUserResponse, error) {
