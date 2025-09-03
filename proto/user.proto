@@ -56,7 +56,7 @@ service UserService {
         };
     }
 
-    rpc GetByEmail(GetUserByEmailRequest) returns (UserResponse) {
+    rpc GetByEmail(GetUserByEmailRequest) returns (GetUserResponse) {
         option (google.api.http) = {
             get: "/v1/users/email/{email}"
         };
@@ -69,7 +69,7 @@ service UserService {
         };
     }
 
-    rpc GetByID(GetUserByIDRequest) returns (UserResponse) {
+    rpc GetByID(GetUserByIDRequest) returns (GetUserResponse) {
         option (google.api.http) = {
             get: "/v1/users/{id}"
         };
@@ -82,7 +82,7 @@ service UserService {
         };
     }
 
-    rpc Update(UpdateUserRequest) returns (UserResponse) {
+    rpc Update(UpdateUserRequest) returns (GetUserResponse) {
         option (google.api.http) = {
             patch: "/v1/users/{id}"
             body: "*"
@@ -129,17 +129,8 @@ message LoginUserRequest {
 }
 
 message LoginUserResponse {
-    UserResponse user = 1;
+    GetUserResponse user = 1;
     string token = 2;
-}
-message UserResponse {
-    string id = 1;
-    string name = 2;
-    string surnames = 3;
-    string email = 4;
-    repeated int64 claims = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {example: "[0]"}];
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
 }
 
 message CreateUserRequest {
@@ -170,6 +161,16 @@ message GetUserByIDRequest {
     string id = 1;
 }
 
+message GetUserResponse {
+    string id = 1;
+    string name = 2;
+    string surnames = 3;
+    string email = 4;
+    repeated int64 claims = 5 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {example: "[0]"}];
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
+
 message UpdateUserRequest {
     string id = 1;
     string name = 2;
@@ -181,7 +182,7 @@ message UpdateUserRequest {
 }
 
 message GetAllUsersResponse {
-    repeated UserResponse users = 1;
+    repeated GetUserResponse users = 1;
 }
 
 message GetClaimsResponse {

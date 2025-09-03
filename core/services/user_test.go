@@ -61,7 +61,7 @@ func TestLogin_Ok(t *testing.T) {
 
 	// Assert
 	assert.Nil(t, err)
-	assert.Equal(t, models.UserResp(expectedUser), resp.User)
+	assert.Equal(t, models.GetUserResp(expectedUser), resp.User)
 }
 
 // TestLogin_NotFound checks that Login returns an error when the user is not found
@@ -194,11 +194,11 @@ func TestLogin_InvalidClaims(t *testing.T) {
 func TestCreate_Ok(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "test@test.com",
-		PasswordHash: "test",
+		Email:    "test@test.com",
+		Password: "test",
 	}
 
-	expectedResponse := models.CreationResp{
+	expectedResponse := models.CreateUserResp{
 		InsertedID: "new-id",
 	}
 
@@ -222,8 +222,8 @@ func TestCreate_Ok(t *testing.T) {
 func TestCreate_CreateError(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "test@test.com",
-		PasswordHash: "test",
+		Email:    "test@test.com",
+		Password: "test",
 	}
 
 	expectedError := "repository-error"
@@ -248,8 +248,8 @@ func TestCreate_CreateError(t *testing.T) {
 func TestCreate_InvalidRequest(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "",
-		PasswordHash: "",
+		Email:    "",
+		Password: "",
 	}
 
 	expectedError := "email cannot be empty | password cannot be empty"
@@ -272,9 +272,9 @@ func TestCreate_InvalidRequest(t *testing.T) {
 func TestCreate_InvalidClaims(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "test@test.com",
-		PasswordHash: "test",
-		Claims:       []int64{3},
+		Email:    "test@test.com",
+		Password: "test",
+		Claims:   []int64{3},
 	}
 
 	expectedError := "claim 3 is not valid"
@@ -298,12 +298,12 @@ func TestCreateMany_Ok(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "test@test.com",
-			PasswordHash: "test",
+			Email:    "test@test.com",
+			Password: "test",
 		},
 	}
 
-	expectedResponse := models.MultiCreationResp{
+	expectedResponse := models.CreateManyUserResp{
 		InsertedIDs: []string{"new-id"},
 	}
 
@@ -328,8 +328,8 @@ func TestCreateMany_CreateManyError(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "test@test.com",
-			PasswordHash: "test",
+			Email:    "test@test.com",
+			Password: "test",
 		},
 	}
 
@@ -356,8 +356,8 @@ func TestCreateMany_InvalidRequest(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "",
-			PasswordHash: "",
+			Email:    "",
+			Password: "",
 		},
 	}
 
@@ -382,9 +382,9 @@ func TestCreateMany_InvalidClaims(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "test@test.com",
-			PasswordHash: "test",
-			Claims:       []int64{3},
+			Email:    "test@test.com",
+			Password: "test",
+			Claims:   []int64{3},
 		},
 	}
 
@@ -429,7 +429,7 @@ func TestGetAll_Ok(t *testing.T) {
 
 	// Assert
 	assert.Nil(t, err)
-	assert.Equal(t, models.UserResp(expectedUser), resp[0])
+	assert.Equal(t, models.GetUserResp(expectedUser), resp[0])
 }
 
 // TestGetAll_NoResourcesFound checks that GetAll does not return an error when the repository does not return an user
@@ -475,7 +475,7 @@ func TestGetByID_Ok(t *testing.T) {
 
 	// Assert
 	assert.Nil(t, err)
-	assert.Equal(t, models.UserResp(expectedUser), resp)
+	assert.Equal(t, models.GetUserResp(expectedUser), resp)
 }
 
 // TestGetByID_Ok checks that GetByID returns tan error when the provided ID does not exist

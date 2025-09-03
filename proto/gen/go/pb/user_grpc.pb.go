@@ -27,9 +27,9 @@ type UserServiceClient interface {
 	Create(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	CreateMany(ctx context.Context, in *CreateManyUsersRequest, opts ...grpc.CallOption) (*CreateManyUsersResponse, error)
 	GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllUsersResponse, error)
-	GetByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	GetByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	GetByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	GetByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	GetClaims(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetClaimsResponse, error)
 	Delete(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -78,8 +78,8 @@ func (c *userServiceClient) GetAll(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
-func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetByEmail", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetUserByEmailRe
 	return out, nil
 }
 
-func (c *userServiceClient) GetByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) GetByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/GetByID", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -96,8 +96,8 @@ func (c *userServiceClient) GetByID(ctx context.Context, in *GetUserByIDRequest,
 	return out, nil
 }
 
-func (c *userServiceClient) Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
-	out := new(UserResponse)
+func (c *userServiceClient) Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
+	out := new(GetUserResponse)
 	err := c.cc.Invoke(ctx, "/user.UserService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -131,9 +131,9 @@ type UserServiceServer interface {
 	Create(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	CreateMany(context.Context, *CreateManyUsersRequest) (*CreateManyUsersResponse, error)
 	GetAll(context.Context, *emptypb.Empty) (*GetAllUsersResponse, error)
-	GetByEmail(context.Context, *GetUserByEmailRequest) (*UserResponse, error)
-	GetByID(context.Context, *GetUserByIDRequest) (*UserResponse, error)
-	Update(context.Context, *UpdateUserRequest) (*UserResponse, error)
+	GetByEmail(context.Context, *GetUserByEmailRequest) (*GetUserResponse, error)
+	GetByID(context.Context, *GetUserByIDRequest) (*GetUserResponse, error)
+	Update(context.Context, *UpdateUserRequest) (*GetUserResponse, error)
 	GetClaims(context.Context, *emptypb.Empty) (*GetClaimsResponse, error)
 	Delete(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -155,13 +155,13 @@ func (UnimplementedUserServiceServer) CreateMany(context.Context, *CreateManyUse
 func (UnimplementedUserServiceServer) GetAll(context.Context, *emptypb.Empty) (*GetAllUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
-func (UnimplementedUserServiceServer) GetByEmail(context.Context, *GetUserByEmailRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) GetByEmail(context.Context, *GetUserByEmailRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByEmail not implemented")
 }
-func (UnimplementedUserServiceServer) GetByID(context.Context, *GetUserByIDRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) GetByID(context.Context, *GetUserByIDRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByID not implemented")
 }
-func (UnimplementedUserServiceServer) Update(context.Context, *UpdateUserRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) Update(context.Context, *UpdateUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedUserServiceServer) GetClaims(context.Context, *emptypb.Empty) (*GetClaimsResponse, error) {

@@ -49,19 +49,19 @@ func (s *userService) Login(ctx context.Context, credentials models.LoginUserReq
 	return
 }
 
-func (s *userService) validateLogin(ctx context.Context, credentials models.LoginUserReq) (models.UserResp, error) {
+func (s *userService) validateLogin(ctx context.Context, credentials models.LoginUserReq) (models.GetUserResp, error) {
 	if err := credentials.Validate(); err != nil {
-		return models.UserResp{}, err
+		return models.GetUserResp{}, err
 	}
 
 	user, err := s.GetByEmail(ctx, credentials.Email)
 	if err != nil {
-		return models.UserResp{}, err
+		return models.GetUserResp{}, err
 	}
 
 	err = validatePassword(credentials.Password, user.PasswordHash)
 	if err != nil {
-		return models.UserResp{}, err
+		return models.GetUserResp{}, err
 	}
 
 	return user, nil
@@ -105,13 +105,26 @@ func validateClaims(claims []int64) error {
 }
 
 // Create user
-func (s *userService) Create(ctx context.Context, user models.CreateUserReq) (resp models.CreationResp, err error) {
-	if err = user.Validate(); err != nil {
+func (s *userService) Create(ctx context.Context, user models.CreateUserReq) (resp models.CreateUserResp, err error) {
+	entity, err := s.createUserEntity(user, time.Now().UTC())
+	if err != nil {
 		return
 	}
 
-	err = hashPassword(&user.PasswordHash)
+	insertedID, err := s.repository.Create(ctx, entity)
 	if err != nil {
+		return
+	}
+
+	resp = models.CreateUserResp{
+		InsertedID: insertedID,
+	}
+
+	return
+}
+
+func (s *userService) createUserEntity(user models.CreateUserReq, creationTime time.Time) (entity entities.User, err error) {
+	if err = user.Validate(); err != nil {
 		return
 	}
 
@@ -120,54 +133,44 @@ func (s *userService) Create(ctx context.Context, user models.CreateUserReq) (re
 		return
 	}
 
-	now := time.Now().UTC()
-	user.CreatedAt = now
-	user.UpdatedAt = now
-	insertedID, err := s.repository.Create(ctx, entities.User(user))
+	hash, err := hashPassword(user.Password)
 	if err != nil {
 		return
 	}
 
-	resp = models.CreationResp{
-		InsertedID: insertedID,
+	entity = entities.User{
+		Name:         user.Name,
+		Surnames:     user.Surnames,
+		Email:        user.Email,
+		PasswordHash: hash,
+		Claims:       user.Claims,
+		CreatedAt:    creationTime,
+		UpdatedAt:    creationTime,
 	}
-
 	return
 }
 
-func hashPassword(password *string) error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return "", err
 	}
-	*password = string(bytes)
-	return nil
+	hash := string(bytes)
+	return hash, nil
 }
 
 // CreateMany users
-func (s *userService) CreateMany(ctx context.Context, users []models.CreateUserReq) (resp models.MultiCreationResp, err error) {
+func (s *userService) CreateMany(ctx context.Context, users []models.CreateUserReq) (resp models.CreateManyUserResp, err error) {
 	var create []interface{}
-	now := time.Now().UTC()
+	var entity entities.User
+	creationTime := time.Now().UTC()
 
 	for _, user := range users {
-		if err = user.Validate(); err != nil {
-			return
-		}
-
-		err = hashPassword(&user.PasswordHash)
+		entity, err = s.createUserEntity(user, creationTime)
 		if err != nil {
 			return
 		}
-
-		err = validateClaims(user.Claims)
-		if err != nil {
-			return
-		}
-
-		user.CreatedAt = now
-		user.UpdatedAt = now
-
-		create = append(create, entities.User(user))
+		create = append(create, entity)
 	}
 
 	insertedIDs, err := s.repository.CreateMany(ctx, create)
@@ -175,14 +178,14 @@ func (s *userService) CreateMany(ctx context.Context, users []models.CreateUserR
 		return
 	}
 
-	resp = models.MultiCreationResp{
+	resp = models.CreateManyUserResp{
 		InsertedIDs: insertedIDs,
 	}
 	return
 }
 
 // GetAll users
-func (s *userService) GetAll(ctx context.Context) (resp []models.UserResp, err error) {
+func (s *userService) GetAll(ctx context.Context) (resp []models.GetUserResp, err error) {
 	result, err := s.repository.Get(ctx, map[string]interface{}{}, nil, nil)
 	if err != nil {
 		if errors.Is(err, wrappers.NonExistentErr) {
@@ -191,16 +194,16 @@ func (s *userService) GetAll(ctx context.Context) (resp []models.UserResp, err e
 		return
 	}
 
-	resp = make([]models.UserResp, len(result))
+	resp = make([]models.GetUserResp, len(result))
 	for i, v := range result {
-		resp[i] = models.UserResp(*(v.(*entities.User)))
+		resp[i] = models.GetUserResp(*(v.(*entities.User)))
 	}
 
 	return
 }
 
 // GetByEmail user
-func (s *userService) GetByEmail(ctx context.Context, email string) (resp models.UserResp, err error) {
+func (s *userService) GetByEmail(ctx context.Context, email string) (resp models.GetUserResp, err error) {
 	filter := map[string]interface{}{"email": email}
 	result, err := s.repository.Get(ctx, filter, nil, nil)
 	if err != nil {
@@ -210,13 +213,13 @@ func (s *userService) GetByEmail(ctx context.Context, email string) (resp models
 		return
 	}
 
-	resp = models.UserResp(*(result[0].(*entities.User)))
+	resp = models.GetUserResp(*(result[0].(*entities.User)))
 
 	return
 }
 
 // GetByID user
-func (s *userService) GetByID(ctx context.Context, ID string) (resp models.UserResp, err error) {
+func (s *userService) GetByID(ctx context.Context, ID string) (resp models.GetUserResp, err error) {
 	user, err := s.repository.GetByID(ctx, ID)
 	if err != nil {
 		if errors.Is(err, wrappers.NonExistentErr) {
@@ -225,7 +228,7 @@ func (s *userService) GetByID(ctx context.Context, ID string) (resp models.UserR
 		return
 	}
 
-	resp = models.UserResp(*user.(*entities.User))
+	resp = models.GetUserResp(*user.(*entities.User))
 
 	return
 }
@@ -252,12 +255,13 @@ func (s *userService) Update(ctx context.Context, ID string, user models.UpdateU
 			return
 		}
 
-		err = hashPassword(user.NewPassword)
+		var hash string
+		hash, err = hashPassword(*user.NewPassword)
 		if err != nil {
 			return
 		}
 
-		dbUser.PasswordHash = *user.NewPassword
+		dbUser.PasswordHash = hash
 	}
 	if user.Claims != nil {
 		err = validateClaims(*user.Claims)

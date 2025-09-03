@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/sergicanet9/go-hexagonal-api/app/mappers"
 	"github.com/sergicanet9/go-hexagonal-api/config"
+	"github.com/sergicanet9/go-hexagonal-api/core/models"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
 	"github.com/sergicanet9/go-hexagonal-api/scvv4/interceptors"
@@ -58,26 +58,24 @@ func (u *userHandler) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.Lo
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	loginReq := mappers.LoginUserReqToModel(req)
-	resp, err := u.svc.Login(ctx, loginReq)
+	loginReq := &models.LoginUserReq{
+		Email:    req.Email,
+		Password: req.Password,
+	}
+	resp, err := u.svc.Login(ctx, *loginReq)
 	if err != nil {
 		return nil, utils.ToGRPC(err)
 	}
 
-	return mappers.LoginUserRespToPB(resp), nil
+	loginResp := &pb.LoginUserResponse{
+		User:  &pb.GetUserResponse{},
+		Token: resp.Token,
+	}
+	return loginResp, nil
 }
 
 func (u *userHandler) Create(_ context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
-	defer cancel()
-
-	createReq := mappers.CreateUserReqToModel(req)
-	resp, err := u.svc.Create(ctx, createReq)
-	if err != nil {
-		return nil, utils.ToGRPC(err)
-	}
-
-	return mappers.CreateUserRespToPB(resp), nil
+	return nil, errors.New("not implemented")
 }
 
 func (u *userHandler) CreateMany(_ context.Context, req *pb.CreateManyUsersRequest) (*pb.CreateManyUsersResponse, error) {
@@ -88,15 +86,15 @@ func (u *userHandler) GetAll(_ context.Context, _ *emptypb.Empty) (*pb.GetAllUse
 	return nil, errors.New("not implemented")
 }
 
-func (u *userHandler) GetByEmail(_ context.Context, req *pb.GetUserByEmailRequest) (*pb.UserResponse, error) {
+func (u *userHandler) GetByEmail(_ context.Context, req *pb.GetUserByEmailRequest) (*pb.GetUserResponse, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (u *userHandler) GetByID(_ context.Context, req *pb.GetUserByIDRequest) (*pb.UserResponse, error) {
+func (u *userHandler) GetByID(_ context.Context, req *pb.GetUserByIDRequest) (*pb.GetUserResponse, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (u *userHandler) Update(_ context.Context, req *pb.UpdateUserRequest) (*pb.UserResponse, error) {
+func (u *userHandler) Update(_ context.Context, req *pb.UpdateUserRequest) (*pb.GetUserResponse, error) {
 	return nil, errors.New("not implemented")
 }
 

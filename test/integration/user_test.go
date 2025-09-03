@@ -26,17 +26,16 @@ func TestLoginUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		testUser := getNewTestUser()
-		testUser.Email = "testlogin@test.com"
+		testUser, password := getNewTestUser()
 		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// Act
-		body := models.CreateUserReq{
-			Email:        "testlogin@test.com",
-			PasswordHash: "test",
+		body := models.LoginUserReq{
+			Email:    testUser.Email,
+			Password: password,
 		}
 		b, err := json.Marshal(body)
 		if err != nil {
@@ -77,10 +76,10 @@ func TestCreateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		testUser := getNewTestUser()
+		testUser, password := getNewTestUser()
 
 		// Act
-		body := models.CreateUserReq(testUser)
+		body := mapUserToCreateUserReq(testUser, password)
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -106,7 +105,7 @@ func TestCreateUser_Ok(t *testing.T) {
 		if want, got := http.StatusCreated, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.CreationResp
+		var response models.CreateUserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
@@ -118,6 +117,8 @@ func TestCreateUser_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Name, createdUser.Name)
 		assert.Equal(t, testUser.Surnames, createdUser.Surnames)
 		assert.Equal(t, testUser.Email, createdUser.Email)
+		assert.Equal(t, testUser.PasswordHash, createdUser.PasswordHash)
+		assert.Equal(t, testUser.Claims, createdUser.Claims)
 	})
 }
 
@@ -126,12 +127,14 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		users := []entities.User{getNewTestUser(), getNewTestUser()}
+		user1, password1 := getNewTestUser()
+		user2, password2 := getNewTestUser()
+		users := []entities.User{user1, user2}
 
 		// Act
 		body := []models.CreateUserReq{
-			models.CreateUserReq(users[0]),
-			models.CreateUserReq(users[1]),
+			mapUserToCreateUserReq(user1, password1),
+			mapUserToCreateUserReq(user2, password2),
 		}
 		b, err := json.Marshal(body)
 		if err != nil {
@@ -158,19 +161,21 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 		if want, got := http.StatusCreated, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.MultiCreationResp
+		var response models.CreateManyUserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
 		assert.Equal(t, 2, len(response.InsertedIDs))
 		for i, id := range response.InsertedIDs {
-			createdUser1, err := findUser(id, cfg)
+			createdUser, err := findUser(id, cfg)
 			if err != nil {
 				t.Fatalf("unexpected error while finding the created user: %s", err)
 			}
-			assert.Equal(t, users[i].Name, createdUser1.Name)
-			assert.Equal(t, users[i].Surnames, createdUser1.Surnames)
-			assert.Equal(t, users[i].Email, createdUser1.Email)
+			assert.Equal(t, users[i].Name, createdUser.Name)
+			assert.Equal(t, users[i].Surnames, createdUser.Surnames)
+			assert.Equal(t, users[i].Email, createdUser.Email)
+			assert.Equal(t, users[i].PasswordHash, createdUser.PasswordHash)
+			assert.Equal(t, users[i].Claims, createdUser.Claims)
 		}
 	})
 }
@@ -203,7 +208,7 @@ func TestGetAllUsers_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response []models.UserResp
+		var response []models.GetUserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
@@ -216,7 +221,7 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		testUser := getNewTestUser()
+		testUser, _ := getNewTestUser()
 		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
@@ -244,11 +249,15 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.UserResp
+		var response models.GetUserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
+		assert.Equal(t, testUser.Name, response.Name)
+		assert.Equal(t, testUser.Surnames, response.Surnames)
 		assert.Equal(t, testUser.Email, response.Email)
+		assert.Equal(t, testUser.PasswordHash, response.PasswordHash)
+		assert.Equal(t, testUser.Claims, response.Claims)
 	})
 }
 
@@ -257,7 +266,7 @@ func TestGetUserByID_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		testUser := getNewTestUser()
+		testUser, _ := getNewTestUser()
 		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
@@ -285,11 +294,15 @@ func TestGetUserByID_Ok(t *testing.T) {
 		if want, got := http.StatusOK, resp.StatusCode; want != got {
 			t.Fatalf("unexpected http status code while calling %s: want=%d but got=%d", resp.Request.URL, want, got)
 		}
-		var response models.UserResp
+		var response models.GetUserResp
 		if err = json.NewDecoder(resp.Body).Decode(&response); err != nil {
 			t.Fatalf("unexpected error parsing the response while calling %s: %s", resp.Request.URL, err)
 		}
-		assert.Equal(t, testUser.ID, response.ID)
+		assert.Equal(t, testUser.Name, response.Name)
+		assert.Equal(t, testUser.Surnames, response.Surnames)
+		assert.Equal(t, testUser.Email, response.Email)
+		assert.Equal(t, testUser.PasswordHash, response.PasswordHash)
+		assert.Equal(t, testUser.Claims, response.Claims)
 	})
 }
 
@@ -298,7 +311,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		testUser := getNewTestUser()
+		testUser, _ := getNewTestUser()
 		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
@@ -307,7 +320,10 @@ func TestUpdateUser_Ok(t *testing.T) {
 		// Act
 		testUser.Name = "modified"
 		testUser.Surnames = "modified"
-		body := models.CreateUserReq(testUser)
+		body := models.UpdateUserReq{
+			Name:     &testUser.Name,
+			Surnames: &testUser.Surnames,
+		}
 		b, err := json.Marshal(body)
 		if err != nil {
 			t.Fatal(err)
@@ -341,6 +357,8 @@ func TestUpdateUser_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Name, updatedUser.Name)
 		assert.Equal(t, testUser.Surnames, updatedUser.Surnames)
 		assert.Equal(t, testUser.Email, updatedUser.Email)
+		assert.Equal(t, testUser.PasswordHash, updatedUser.PasswordHash)
+		assert.Equal(t, testUser.Claims, updatedUser.Claims)
 	})
 }
 
@@ -350,22 +368,16 @@ func TestDeleteUser_Ok(t *testing.T) {
 	Databases(t, func(t *testing.T, database string) {
 		// Arrange
 		cfg := New(t, database)
-		testUser := getNewTestUser()
+		testUser, _ := getNewTestUser()
 		err := insertUser(&testUser, cfg)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		// Act
-		body := models.CreateUserReq(testUser)
-		b, err := json.Marshal(body)
-		if err != nil {
-			t.Fatal(err)
-		}
-
 		url := fmt.Sprintf("http://:%d/v1/users/%s", cfg.HTTPPort, testUser.ID)
 
-		req, err := http.NewRequest(http.MethodDelete, url, bytes.NewReader(b))
+		req, err := http.NewRequest(http.MethodDelete, url, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -427,13 +439,13 @@ func TestGetUserClaims_Ok(t *testing.T) {
 
 // HELP FUNCTIONS
 
-func getNewTestUser() entities.User {
+func getNewTestUser() (entities.User, string) {
 	return entities.User{
 		Name:         "test",
 		Surnames:     "test",
 		Email:        fmt.Sprintf("test%d@test.com", rand.Int()),
-		PasswordHash: "$2a$10$Q71DDcyvQhzt2K1EbRp1cOh4ToUh9de9ETsixwXGOVeRorTh8tjN2", // test hashed
-	}
+		PasswordHash: "$2a$10$Q71DDcyvQhzt2K1EbRp1cOh4ToUh9de9ETsixwXGOVeRorTh8tjN2",
+	}, "test"
 }
 
 func insertUser(u *entities.User, cfg config.Config) error {
@@ -509,4 +521,15 @@ func findUser(ID string, cfg config.Config) (entities.User, error) {
 	default:
 		return entities.User{}, fmt.Errorf("database flag %s not valid", cfg.Database)
 	}
+}
+
+func mapUserToCreateUserReq(user entities.User, password string) models.CreateUserReq {
+	return models.CreateUserReq{
+		Name:     user.Name,
+		Surnames: user.Surnames,
+		Email:    user.Email,
+		Password: password,
+		Claims:   user.Claims,
+	}
+
 }
