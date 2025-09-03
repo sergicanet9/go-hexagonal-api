@@ -6,7 +6,6 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/fullstorydev/grpcui v1.4.3
 	github.com/golang-jwt/jwt/v4 v4.5.2
-	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/hashicorp/go-multierror v1.1.1
