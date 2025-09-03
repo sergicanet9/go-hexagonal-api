@@ -29,14 +29,14 @@ func NewUserRepository(db *sql.DB) ports.UserRepository {
 
 func (r *userRepository) Create(ctx context.Context, user interface{}) (string, error) {
 	q := `
-	INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
+	INSERT INTO users (name, surnames, email, password_hash, claim_ids, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id;
     `
 
 	u := user.(entities.User)
 	row := r.DB.QueryRowContext(
-		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt,
+		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.ClaimIDs), u.CreatedAt, u.UpdatedAt,
 	)
 
 	err := row.Scan(&u.ID)
@@ -65,7 +65,7 @@ func (r *userRepository) Get(ctx context.Context, filter map[string]interface{},
 	}
 
 	q := fmt.Sprintf(`
-	SELECT id, name, surnames, email, password_hash, claims, created_at, updated_at
+	SELECT id, name, surnames, email, password_hash, claim_ids, created_at, updated_at
 	    FROM users %s;
 	`, where)
 
@@ -79,7 +79,7 @@ func (r *userRepository) Get(ctx context.Context, filter map[string]interface{},
 	var users []interface{}
 	for rows.Next() {
 		var u entities.User
-		err = rows.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
+		err = rows.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.ClaimIDs), &u.CreatedAt, &u.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -95,14 +95,14 @@ func (r *userRepository) Get(ctx context.Context, filter map[string]interface{},
 
 func (r *userRepository) GetByID(ctx context.Context, ID string) (interface{}, error) {
 	q := `
-    SELECT id, name, surnames, email, password_hash, claims, created_at, updated_at
+    SELECT id, name, surnames, email, password_hash, claim_ids, created_at, updated_at
         FROM users WHERE id = $1;
     `
 
 	row := r.DB.QueryRowContext(ctx, q, ID)
 
 	var u entities.User
-	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.Claims), &u.CreatedAt, &u.UpdatedAt)
+	err := row.Scan(&u.ID, &u.Name, &u.Surnames, &u.Email, &u.PasswordHash, pq.Array(&u.ClaimIDs), &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			err = wrappers.NewNonExistentErr(err)
@@ -115,13 +115,13 @@ func (r *userRepository) GetByID(ctx context.Context, ID string) (interface{}, e
 
 func (r *userRepository) Update(ctx context.Context, ID string, user interface{}) error {
 	q := `
-	UPDATE users set name=$1, surnames=$2, email=$3, password_hash=$4, claims=$5, updated_at=$6
+	UPDATE users set name=$1, surnames=$2, email=$3, password_hash=$4, claim_ids=$5, updated_at=$6
 	    WHERE id=$7;
 	`
 
 	u := user.(entities.User)
 	result, err := r.DB.ExecContext(
-		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.UpdatedAt, ID,
+		ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.ClaimIDs), u.UpdatedAt, ID,
 	)
 	if err != nil {
 		return err
@@ -167,13 +167,13 @@ func (r *userRepository) CreateMany(ctx context.Context, users []interface{}) ([
 		u := entity.(entities.User)
 
 		q := `
-		INSERT INTO users (name, surnames, email, password_hash, claims, created_at, updated_at)
+		INSERT INTO users (name, surnames, email, password_hash, claim_ids, created_at, updated_at)
 			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			RETURNING id;`
 
 		// Here, the query is executed on the transaction instance, and not applied to the database yet
 		row := tx.QueryRowContext(
-			ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.Claims), u.CreatedAt, u.UpdatedAt,
+			ctx, q, u.Name, u.Surnames, u.Email, u.PasswordHash, pq.Array(u.ClaimIDs), u.CreatedAt, u.UpdatedAt,
 		)
 		err := row.Scan(&u.ID)
 		if err != nil {

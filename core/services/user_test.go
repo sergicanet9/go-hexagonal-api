@@ -43,7 +43,7 @@ func TestLogin_Ok(t *testing.T) {
 	expectedUser := entities.User{
 		Email:        req.Email,
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{0},
+		ClaimIDs:     []int64{0},
 	}
 	result = append(result, &expectedUser)
 
@@ -166,7 +166,7 @@ func TestLogin_InvalidClaims(t *testing.T) {
 	expectedUser := entities.User{
 		Email:        req.Email,
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{3},
+		ClaimIDs:     []int64{3},
 	}
 	result = append(result, &expectedUser)
 
@@ -274,7 +274,7 @@ func TestCreate_InvalidClaims(t *testing.T) {
 	req := models.CreateUserReq{
 		Email:    "test@test.com",
 		Password: "test",
-		Claims:   []int64{3},
+		ClaimIDs: []int64{3},
 	}
 
 	expectedError := "claim 3 is not valid"
@@ -384,7 +384,7 @@ func TestCreateMany_InvalidClaims(t *testing.T) {
 		{
 			Email:    "test@test.com",
 			Password: "test",
-			Claims:   []int64{3},
+			ClaimIDs: []int64{3},
 		},
 	}
 
@@ -411,7 +411,7 @@ func TestGetAll_Ok(t *testing.T) {
 	expectedUser := entities.User{
 		Email:        "test@test.com",
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{0},
+		ClaimIDs:     []int64{0},
 	}
 	result = append(result, &expectedUser)
 
@@ -459,7 +459,7 @@ func TestGetByID_Ok(t *testing.T) {
 		ID:           "test-id",
 		Email:        "test@test.com",
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{0},
+		ClaimIDs:     []int64{0},
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
@@ -516,7 +516,7 @@ func TestUpdate_Ok(t *testing.T) {
 		Email:       &testEmail,
 		NewPassword: &testParam,
 		OldPassword: &testParam,
-		Claims:      &testClaims,
+		ClaimIDs:    &testClaims,
 	}
 
 	existingUser := entities.User{
@@ -603,8 +603,8 @@ func TestUpdate_InvalidClaims(t *testing.T) {
 	invalidClaims := []int64{3}
 
 	req := models.UpdateUserReq{
-		ID:     "test-id",
-		Claims: &invalidClaims,
+		ID:       "test-id",
+		ClaimIDs: &invalidClaims,
 	}
 
 	expectedError := "claim 3 is not valid"

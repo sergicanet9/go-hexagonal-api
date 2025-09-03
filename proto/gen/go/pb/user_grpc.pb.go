@@ -29,7 +29,7 @@ type UserServiceClient interface {
 	GetAll(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAllUsersResponse, error)
 	GetByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
 	GetByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
-	Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetClaims(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetClaimsResponse, error)
 	Delete(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -96,8 +96,8 @@ func (c *userServiceClient) GetByID(ctx context.Context, in *GetUserByIDRequest,
 	return out, nil
 }
 
-func (c *userServiceClient) Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	out := new(GetUserResponse)
+func (c *userServiceClient) Update(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/user.UserService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -133,7 +133,7 @@ type UserServiceServer interface {
 	GetAll(context.Context, *emptypb.Empty) (*GetAllUsersResponse, error)
 	GetByEmail(context.Context, *GetUserByEmailRequest) (*GetUserResponse, error)
 	GetByID(context.Context, *GetUserByIDRequest) (*GetUserResponse, error)
-	Update(context.Context, *UpdateUserRequest) (*GetUserResponse, error)
+	Update(context.Context, *UpdateUserRequest) (*emptypb.Empty, error)
 	GetClaims(context.Context, *emptypb.Empty) (*GetClaimsResponse, error)
 	Delete(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -161,7 +161,7 @@ func (UnimplementedUserServiceServer) GetByEmail(context.Context, *GetUserByEmai
 func (UnimplementedUserServiceServer) GetByID(context.Context, *GetUserByIDRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByID not implemented")
 }
-func (UnimplementedUserServiceServer) Update(context.Context, *UpdateUserRequest) (*GetUserResponse, error) {
+func (UnimplementedUserServiceServer) Update(context.Context, *UpdateUserRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedUserServiceServer) GetClaims(context.Context, *emptypb.Empty) (*GetClaimsResponse, error) {

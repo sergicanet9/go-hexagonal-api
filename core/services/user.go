@@ -36,7 +36,7 @@ func (s *userService) Login(ctx context.Context, credentials models.LoginUserReq
 		return
 	}
 
-	token, err := createToken(user.ID, s.config.JWTSecret, user.Claims)
+	token, err := createToken(user.ID, s.config.JWTSecret, user.ClaimIDs)
 	if err != nil {
 		return
 	}
@@ -75,19 +75,19 @@ func validatePassword(password, hash string) error {
 	return wrappers.NewValidationErr(err)
 }
 
-func createToken(userid string, jwtSecret string, claims []int64) (string, error) {
+func createToken(userid string, jwtSecret string, claimsIDs []int64) (string, error) {
 	var err error
 	addClaims := jwt.MapClaims{}
 	addClaims["authorized"] = true
 	addClaims["user_id"] = userid
 	addClaims["exp"] = time.Now().UTC().Add(time.Hour * 168).Unix()
 
-	err = validateClaims(claims)
+	err = validateClaims(claimsIDs)
 	if err != nil {
 		return "", err
 	}
-	for _, claim := range claims {
-		addClaims[entities.UserClaim(claim).String()] = true
+	for _, claimID := range claimsIDs {
+		addClaims[entities.UserClaim(claimID).String()] = true
 	}
 
 	add := jwt.NewWithClaims(jwt.SigningMethodHS256, addClaims)
@@ -95,10 +95,10 @@ func createToken(userid string, jwtSecret string, claims []int64) (string, error
 	return token, err
 }
 
-func validateClaims(claims []int64) error {
-	for _, claim := range claims {
-		if ok := entities.UserClaim(claim).IsValid(); !ok {
-			return wrappers.NewValidationErr(fmt.Errorf("claim %d is not valid", claim))
+func validateClaims(claimsIDs []int64) error {
+	for _, claimID := range claimsIDs {
+		if ok := entities.UserClaim(claimID).IsValid(); !ok {
+			return wrappers.NewValidationErr(fmt.Errorf("claim %d is not valid", claimID))
 		}
 	}
 	return nil
@@ -128,7 +128,7 @@ func (s *userService) createUserEntity(user models.CreateUserReq, creationTime t
 		return
 	}
 
-	err = validateClaims(user.Claims)
+	err = validateClaims(user.ClaimIDs)
 	if err != nil {
 		return
 	}
@@ -143,7 +143,7 @@ func (s *userService) createUserEntity(user models.CreateUserReq, creationTime t
 		Surnames:     user.Surnames,
 		Email:        user.Email,
 		PasswordHash: hash,
-		Claims:       user.Claims,
+		ClaimIDs:     user.ClaimIDs,
 		CreatedAt:    creationTime,
 		UpdatedAt:    creationTime,
 	}
@@ -263,12 +263,12 @@ func (s *userService) Update(ctx context.Context, ID string, user models.UpdateU
 
 		dbUser.PasswordHash = hash
 	}
-	if user.Claims != nil {
-		err = validateClaims(*user.Claims)
+	if user.ClaimIDs != nil {
+		err = validateClaims(*user.ClaimIDs)
 		if err != nil {
 			return err
 		}
-		dbUser.Claims = *user.Claims
+		dbUser.ClaimIDs = *user.ClaimIDs
 	}
 	dbUser.ID = ""
 	dbUser.UpdatedAt = time.Now().UTC()

@@ -33,7 +33,7 @@ CREATE TABLE public.users (
     surnames varchar,
     email varchar,
     password_hash varchar,
-    claims bigint[],
+    claim_ids bigint[],
     created_at timestamp,
     updated_at timestamp,
     PRIMARY KEY(id)

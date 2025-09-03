@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"errors"
 
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/models"
@@ -63,6 +62,7 @@ func (u *userHandler) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.Lo
 		Email:    req.Email,
 		Password: req.Password,
 	}
+
 	resp, err := u.svc.Login(ctx, loginReq)
 	if err != nil {
 		return nil, utils.ToGRPC(err)
@@ -74,7 +74,7 @@ func (u *userHandler) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.Lo
 			Name:      resp.User.Name,
 			Surnames:  resp.User.Surnames,
 			Email:     resp.User.Email,
-			Claims:    resp.User.Claims,
+			ClaimIds:  resp.User.ClaimIDs,
 			CreatedAt: timestamppb.New(resp.User.CreatedAt),
 			UpdatedAt: timestamppb.New(resp.User.UpdatedAt),
 		},
@@ -92,8 +92,9 @@ func (u *userHandler) Create(_ context.Context, req *pb.CreateUserRequest) (*pb.
 		Surnames: req.Surnames,
 		Email:    req.Email,
 		Password: req.Password,
-		Claims:   req.Claims,
+		ClaimIDs: req.ClaimIds,
 	}
+
 	resp, err := u.svc.Create(ctx, createReq)
 	if err != nil {
 		return nil, utils.ToGRPC(err)
@@ -106,7 +107,29 @@ func (u *userHandler) Create(_ context.Context, req *pb.CreateUserRequest) (*pb.
 }
 
 func (u *userHandler) CreateMany(_ context.Context, req *pb.CreateManyUsersRequest) (*pb.CreateManyUsersResponse, error) {
-	return nil, errors.New("not implemented")
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	var createManyReq []models.CreateUserReq
+	for _, user := range req.Users {
+		createManyReq = append(createManyReq, models.CreateUserReq{
+			Name:     user.Name,
+			Surnames: user.Surnames,
+			Email:    user.Email,
+			Password: user.Password,
+			ClaimIDs: user.ClaimIds,
+		})
+	}
+
+	resp, err := u.svc.CreateMany(ctx, createManyReq)
+	if err != nil {
+		return nil, utils.ToGRPC(err)
+	}
+
+	createManyResp := &pb.CreateManyUsersResponse{
+		Ids: resp.InsertedIDs,
+	}
+	return createManyResp, nil
 }
 
 func (u *userHandler) GetAll(_ context.Context, _ *emptypb.Empty) (*pb.GetAllUsersResponse, error) {
@@ -125,7 +148,7 @@ func (u *userHandler) GetAll(_ context.Context, _ *emptypb.Empty) (*pb.GetAllUse
 			Name:      user.Name,
 			Surnames:  user.Surnames,
 			Email:     user.Email,
-			Claims:    user.Claims,
+			ClaimIds:  user.ClaimIDs,
 			CreatedAt: timestamppb.New(user.CreatedAt),
 			UpdatedAt: timestamppb.New(user.UpdatedAt),
 		})
@@ -138,21 +161,94 @@ func (u *userHandler) GetAll(_ context.Context, _ *emptypb.Empty) (*pb.GetAllUse
 }
 
 func (u *userHandler) GetByEmail(_ context.Context, req *pb.GetUserByEmailRequest) (*pb.GetUserResponse, error) {
-	return nil, errors.New("not implemented")
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	resp, err := u.svc.GetByEmail(ctx, req.Email)
+	if err != nil {
+		return nil, utils.ToGRPC(err)
+	}
+
+	getByEmailResp := &pb.GetUserResponse{
+		Id:        resp.ID,
+		Name:      resp.Name,
+		Surnames:  resp.Surnames,
+		Email:     resp.Email,
+		ClaimIds:  resp.ClaimIDs,
+		CreatedAt: timestamppb.New(resp.CreatedAt),
+		UpdatedAt: timestamppb.New(resp.CreatedAt),
+	}
+	return getByEmailResp, nil
 }
 
 func (u *userHandler) GetByID(_ context.Context, req *pb.GetUserByIDRequest) (*pb.GetUserResponse, error) {
-	return nil, errors.New("not implemented")
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	resp, err := u.svc.GetByID(ctx, req.Id)
+	if err != nil {
+		return nil, utils.ToGRPC(err)
+	}
+
+	getByIDResp := &pb.GetUserResponse{
+		Id:        resp.ID,
+		Name:      resp.Name,
+		Surnames:  resp.Surnames,
+		Email:     resp.Email,
+		ClaimIds:  resp.ClaimIDs,
+		CreatedAt: timestamppb.New(resp.CreatedAt),
+		UpdatedAt: timestamppb.New(resp.CreatedAt),
+	}
+	return getByIDResp, nil
 }
 
-func (u *userHandler) Update(_ context.Context, req *pb.UpdateUserRequest) (*pb.GetUserResponse, error) {
-	return nil, errors.New("not implemented")
+func (u *userHandler) Update(_ context.Context, req *pb.UpdateUserRequest) (*emptypb.Empty, error) {
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	updateReq := models.UpdateUserReq{
+		Name:        &req.Name,
+		Surnames:    &req.Surnames,
+		Email:       &req.Email,
+		OldPassword: &req.OldPassword,
+		NewPassword: &req.NewPassword,
+		ClaimIDs:    &req.ClaimIds,
+	}
+
+	err := u.svc.Update(ctx, req.Id, updateReq)
+	if err != nil {
+		return nil, utils.ToGRPC(err)
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (u *userHandler) GetClaims(_ context.Context, _ *emptypb.Empty) (*pb.GetClaimsResponse, error) {
-	return nil, errors.New("not implemented")
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	resp := u.svc.GetUserClaims(ctx)
+
+	var getClaimsList []*pb.Claim
+	for id, value := range resp {
+		getClaimsList = append(getClaimsList, &pb.Claim{
+			Id:    int64(id),
+			Value: value,
+		})
+	}
+	getClaimsResp := &pb.GetClaimsResponse{
+		Claims: getClaimsList,
+	}
+	return getClaimsResp, nil
 }
 
 func (u *userHandler) Delete(_ context.Context, req *pb.DeleteUserRequest) (*emptypb.Empty, error) {
-	return nil, errors.New("not implemented")
+	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
+	defer cancel()
+
+	err := u.svc.Delete(ctx, req.Id)
+	if err != nil {
+		return nil, utils.ToGRPC(err)
+	}
+
+	return &emptypb.Empty{}, nil
 }

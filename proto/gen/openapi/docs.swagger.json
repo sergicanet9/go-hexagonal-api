@@ -319,7 +319,8 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userGetUserResponse"
+              "type": "object",
+              "properties": {}
             }
           },
           "default": {
@@ -358,7 +359,7 @@
                 "newPassword": {
                   "type": "string"
                 },
-                "claims": {
+                "claimIds": {
                   "type": "array",
                   "example": [
                     0
@@ -437,6 +438,18 @@
         }
       }
     },
+    "userClaim": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "userCreateManyUsersRequest": {
       "type": "object",
       "properties": {
@@ -475,7 +488,7 @@
         "password": {
           "type": "string"
         },
-        "claims": {
+        "claimIds": {
           "type": "array",
           "example": [
             0
@@ -512,12 +525,9 @@
       "properties": {
         "claims": {
           "type": "array",
-          "example": [
-            0
-          ],
           "items": {
-            "type": "string",
-            "format": "int64"
+            "type": "object",
+            "$ref": "#/definitions/userClaim"
           }
         }
       }
@@ -537,7 +547,7 @@
         "email": {
           "type": "string"
         },
-        "claims": {
+        "claimIds": {
           "type": "array",
           "example": [
             0

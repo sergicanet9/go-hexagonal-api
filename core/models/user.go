@@ -44,7 +44,7 @@ type CreateUserReq struct {
 	Surnames string
 	Email    string
 	Password string
-	Claims   []int64
+	ClaimIDs []int64
 }
 
 // Validate checks that a given CreateUserReq is valid
@@ -77,15 +77,12 @@ type CreateManyUserResp struct {
 
 // UpdateUserReq update user request struct
 type UpdateUserReq struct {
-	ID          string
 	Name        *string
 	Surnames    *string
 	Email       *string
 	OldPassword *string
 	NewPassword *string
-	Claims      *[]int64
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
+	ClaimIDs    *[]int64
 }
 
 // GetUserResp user response struct
@@ -95,7 +92,7 @@ type GetUserResp struct {
 	Surnames     string
 	Email        string
 	PasswordHash string
-	Claims       []int64
+	ClaimIDs     []int64
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

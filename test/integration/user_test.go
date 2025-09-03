@@ -118,7 +118,7 @@ func TestCreateUser_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Surnames, createdUser.Surnames)
 		assert.Equal(t, testUser.Email, createdUser.Email)
 		assert.Equal(t, testUser.PasswordHash, createdUser.PasswordHash)
-		assert.Equal(t, testUser.Claims, createdUser.Claims)
+		assert.Equal(t, testUser.ClaimIDs, createdUser.ClaimIDs)
 	})
 }
 
@@ -175,7 +175,7 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 			assert.Equal(t, users[i].Surnames, createdUser.Surnames)
 			assert.Equal(t, users[i].Email, createdUser.Email)
 			assert.Equal(t, users[i].PasswordHash, createdUser.PasswordHash)
-			assert.Equal(t, users[i].Claims, createdUser.Claims)
+			assert.Equal(t, users[i].ClaimIDs, createdUser.ClaimIDs)
 		}
 	})
 }
@@ -257,7 +257,7 @@ func TestGetUserByEmail_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Surnames, response.Surnames)
 		assert.Equal(t, testUser.Email, response.Email)
 		assert.Equal(t, testUser.PasswordHash, response.PasswordHash)
-		assert.Equal(t, testUser.Claims, response.Claims)
+		assert.Equal(t, testUser.ClaimIDs, response.ClaimIDs)
 	})
 }
 
@@ -302,7 +302,7 @@ func TestGetUserByID_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Surnames, response.Surnames)
 		assert.Equal(t, testUser.Email, response.Email)
 		assert.Equal(t, testUser.PasswordHash, response.PasswordHash)
-		assert.Equal(t, testUser.Claims, response.Claims)
+		assert.Equal(t, testUser.ClaimIDs, response.ClaimIDs)
 	})
 }
 
@@ -358,7 +358,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Surnames, updatedUser.Surnames)
 		assert.Equal(t, testUser.Email, updatedUser.Email)
 		assert.Equal(t, testUser.PasswordHash, updatedUser.PasswordHash)
-		assert.Equal(t, testUser.Claims, updatedUser.Claims)
+		assert.Equal(t, testUser.ClaimIDs, updatedUser.ClaimIDs)
 	})
 }
 
@@ -529,7 +529,7 @@ func mapUserToCreateUserReq(user entities.User, password string) models.CreateUs
 		Surnames: user.Surnames,
 		Email:    user.Email,
 		Password: password,
-		Claims:   user.Claims,
+		ClaimIDs: user.ClaimIDs,
 	}
 
 }
