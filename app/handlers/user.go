@@ -231,7 +231,7 @@ func (u *userHandler) GetClaims(_ context.Context, _ *emptypb.Empty) (*pb.GetCla
 	var getClaimsList []*pb.Claim
 	for id, value := range resp {
 		getClaimsList = append(getClaimsList, &pb.Claim{
-			Id:    int64(id),
+			Id:    int32(id),
 			Value: value,
 		})
 	}

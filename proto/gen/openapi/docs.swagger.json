@@ -361,12 +361,9 @@
                 },
                 "claimIds": {
                   "type": "array",
-                  "example": [
-                    0
-                  ],
                   "items": {
-                    "type": "string",
-                    "format": "int64"
+                    "type": "integer",
+                    "format": "int32"
                   }
                 }
               }
@@ -442,8 +439,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "value": {
           "type": "string"
@@ -490,12 +487,9 @@
         },
         "claimIds": {
           "type": "array",
-          "example": [
-            0
-          ],
           "items": {
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           }
         }
       }
@@ -549,12 +543,9 @@
         },
         "claimIds": {
           "type": "array",
-          "example": [
-            0
-          ],
           "items": {
-            "type": "string",
-            "format": "int64"
+            "type": "integer",
+            "format": "int32"
           }
         },
         "createdAt": {

@@ -75,7 +75,7 @@ func validatePassword(password, hash string) error {
 	return wrappers.NewValidationErr(err)
 }
 
-func createToken(userid string, jwtSecret string, claimsIDs []int64) (string, error) {
+func createToken(userid string, jwtSecret string, claimsIDs []int32) (string, error) {
 	var err error
 	addClaims := jwt.MapClaims{}
 	addClaims["authorized"] = true
@@ -95,7 +95,7 @@ func createToken(userid string, jwtSecret string, claimsIDs []int64) (string, er
 	return token, err
 }
 
-func validateClaims(claimsIDs []int64) error {
+func validateClaims(claimsIDs []int32) error {
 	for _, claimID := range claimsIDs {
 		if ok := entities.UserClaim(claimID).IsValid(); !ok {
 			return wrappers.NewValidationErr(fmt.Errorf("claim %d is not valid", claimID))
