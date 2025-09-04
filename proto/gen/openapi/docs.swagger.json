@@ -359,12 +359,8 @@
                 "newPassword": {
                   "type": "string"
                 },
-                "claimIds": {
-                  "type": "array",
-                  "items": {
-                    "type": "integer",
-                    "format": "int32"
-                  }
+                "claims": {
+                  "$ref": "#/definitions/userClaimIds"
                 }
               }
             }
@@ -444,6 +440,18 @@
         },
         "value": {
           "type": "string"
+        }
+      }
+    },
+    "userClaimIds": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         }
       }
     },

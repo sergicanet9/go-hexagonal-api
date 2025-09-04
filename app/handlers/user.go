@@ -207,12 +207,14 @@ func (u *userHandler) Update(_ context.Context, req *pb.UpdateUserRequest) (*emp
 	defer cancel()
 
 	updateReq := models.UpdateUserReq{
-		Name:        &req.Name,
-		Surnames:    &req.Surnames,
-		Email:       &req.Email,
-		OldPassword: &req.OldPassword,
-		NewPassword: &req.NewPassword,
-		ClaimIDs:    &req.ClaimIds,
+		Name:        req.Name,
+		Surnames:    req.Surnames,
+		Email:       req.Email,
+		OldPassword: req.OldPassword,
+		NewPassword: req.NewPassword,
+	}
+	if req.Claims != nil {
+		updateReq.ClaimIDs = &req.Claims.Ids
 	}
 
 	err := u.svc.Update(ctx, req.Id, updateReq)
