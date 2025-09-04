@@ -111,13 +111,13 @@ func (s *userService) Create(ctx context.Context, user models.CreateUserReq) (re
 		return
 	}
 
-	insertedID, err := s.repository.Create(ctx, entity)
+	id, err := s.repository.Create(ctx, entity)
 	if err != nil {
 		return
 	}
 
 	resp = models.CreateUserResp{
-		InsertedID: insertedID,
+		ID: id,
 	}
 
 	return
@@ -173,13 +173,13 @@ func (s *userService) CreateMany(ctx context.Context, users []models.CreateUserR
 		create = append(create, entity)
 	}
 
-	insertedIDs, err := s.repository.CreateMany(ctx, create)
+	ids, err := s.repository.CreateMany(ctx, create)
 	if err != nil {
 		return
 	}
 
 	resp = models.CreateManyUserResp{
-		InsertedIDs: insertedIDs,
+		IDs: ids,
 	}
 	return
 }

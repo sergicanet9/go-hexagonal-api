@@ -93,7 +93,7 @@ func TestCreateUser_Ok(t *testing.T) {
 	// Arrange
 	userService := mocks.NewUserService(t)
 	expectedResp := models.CreateUserResp{
-		InsertedID: "new-id",
+		ID: "new-id",
 	}
 	userService.On(testutils.FunctionName(t, ports.UserService.Create), mock.Anything, mock.AnythingOfType("models.CreateUserReq")).Return(expectedResp, nil).Once()
 
@@ -110,7 +110,7 @@ func TestCreateUser_Ok(t *testing.T) {
 
 	// Assert
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResp.InsertedID, resp.Id)
+	assert.Equal(t, expectedResp.ID, resp.Id)
 }
 
 // TestCreateUser_ServiceError checks that the Create handler returns a gRPC error when the service fails
@@ -144,7 +144,7 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 	// Arrange
 	userService := mocks.NewUserService(t)
 	expectedResp := models.CreateManyUserResp{
-		InsertedIDs: []string{"id-1", "id-2"},
+		IDs: []string{"id-1", "id-2"},
 	}
 	userService.On(testutils.FunctionName(t, ports.UserService.CreateMany), mock.Anything, mock.AnythingOfType("[]models.CreateUserReq")).Return(expectedResp, nil).Once()
 
@@ -163,7 +163,7 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 
 	// Assert
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResp.InsertedIDs, resp.Ids)
+	assert.Equal(t, expectedResp.IDs, resp.Ids)
 }
 
 // TestCreateManyUsers_ServiceError checks that the CreateMany handler returns a gRPC error when the service fails

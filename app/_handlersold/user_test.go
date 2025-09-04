@@ -138,7 +138,7 @@ func TestCreateUser_Ok(t *testing.T) {
 
 	userService := mocks.NewUserService(t)
 	expectedResponse := models.CreationResp{
-		InsertedID: "new-id",
+		ID: "new-id",
 	}
 	userService.On(testutils.FunctionName(t, ports.UserService.Create), mock.Anything, mock.AnythingOfType("models.CreateUserReq")).Return(expectedResponse, nil).Once()
 
@@ -248,7 +248,7 @@ func TestCreateManyUsers_Ok(t *testing.T) {
 
 	userService := mocks.NewUserService(t)
 	expectedResponse := models.MultiCreationResp{
-		InsertedIDs: []string{"new-id"},
+		IDs: []string{"new-id"},
 	}
 	userService.On(testutils.FunctionName(t, ports.UserService.CreateMany), mock.Anything, mock.AnythingOfType("[]models.CreateUserReq")).Return(expectedResponse, nil).Once()
 

@@ -199,11 +199,11 @@ func TestCreate_Ok(t *testing.T) {
 	}
 
 	expectedResponse := models.CreateUserResp{
-		InsertedID: "new-id",
+		ID: "new-id",
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return(expectedResponse.InsertedID, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return(expectedResponse.ID, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -304,11 +304,11 @@ func TestCreateMany_Ok(t *testing.T) {
 	}
 
 	expectedResponse := models.CreateManyUserResp{
-		InsertedIDs: []string{"new-id"},
+		IDs: []string{"new-id"},
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return(expectedResponse.InsertedIDs, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return(expectedResponse.IDs, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},

@@ -67,12 +67,12 @@ func (req CreateUserReq) Validate() error {
 
 // CreateUserResp create user respponse struct
 type CreateUserResp struct {
-	InsertedID string
+	ID string
 }
 
 // CreateManyUserResp create many user response struct
 type CreateManyUserResp struct {
-	InsertedIDs []string
+	IDs []string
 }
 
 // UpdateUserReq update user request struct

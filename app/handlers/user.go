@@ -101,7 +101,7 @@ func (u *userHandler) Create(_ context.Context, req *pb.CreateUserRequest) (*pb.
 	}
 
 	createResp := &pb.CreateUserResponse{
-		Id: resp.InsertedID,
+		Id: resp.ID,
 	}
 	return createResp, nil
 }
@@ -127,7 +127,7 @@ func (u *userHandler) CreateMany(_ context.Context, req *pb.CreateManyUsersReque
 	}
 
 	createManyResp := &pb.CreateManyUsersResponse{
-		Ids: resp.InsertedIDs,
+		Ids: resp.IDs,
 	}
 	return createManyResp, nil
 }
