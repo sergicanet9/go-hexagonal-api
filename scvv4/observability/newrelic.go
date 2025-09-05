@@ -1,7 +1,8 @@
 package observability
 
 import (
-	"log"
+	"fmt"
+	"io"
 	"os"
 	"time"
 
@@ -27,7 +28,19 @@ func SetupNewRelic(appName, newrelicKey string) (*newrelic.Application, error) {
 
 	m.Lock()
 	defer m.Unlock()
-	logger = log.New(writer, "", log.Default().Flags())
+	// logger.SetOutput(writer) // TODO Put back
+	logger.SetOutput(&tempDebugWriter{target: writer}) // TODO remove
 
 	return app, nil
+}
+
+// TODO remove
+type tempDebugWriter struct {
+	target io.Writer
+}
+
+func (w *tempDebugWriter) Write(p []byte) (int, error) {
+	fmt.Printf("DEBUG log -> %s", string(p))
+	fmt.Printf("DEBUG writer type -> %T\n", w.target)
+	return w.target.Write(p)
 }
