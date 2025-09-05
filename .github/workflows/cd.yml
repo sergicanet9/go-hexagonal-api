@@ -42,7 +42,8 @@ jobs:
       GCP_CLUSTER_REGION: us-east1-b
       GCP_CLUSTER_NAME: scv-gke-cluster
       ENVIRONMENT: prod
-      PORT: 80
+      HTTP_PORT: 80
+      GRPC_PORT: 50051
       DATABASE: mongo
       VERSION: ${{ needs.build-and-push.outputs.tag }}
     secrets:

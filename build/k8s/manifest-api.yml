@@ -29,8 +29,10 @@ spec:
           env:
             - name: env
               value: "__environment__"
-            - name: p
-              value: "__port__"
+            - name: hp
+              value: "__httpport__"
+            - name: gp
+              value: "__grpcport__"
             - name: db
               value: "__database__"
             - name: dsn
@@ -48,5 +50,8 @@ spec:
     app: go-hexagonal-api-__database__-__environment__
   ports:
     - name: http
-      port: __port__
-      targetPort: __port__
+      port: __httpport__
+      targetPort: __httpport__
+    - name: grpc
+      port: __grpcport__
+      targetPort: __grpcport__
