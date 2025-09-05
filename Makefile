@@ -27,7 +27,7 @@ up:
 down:
 	docker-compose down
 test-unit:
-	go test -race $(shell go list ./... | grep -v /test) -coverprofile=coverage.out
+	go test -race $(shell go list ./... | grep -v /test | grep -v /pb) -coverprofile=coverage.out
 cover:
 	go tool cover -html=coverage.out
 test-integration:
