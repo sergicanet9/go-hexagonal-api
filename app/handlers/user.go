@@ -176,7 +176,7 @@ func (u *userHandler) GetByEmail(_ context.Context, req *pb.GetUserByEmailReques
 		Email:     resp.Email,
 		ClaimIds:  resp.ClaimIDs,
 		CreatedAt: timestamppb.New(resp.CreatedAt),
-		UpdatedAt: timestamppb.New(resp.CreatedAt),
+		UpdatedAt: timestamppb.New(resp.UpdatedAt),
 	}
 	return getByEmailResp, nil
 }
@@ -197,7 +197,7 @@ func (u *userHandler) GetByID(_ context.Context, req *pb.GetUserByIDRequest) (*p
 		Email:     resp.Email,
 		ClaimIds:  resp.ClaimIDs,
 		CreatedAt: timestamppb.New(resp.CreatedAt),
-		UpdatedAt: timestamppb.New(resp.CreatedAt),
+		UpdatedAt: timestamppb.New(resp.UpdatedAt),
 	}
 	return getByIDResp, nil
 }
