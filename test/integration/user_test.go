@@ -409,7 +409,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Email, updatedUser.Email)
 		assert.NotNil(t, updatedUser.PasswordHash)
 		assert.Equal(t, testUser.ClaimIDs, updatedUser.ClaimIDs)
-		assert.NotEqual(t, testUser.CreatedAt, testUser.UpdatedAt)
+		assert.NotEqual(t, updatedUser.CreatedAt, updatedUser.UpdatedAt)
 	})
 }
 
