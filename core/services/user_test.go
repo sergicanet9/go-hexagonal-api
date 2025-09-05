@@ -43,7 +43,7 @@ func TestLogin_Ok(t *testing.T) {
 	expectedUser := entities.User{
 		Email:        req.Email,
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{0},
+		ClaimIDs:     []int32{0},
 	}
 	result = append(result, &expectedUser)
 
@@ -61,7 +61,7 @@ func TestLogin_Ok(t *testing.T) {
 
 	// Assert
 	assert.Nil(t, err)
-	assert.Equal(t, models.UserResp(expectedUser), resp.User)
+	assert.Equal(t, models.GetUserResp(expectedUser), resp.User)
 }
 
 // TestLogin_NotFound checks that Login returns an error when the user is not found
@@ -166,7 +166,7 @@ func TestLogin_InvalidClaims(t *testing.T) {
 	expectedUser := entities.User{
 		Email:        req.Email,
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{3},
+		ClaimIDs:     []int32{3},
 	}
 	result = append(result, &expectedUser)
 
@@ -194,16 +194,16 @@ func TestLogin_InvalidClaims(t *testing.T) {
 func TestCreate_Ok(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "test@test.com",
-		PasswordHash: "test",
+		Email:    "test@test.com",
+		Password: "test",
 	}
 
-	expectedResponse := models.CreationResp{
-		InsertedID: "new-id",
+	expectedResponse := models.CreateUserResp{
+		ID: "new-id",
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return(expectedResponse.InsertedID, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return(expectedResponse.ID, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -222,8 +222,8 @@ func TestCreate_Ok(t *testing.T) {
 func TestCreate_CreateError(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "test@test.com",
-		PasswordHash: "test",
+		Email:    "test@test.com",
+		Password: "test",
 	}
 
 	expectedError := "repository-error"
@@ -248,8 +248,8 @@ func TestCreate_CreateError(t *testing.T) {
 func TestCreate_InvalidRequest(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "",
-		PasswordHash: "",
+		Email:    "",
+		Password: "",
 	}
 
 	expectedError := "email cannot be empty | password cannot be empty"
@@ -272,9 +272,9 @@ func TestCreate_InvalidRequest(t *testing.T) {
 func TestCreate_InvalidClaims(t *testing.T) {
 	// Arrange
 	req := models.CreateUserReq{
-		Email:        "test@test.com",
-		PasswordHash: "test",
-		Claims:       []int64{3},
+		Email:    "test@test.com",
+		Password: "test",
+		ClaimIDs: []int32{3},
 	}
 
 	expectedError := "claim 3 is not valid"
@@ -298,17 +298,17 @@ func TestCreateMany_Ok(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "test@test.com",
-			PasswordHash: "test",
+			Email:    "test@test.com",
+			Password: "test",
 		},
 	}
 
-	expectedResponse := models.MultiCreationResp{
-		InsertedIDs: []string{"new-id"},
+	expectedResponse := models.CreateManyUserResp{
+		IDs: []string{"new-id"},
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return(expectedResponse.InsertedIDs, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return(expectedResponse.IDs, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -328,8 +328,8 @@ func TestCreateMany_CreateManyError(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "test@test.com",
-			PasswordHash: "test",
+			Email:    "test@test.com",
+			Password: "test",
 		},
 	}
 
@@ -356,8 +356,8 @@ func TestCreateMany_InvalidRequest(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "",
-			PasswordHash: "",
+			Email:    "",
+			Password: "",
 		},
 	}
 
@@ -382,9 +382,9 @@ func TestCreateMany_InvalidClaims(t *testing.T) {
 	// Arrange
 	req := []models.CreateUserReq{
 		{
-			Email:        "test@test.com",
-			PasswordHash: "test",
-			Claims:       []int64{3},
+			Email:    "test@test.com",
+			Password: "test",
+			ClaimIDs: []int32{3},
 		},
 	}
 
@@ -411,7 +411,7 @@ func TestGetAll_Ok(t *testing.T) {
 	expectedUser := entities.User{
 		Email:        "test@test.com",
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{0},
+		ClaimIDs:     []int32{0},
 	}
 	result = append(result, &expectedUser)
 
@@ -429,7 +429,7 @@ func TestGetAll_Ok(t *testing.T) {
 
 	// Assert
 	assert.Nil(t, err)
-	assert.Equal(t, models.UserResp(expectedUser), resp[0])
+	assert.Equal(t, models.GetUserResp(expectedUser), resp[0])
 }
 
 // TestGetAll_NoResourcesFound checks that GetAll does not return an error when the repository does not return an user
@@ -459,7 +459,7 @@ func TestGetByID_Ok(t *testing.T) {
 		ID:           "test-id",
 		Email:        "test@test.com",
 		PasswordHash: "$2a$10$NexA3QvmeUMPME6GVhFaX.C4A.y2VIPBwRNrV0c2DncjCAWSBnINK",
-		Claims:       []int64{0},
+		ClaimIDs:     []int32{0},
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
@@ -475,7 +475,7 @@ func TestGetByID_Ok(t *testing.T) {
 
 	// Assert
 	assert.Nil(t, err)
-	assert.Equal(t, models.UserResp(expectedUser), resp)
+	assert.Equal(t, models.GetUserResp(expectedUser), resp)
 }
 
 // TestGetByID_Ok checks that GetByID returns tan error when the provided ID does not exist
@@ -507,16 +507,16 @@ func TestUpdate_Ok(t *testing.T) {
 	// Arrange
 	testParam := "test"
 	testEmail := "test@test.com"
-	testClaims := []int64{0}
+	testClaims := []int32{0}
+	id := "test-id"
 
 	req := models.UpdateUserReq{
-		ID:          "test-id",
 		Name:        &testParam,
 		Surnames:    &testParam,
 		Email:       &testEmail,
 		NewPassword: &testParam,
 		OldPassword: &testParam,
-		Claims:      &testClaims,
+		ClaimIDs:    &testClaims,
 	}
 
 	existingUser := entities.User{
@@ -524,8 +524,8 @@ func TestUpdate_Ok(t *testing.T) {
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), req.ID).Return(&existingUser, nil).Once()
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Update), context.Background(), req.ID, mock.AnythingOfType("entities.User")).Return(nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), id).Return(&existingUser, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Update), context.Background(), id, mock.AnythingOfType("entities.User")).Return(nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -533,7 +533,7 @@ func TestUpdate_Ok(t *testing.T) {
 	}
 
 	// Act
-	err := service.Update(context.Background(), req.ID, req)
+	err := service.Update(context.Background(), id, req)
 
 	// Assert
 	assert.Nil(t, err)
@@ -567,9 +567,9 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 	// Arrange
 	newPassword := "new-password"
 	incorrectOldPassword := "incorrect-password"
+	id := "test-id"
 
 	req := models.UpdateUserReq{
-		ID:          "test-id",
 		NewPassword: &newPassword,
 		OldPassword: &incorrectOldPassword,
 	}
@@ -581,7 +581,7 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 	expectedError := "password incorrect"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), req.ID).Return(&existingUser, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), id).Return(&existingUser, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -589,7 +589,7 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 	}
 
 	// Act
-	err := service.Update(context.Background(), req.ID, req)
+	err := service.Update(context.Background(), id, req)
 
 	// Assert
 	assert.NotEmpty(t, err)
@@ -600,17 +600,17 @@ func TestUpdate_IncorrectPassword(t *testing.T) {
 // TestUpdate_InvalidClaims checks that Update returns an error when the provided new claims are not valid
 func TestUpdate_InvalidClaims(t *testing.T) {
 	// Arrange
-	invalidClaims := []int64{3}
+	invalidClaims := []int32{3}
+	id := "test-id"
 
 	req := models.UpdateUserReq{
-		ID:     "test-id",
-		Claims: &invalidClaims,
+		ClaimIDs: &invalidClaims,
 	}
 
 	expectedError := "claim 3 is not valid"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), req.ID).Return(&entities.User{}, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.GetByID), context.Background(), id).Return(&entities.User{}, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -618,7 +618,7 @@ func TestUpdate_InvalidClaims(t *testing.T) {
 	}
 
 	// Act
-	err := service.Update(context.Background(), req.ID, req)
+	err := service.Update(context.Background(), id, req)
 
 	// Assert
 	assert.NotEmpty(t, err)

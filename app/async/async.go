@@ -3,10 +3,10 @@ package async
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/sergicanet9/go-hexagonal-api/app/async/healthchecker"
 	"github.com/sergicanet9/go-hexagonal-api/config"
+	"github.com/sergicanet9/scv-go-tools/v3/observability"
 )
 
 type async struct {
@@ -21,11 +21,11 @@ func New(cfg config.Config) async {
 
 func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 	return func() error {
-		go healthchecker.Run(ctx, cancel, fmt.Sprintf("http://:%d/health", a.config.Port), a.config.Async.Interval.Duration)
+		go healthchecker.RunHTTP(ctx, cancel, fmt.Sprintf("http://:%d/health", a.config.HTTPPort), a.config.Async.Interval.Duration)
+		go healthchecker.RunGRPC(ctx, cancel, fmt.Sprintf(":%d", a.config.GRPCPort), a.config.Async.Interval.Duration)
 
-		for ctx.Err() == nil {
-			<-time.After(1 * time.Second)
-		}
-		return fmt.Errorf("async process stopped")
+		<-ctx.Done()
+		observability.Logger().Printf("Async process stopped")
+		return nil
 	}
 }

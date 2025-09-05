@@ -2,304 +2,255 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
-	"io"
-	"net/http"
 
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-
 	"github.com/sergicanet9/go-hexagonal-api/core/models"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
-	"github.com/sergicanet9/scv-go-tools/v3/api/middlewares"
-	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/interceptors"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/utils"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type userHandler struct {
 	ctx context.Context
 	cfg config.Config
 	svc ports.UserService
+	pb.UnimplementedUserServiceServer
 }
 
 // NewUserHandler creates a new user handler
-func NewUserHandler(ctx context.Context, cfg config.Config, svc ports.UserService) userHandler {
-	return userHandler{
+func NewUserHandler(ctx context.Context, cfg config.Config, svc ports.UserService) *userHandler {
+	return &userHandler{
 		ctx: ctx,
 		cfg: cfg,
 		svc: svc,
 	}
 }
 
-// SetUserRoutes creates user routes
-func SetUserRoutes(router *mux.Router, u userHandler) {
-	router.HandleFunc("/v1/users/login", u.loginUser).Methods(http.MethodPost)
-	router.HandleFunc("/v1/users", u.createUser).Methods(http.MethodPost)
-	router.HandleFunc("/v1/users/many", u.createManyUsers).Methods(http.MethodPost)
+// JWTMethodPolicies defines custom JWT method policies
+func (u *userHandler) JWTMethodPolicies() []interceptors.MethodPolicy {
+	srv := "user.UserService"
+	methods := []struct {
+		name   string
+		claims []string
+	}{
+		{"GetAll", nil},
+		{"GetByEmail", nil},
+		{"GetByID", nil},
+		{"Update", nil},
+		{"GetClaims", nil},
+		{"Delete", []string{"admin"}},
+	}
 
-	secureRouter := router.PathPrefix("").Subrouter()
-	secureRouter.Use(middlewares.JWT(u.cfg.JWTSecret, jwt.MapClaims{}))
-
-	secureRouter.HandleFunc("/v1/users", u.getAllUsers).Methods(http.MethodGet)
-	secureRouter.HandleFunc("/v1/users/email/{email}", u.getUserByEmail).Methods(http.MethodGet)
-	secureRouter.HandleFunc("/v1/users/{id}", u.getUserByID).Methods(http.MethodGet)
-	secureRouter.HandleFunc("/v1/users/{id}", u.updateUser).Methods(http.MethodPatch)
-	secureRouter.HandleFunc("/v1/claims", u.getUserClaims).Methods(http.MethodGet)
-
-	adminRouter := router.PathPrefix("").Subrouter()
-	adminRouter.Use(middlewares.JWT(u.cfg.JWTSecret, jwt.MapClaims{"admin": true}))
-
-	adminRouter.HandleFunc("/v1/users/{id}", u.deleteUser).Methods(http.MethodDelete)
+	var policies []interceptors.MethodPolicy
+	for _, m := range methods {
+		policies = append(policies, interceptors.MethodPolicy{
+			MethodName:     "/" + srv + "/" + m.name,
+			RequiredClaims: m.claims,
+		})
+	}
+	return policies
 }
 
-// @Summary Login user
-// @Description Logs in an user
-// @Tags Users
-// @Param login body models.LoginUserReq true "Login request"
-// @Success 200 {object} models.LoginUserResp "OK"
-// @Failure 400 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users/login [post]
-func (u *userHandler) loginUser(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) Login(_ context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+	loginReq := models.LoginUserReq{
+		Email:    req.Email,
+		Password: req.Password,
 	}
 
-	var credentials models.LoginUserReq
-	err = json.Unmarshal(body, &credentials)
+	resp, err := u.svc.Login(ctx, loginReq)
 	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
 
-	response, err := u.svc.Login(ctx, credentials)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+	loginResp := &pb.LoginUserResponse{
+		User: &pb.GetUserResponse{
+			Id:        resp.User.ID,
+			Name:      resp.User.Name,
+			Surnames:  resp.User.Surnames,
+			Email:     resp.User.Email,
+			ClaimIds:  resp.User.ClaimIDs,
+			CreatedAt: timestamppb.New(resp.User.CreatedAt),
+			UpdatedAt: timestamppb.New(resp.User.UpdatedAt),
+		},
+		Token: resp.Token,
 	}
-	utils.ResponseJSON(w, r, body, http.StatusOK, response)
+	return loginResp, nil
 }
 
-// @Summary Create user
-// @Description Creates a new user
-// @Tags Users
-// @Param user body models.CreateUserReq true "New user to be created"
-// @Success 201 {object} models.CreationResp "OK"
-// @Failure 400 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users [post]
-func (u *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) Create(_ context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+	createReq := models.CreateUserReq{
+		Name:     req.Name,
+		Surnames: req.Surnames,
+		Email:    req.Email,
+		Password: req.Password,
+		ClaimIDs: req.ClaimIds,
 	}
 
-	var user models.CreateUserReq
-	err = json.Unmarshal(body, &user)
+	resp, err := u.svc.Create(ctx, createReq)
 	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
 
-	result, err := u.svc.Create(ctx, user)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+	createResp := &pb.CreateUserResponse{
+		Id: resp.ID,
 	}
-	utils.ResponseJSON(w, r, body, http.StatusCreated, result)
+	return createResp, nil
 }
 
-// @Summary Create many users
-// @Description Creates many users atomically
-// @Tags Users
-// @Param users body []models.CreateUserReq true "New users to be created"
-// @Success 201 {object} models.MultiCreationResp "OK"
-// @Failure 400 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users/many [post]
-func (u *userHandler) createManyUsers(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) CreateMany(_ context.Context, req *pb.CreateManyUsersRequest) (*pb.CreateManyUsersResponse, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+	var createManyReq []models.CreateUserReq
+	for _, user := range req.Users {
+		createManyReq = append(createManyReq, models.CreateUserReq{
+			Name:     user.Name,
+			Surnames: user.Surnames,
+			Email:    user.Email,
+			Password: user.Password,
+			ClaimIDs: user.ClaimIds,
+		})
 	}
 
-	var users []models.CreateUserReq
-	err = json.Unmarshal(body, &users)
+	resp, err := u.svc.CreateMany(ctx, createManyReq)
 	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
 
-	result, err := u.svc.CreateMany(ctx, users)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+	createManyResp := &pb.CreateManyUsersResponse{
+		Ids: resp.IDs,
 	}
-	utils.ResponseJSON(w, r, body, http.StatusCreated, result)
+	return createManyResp, nil
 }
 
-// @Summary Get all users
-// @Description Gets all the users
-// @Tags Users
-// @Security Bearer
-// @Success 200 {array} models.UserResp "OK"
-// @Failure 400 {object} object
-// @Failure 401 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users [get]
-func (u *userHandler) getAllUsers(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) GetAll(_ context.Context, _ *emptypb.Empty) (*pb.GetAllUsersResponse, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	users, err := u.svc.GetAll(ctx)
+	resp, err := u.svc.GetAll(ctx)
 	if err != nil {
-		utils.ResponseError(w, r, nil, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
-	utils.ResponseJSON(w, r, nil, http.StatusOK, users)
+
+	var getAllRespList []*pb.GetUserResponse
+	for _, user := range resp {
+		getAllRespList = append(getAllRespList, &pb.GetUserResponse{
+			Id:        user.ID,
+			Name:      user.Name,
+			Surnames:  user.Surnames,
+			Email:     user.Email,
+			ClaimIds:  user.ClaimIDs,
+			CreatedAt: timestamppb.New(user.CreatedAt),
+			UpdatedAt: timestamppb.New(user.UpdatedAt),
+		})
+	}
+
+	getAllResp := &pb.GetAllUsersResponse{
+		Users: getAllRespList,
+	}
+	return getAllResp, nil
 }
 
-// @Summary Get user by email
-// @Description Gets a user by email
-// @Tags Users
-// @Security Bearer
-// @Param email path string true "Email"
-// @Success 200 {object} models.UserResp "OK"
-// @Failure 400 {object} object
-// @Failure 401 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users/email/{email} [get]
-func (u *userHandler) getUserByEmail(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) GetByEmail(_ context.Context, req *pb.GetUserByEmailRequest) (*pb.GetUserResponse, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	var params = mux.Vars(r)
-	user, err := u.svc.GetByEmail(ctx, params["email"])
+	resp, err := u.svc.GetByEmail(ctx, req.Email)
 	if err != nil {
-		utils.ResponseError(w, r, nil, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
-	utils.ResponseJSON(w, r, nil, http.StatusOK, user)
+
+	getByEmailResp := &pb.GetUserResponse{
+		Id:        resp.ID,
+		Name:      resp.Name,
+		Surnames:  resp.Surnames,
+		Email:     resp.Email,
+		ClaimIds:  resp.ClaimIDs,
+		CreatedAt: timestamppb.New(resp.CreatedAt),
+		UpdatedAt: timestamppb.New(resp.UpdatedAt),
+	}
+	return getByEmailResp, nil
 }
 
-// @Summary Get user by ID
-// @Description Gets a user by ID
-// @Tags Users
-// @Security Bearer
-// @Param id path string true "ID"
-// @Success 200 {object} models.UserResp "OK"
-// @Failure 400 {object} object
-// @Failure 401 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users/{id} [get]
-func (u *userHandler) getUserByID(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) GetByID(_ context.Context, req *pb.GetUserByIDRequest) (*pb.GetUserResponse, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	var params = mux.Vars(r)
-	user, err := u.svc.GetByID(ctx, params["id"])
+	resp, err := u.svc.GetByID(ctx, req.Id)
 	if err != nil {
-		utils.ResponseError(w, r, nil, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
-	utils.ResponseJSON(w, r, nil, http.StatusOK, user)
+
+	getByIDResp := &pb.GetUserResponse{
+		Id:        resp.ID,
+		Name:      resp.Name,
+		Surnames:  resp.Surnames,
+		Email:     resp.Email,
+		ClaimIds:  resp.ClaimIDs,
+		CreatedAt: timestamppb.New(resp.CreatedAt),
+		UpdatedAt: timestamppb.New(resp.UpdatedAt),
+	}
+	return getByIDResp, nil
 }
 
-// @Summary Update user
-// @Description Updates a user
-// @Tags Users
-// @Security Bearer
-// @Param id path string true "ID"
-// @Param User body models.UpdateUserReq true "User"
-// @Success 200 "OK"
-// @Failure 400 {object} object
-// @Failure 401 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users/{id} [patch]
-func (u *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) Update(_ context.Context, req *pb.UpdateUserRequest) (*emptypb.Empty, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+	updateReq := models.UpdateUserReq{
+		Name:        req.Name,
+		Surnames:    req.Surnames,
+		Email:       req.Email,
+		OldPassword: req.OldPassword,
+		NewPassword: req.NewPassword,
+	}
+	if req.Claims != nil {
+		updateReq.ClaimIDs = &req.Claims.Ids
 	}
 
-	var params = mux.Vars(r)
-	var user models.UpdateUserReq
-	err = json.Unmarshal(body, &user)
+	err := u.svc.Update(ctx, req.Id, updateReq)
 	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
-
-	err = u.svc.Update(ctx, params["id"], user)
-	if err != nil {
-		utils.ResponseError(w, r, body, err)
-		return
-	}
-	utils.ResponseJSON(w, r, body, http.StatusOK, nil)
+	return &emptypb.Empty{}, nil
 }
 
-// @Summary Get claims
-// @Description Gets all claims
-// @Tags Users
-// @Security Bearer
-// @Success 200 {object} object "OK"
-// @Failure 400 {object} object
-// @Failure 401 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/claims [get]
-func (u *userHandler) getUserClaims(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) GetClaims(_ context.Context, _ *emptypb.Empty) (*pb.GetClaimsResponse, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	claims := u.svc.GetUserClaims(ctx)
-	utils.ResponseJSON(w, r, nil, http.StatusOK, claims)
+	resp := u.svc.GetUserClaims(ctx)
+
+	var getClaimsList []*pb.Claim
+	for id, value := range resp {
+		getClaimsList = append(getClaimsList, &pb.Claim{
+			Id:    int32(id),
+			Value: value,
+		})
+	}
+	getClaimsResp := &pb.GetClaimsResponse{
+		Claims: getClaimsList,
+	}
+	return getClaimsResp, nil
 }
 
-// @Summary Delete user
-// @Description Delete a user
-// @Tags Users
-// @Security Bearer
-// @Param id path string true "ID"
-// @Success 200 "OK"
-// @Failure 400 {object} object
-// @Failure 401 {object} object
-// @Failure 408 {object} object
-// @Failure 500 {object} object
-// @Router /v1/users/{id} [delete]
-func (u *userHandler) deleteUser(w http.ResponseWriter, r *http.Request) {
+func (u *userHandler) Delete(_ context.Context, req *pb.DeleteUserRequest) (*emptypb.Empty, error) {
 	ctx, cancel := context.WithTimeout(u.ctx, u.cfg.Timeout.Duration)
 	defer cancel()
 
-	var params = mux.Vars(r)
-	err := u.svc.Delete(ctx, params["id"])
+	err := u.svc.Delete(ctx, req.Id)
 	if err != nil {
-		utils.ResponseError(w, r, nil, err)
-		return
+		return nil, utils.ToGRPC(err)
 	}
-	utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
+
+	return &emptypb.Empty{}, nil
 }

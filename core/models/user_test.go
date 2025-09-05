@@ -11,8 +11,8 @@ import (
 func TestValidateCreateUserReq_Ok(t *testing.T) {
 	// Arrange
 	req := CreateUserReq{
-		Email:        "test@test.com",
-		PasswordHash: "test",
+		Email:    "test@test.com",
+		Password: "test",
 	}
 
 	// Act

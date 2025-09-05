@@ -2,32 +2,62 @@ package handlers
 
 import (
 	"context"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
-	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
+	"github.com/stretchr/testify/assert"
 )
 
-// TestHealthCheck_Ok checks that healthCheck handler does not return an error when everything goes as expected
-func TestHealthCheck_Ok(t *testing.T) {
+// TestHealthCheck_WhenEnvironmentIsNotLocal_DSNFiltered checks that healthCheck handler does return the expected response filtering the DSN
+func TestHealthCheck_WhenEnvironmentIsNotLocal_DSNIsFiltered(t *testing.T) {
 	// Arrange
-	r := mux.NewRouter()
-
-	cfg := config.Config{}
+	cfg := config.Config{
+		Version:     "test-version",
+		Environment: "test-environment",
+		Database:    "test-database",
+		HTTPPort:    1,
+		GRPCPort:    2,
+		DSN:         "test-dsn",
+	}
 	healthHandler := NewHealthHandler(context.Background(), cfg)
-	SetHealthRoutes(r, healthHandler)
-
-	rr := httptest.NewRecorder()
-	url := "http://testing/health"
-	req := httptest.NewRequest(http.MethodGet, url, nil)
+	// var req *emptypb.Empty
+	expectedDSN := "***FILTERED***"
 
 	// Act
-	r.ServeHTTP(rr, req)
+	resp, err := healthHandler.HealthCheck(context.Background(), nil)
 
 	// Assert
-	if want, got := http.StatusOK, rr.Code; want != got {
-		t.Fatalf("unexpected http status code: want=%d but got=%d", want, got)
+	assert.Nil(t, err)
+	assert.Equal(t, cfg.Version, resp.Version)
+	assert.Equal(t, cfg.Environment, resp.Environment)
+	assert.Equal(t, cfg.Database, resp.Database)
+	assert.Equal(t, cfg.HTTPPort, int(resp.HttpPort))
+	assert.Equal(t, cfg.GRPCPort, int(resp.GrpcPort))
+	assert.Equal(t, expectedDSN, resp.Dsn)
+}
+
+// TestHealthCheck_WhenEnvironmentIsLocal_DSNIsNotFiltered checks that healthCheck handler does return the expected response without filtering the DSN
+func TestHealthCheck_WhenEnvironmentIsLocal_DSNIsNotFiltered(t *testing.T) {
+	// Arrange
+	cfg := config.Config{
+		Version:     "test-version",
+		Environment: "local",
+		Database:    "test-database",
+		HTTPPort:    1,
+		GRPCPort:    2,
+		DSN:         "test-dsn",
 	}
+	healthHandler := NewHealthHandler(context.Background(), cfg)
+
+	// Act
+	resp, err := healthHandler.HealthCheck(context.Background(), nil)
+
+	// Assert
+	assert.Nil(t, err)
+	assert.Equal(t, cfg.Version, resp.Version)
+	assert.Equal(t, cfg.Environment, resp.Environment)
+	assert.Equal(t, cfg.Database, resp.Database)
+	assert.Equal(t, cfg.HTTPPort, int(resp.HttpPort))
+	assert.Equal(t, cfg.GRPCPort, int(resp.GrpcPort))
+	assert.Equal(t, cfg.DSN, resp.Dsn)
 }

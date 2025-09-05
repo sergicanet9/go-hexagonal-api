@@ -2,48 +2,39 @@ package handlers
 
 import (
 	"context"
-	"net/http"
-	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type healthHandler struct {
 	ctx context.Context
 	cfg config.Config
+	pb.UnimplementedHealthServiceServer
 }
 
 // NewHealthHandler creates a new health handler
-func NewHealthHandler(ctx context.Context, cfg config.Config) healthHandler {
-	return healthHandler{
+func NewHealthHandler(ctx context.Context, cfg config.Config) *healthHandler {
+	return &healthHandler{
 		ctx: ctx,
 		cfg: cfg,
 	}
 }
 
-// SetHealthRoutes creates health routes
-func SetHealthRoutes(router *mux.Router, h healthHandler) {
-	router.HandleFunc("/health", h.healthCheck).Methods(http.MethodGet)
-}
-
-// @Summary Health Check
-// @Description Runs a Health Check
-// @Tags Health
-// @Success 200 "OK"
-// @Failure 500 {object} object
-// @Failure 503 {object} object
-// @Router /health [get]
-func (h *healthHandler) healthCheck(w http.ResponseWriter, r *http.Request) {
-	r.Header.Add("Version", h.cfg.Version)
-	r.Header.Add("Environment", h.cfg.Environment)
-	r.Header.Add("Port", strconv.Itoa(h.cfg.Port))
-	r.Header.Add("Database", h.cfg.Database)
-
+// HealthCheck .
+func (h *healthHandler) HealthCheck(_ context.Context, _ *emptypb.Empty) (*pb.HealthCheckResponse, error) {
+	response := &pb.HealthCheckResponse{
+		Version:     h.cfg.Version,
+		Environment: h.cfg.Environment,
+		Database:    h.cfg.Database,
+		HttpPort:    int32(h.cfg.HTTPPort),
+		GrpcPort:    int32(h.cfg.GRPCPort),
+		Dsn:         "***FILTERED***",
+	}
 	if h.cfg.Environment == "local" {
-		r.Header.Add("DSN", h.cfg.DSN)
+		response.Dsn = h.cfg.DSN
 	}
 
-	utils.ResponseJSON(w, r, nil, http.StatusOK, nil)
+	return response, nil
 }

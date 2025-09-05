@@ -1,5 +1,4 @@
 {
-    "Address": "http://localhost",
     "PostgresMigrationsDir": "infrastructure/postgres/migrations",
     "JWTSecret": "CTeemck6Gg",
     "Timeout": "5s",

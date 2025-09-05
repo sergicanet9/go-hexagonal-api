@@ -93,8 +93,8 @@ func TestGet_Ok(t *testing.T) {
 	filter := map[string]interface{}{"email": "test-email", "name": "test-name"}
 	skip := 1
 	take := 1
-	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claims", "created_at", "updated_at"}).
-		AddRow(expectedUser.ID, expectedUser.Name, expectedUser.Surnames, expectedUser.Email, expectedUser.PasswordHash, pq.Array(expectedUser.Claims), expectedUser.CreatedAt, expectedUser.UpdatedAt))
+	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claim_ids", "created_at", "updated_at"}).
+		AddRow(expectedUser.ID, expectedUser.Name, expectedUser.Surnames, expectedUser.Email, expectedUser.PasswordHash, pq.Array(expectedUser.ClaimIDs), expectedUser.CreatedAt, expectedUser.UpdatedAt))
 
 	// Act
 	result, err := repo.Get(context.Background(), filter, &skip, &take)
@@ -139,7 +139,7 @@ func TestGet_NoResourcesFound(t *testing.T) {
 			DB: db,
 		},
 	}
-	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claims", "created_at", "updated_at"}))
+	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claim_ids", "created_at", "updated_at"}))
 
 	// Act
 	_, err := repo.Get(context.Background(), map[string]interface{}{}, nil, nil)
@@ -163,8 +163,8 @@ func TestGetByID_Ok(t *testing.T) {
 	expectedUser := entities.User{
 		ID: "f8352727-231e-4de1-8257-c235a0af5c4a",
 	}
-	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claims", "created_at", "updated_at"}).
-		AddRow(expectedUser.ID, expectedUser.Name, expectedUser.Surnames, expectedUser.Email, expectedUser.PasswordHash, pq.Array(expectedUser.Claims), expectedUser.CreatedAt, expectedUser.UpdatedAt))
+	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claim_ids", "created_at", "updated_at"}).
+		AddRow(expectedUser.ID, expectedUser.Name, expectedUser.Surnames, expectedUser.Email, expectedUser.PasswordHash, pq.Array(expectedUser.ClaimIDs), expectedUser.CreatedAt, expectedUser.UpdatedAt))
 
 	// Act
 	result, err := repo.GetByID(context.Background(), expectedUser.ID)
@@ -208,7 +208,7 @@ func TestGetByID_ResourceNotFound(t *testing.T) {
 			DB: db,
 		},
 	}
-	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claims", "created_at", "updated_at"}))
+	mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{"id", "name", "surnames", "email", "password_hash", "claim_ids", "created_at", "updated_at"}))
 
 	// Act
 	_, err := repo.GetByID(context.Background(), "")
@@ -217,7 +217,7 @@ func TestGetByID_ResourceNotFound(t *testing.T) {
 	assert.Equal(t, wrappers.NewNonExistentErr(sql.ErrNoRows), err)
 }
 
-// TestUpdate_OK checks that Update does not return an error when the received ID has a valid format
+// TestUpdate_Ok checks that Update does not return an error when the received ID has a valid format
 func TestUpdate_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)
@@ -281,7 +281,7 @@ func TestUpdate_NotUpdatedError(t *testing.T) {
 	assert.Equal(t, wrappers.NewNonExistentErr(sql.ErrNoRows), err)
 }
 
-// TestDelete_OK checks that Delete does not return an error when the received ID has a valid format
+// TestDelete_Ok checks that Delete does not return an error when the received ID has a valid format
 func TestDelete_Ok(t *testing.T) {
 	// Arrange
 	mock, db := mocks.NewSqlDB(t)

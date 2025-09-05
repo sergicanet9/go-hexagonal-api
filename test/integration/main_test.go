@@ -201,18 +201,23 @@ func New(t *testing.T, database string) config.Config {
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 
+	grpcServerReady := make(chan struct{})
 	a := api.New(ctx, cfg, nrApp)
-	run := a.Run(ctx, cancel)
-	go run()
+	runGRPC := a.RunGRPC(ctx, cancel, grpcServerReady)
+	runHTTP := a.RunHTTP(ctx, cancel, grpcServerReady)
 
-	<-time.After(100 * time.Millisecond) // waiting time for letting the API start completely
+	go runGRPC()
+	go runHTTP()
+
+	<-time.After(200 * time.Millisecond) // waiting time for letting the API start completely
 	return cfg
 }
 
 func testConfig(t *testing.T, database string) (c config.Config, err error) {
 	c.Version = "Integration tests"
 	c.Environment = "Integration tests"
-	c.Port = testutils.FreePort(t)
+	c.HTTPPort = testutils.FreePort(t)
+	c.GRPCPort = testutils.FreePort(t)
 	c.Database = database
 	switch database {
 	case "mongo":

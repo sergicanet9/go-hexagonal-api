@@ -14,7 +14,8 @@
             "args": [
                 "--ver", "debug",
                 "--env", "local",
-                "--port", "8080",
+                "--hport", "8080",
+                "--gport", "50051",
                 "--db", "mongo",
                 "--dsn", "mongodb://mongo:admin@localhost:4041/gohexagonalapilocal?authSource=admin&connect=direct"
             ]
@@ -29,7 +30,8 @@
             "args": [
                 "--ver", "debug",
                 "--env", "local",
-                "--port", "8080",
+                "--hport", "8080",
+                "--gport", "50051",
                 "--db", "postgres",
                 "--dsn", "postgres://postgres:admin@localhost:4042/gohexagonalapilocal?sslmode=disable"
             ]
