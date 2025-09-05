@@ -155,9 +155,13 @@ Log in with the username and password specified as `MONGO_EXPRESS_LOGIN_USERNAME
 
 ## ☁️ Live Environment
 The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database, New Relic Go agent for APM and log forwarding, and a Cloudflare tunnel for public access through HTTP.<br/>
+* Swagger UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
+* gRPC UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/grpcui/
 <br />
-Check the Swagger at:
-https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
+<br />
+
+NOTES:
+- The gRPC UI is publically exposed through HTTP. However, direct gRPC calls (e.g., using `grpcurl`) are not allowed outside the cluster.
 
 ## ✍️ Author
 Sergi Canet Vela
