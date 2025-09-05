@@ -1,12 +1,11 @@
 package observability
 
 import (
-	"fmt"
-	"io"
+	"log"
 	"os"
 	"time"
 
-	"github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter"
+	"github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter"
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
@@ -24,23 +23,7 @@ func SetupNewRelic(appName, newrelicKey string) (*newrelic.Application, error) {
 		return app, err
 	}
 
-	writer := nrwriter.New(os.Stdout, app)
-
-	m.Lock()
-	defer m.Unlock()
-	// logger.SetOutput(writer) // TODO Put back
-	logger.SetOutput(&tempDebugWriter{target: writer}) // TODO remove
-
+	writer := logWriter.New(os.Stdout, app)
+	logger = log.New(&writer, "", log.Default().Flags())
 	return app, nil
-}
-
-// TODO remove
-type tempDebugWriter struct {
-	target io.Writer
-}
-
-func (w *tempDebugWriter) Write(p []byte) (int, error) {
-	fmt.Printf("DEBUG log -> %s", string(p))
-	fmt.Printf("DEBUG writer type -> %T\n", w.target)
-	return w.target.Write(p)
 }

@@ -144,6 +144,8 @@ github.com/newrelic/csec-go-agent v1.6.0 h1:OCShRZgiE+kg37jk+QXHw9e9EQ9BvLOeQTk+
 github.com/newrelic/csec-go-agent v1.6.0/go.mod h1:LiLGm6a+q+hkmTnrxrYw1ToToirThOHydjrrLMtci5M=
 github.com/newrelic/go-agent/v3 v3.40.1 h1:8nb4R252Fpuc3oySvlHpDwqySqaPWL5nf7ZVEhqtUeA=
 github.com/newrelic/go-agent/v3 v3.40.1/go.mod h1:X0TLXDo+ttefTIue1V96Y5seb8H6wqf6uUq4UpPsYj8=
+github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter v1.0.3 h1:tdYQN4eZ1qX/tZQ6Ofid5w1Ko+ujkhVdcs2g9dGmn80=
+github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter v1.0.3/go.mod h1:Px3w0x8Lvl5Zz3kd3jYAT0EIoWPOfceS1nrjt93/Kt0=
 github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.2 h1:aDiFahAJlmuCcsUqcXqxbRLsBFsPf6U0ptQULRm4Y/s=
 github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.2/go.mod h1:Aq6/RsiWYYt8zrwfL3pDjUf5yRS0T5a7FMZRGJ0NnZs=
 github.com/newrelic/go-agent/v3/integrations/nrgorilla v1.2.5 h1:1p8UxomhZWf6+y6KUcDPfbKG33G5ymjFFtDcMOV3wUY=
