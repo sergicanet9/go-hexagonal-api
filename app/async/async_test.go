@@ -21,17 +21,18 @@ func TestNew_Ok(t *testing.T) {
 	assert.Equal(t, expectedConfig, async.config)
 }
 
-// TestRun_ContextCancelled checks that Run finishes and returns the expected error when the context gets cancelled
+// TestRun_ContextCancelled checks that Run finishes when the context gets cancelled
 func TestRun_ContextCancelled(t *testing.T) {
 	// Arrange
-	async := &async{}
+	async := &async{
+		config: config.Config{},
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
-	expectedError := "async process stopped"
 
 	// Act
 	errFunc := async.Run(ctx, cancel)
 
 	// Assert
-	assert.Equal(t, expectedError, errFunc().Error())
+	assert.Nil(t, errFunc())
 }
