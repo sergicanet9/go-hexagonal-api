@@ -4,18 +4,21 @@
 ![Coverage](https://img.shields.io/badge/Coverage-28.5%25-red)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergicanet9/go-hexagonal-api.svg)](https://pkg.go.dev/github.com/sergicanet9/go-hexagonal-api)
 
-A robust API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) pattern. It makes use of own [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) package.
+A robust gRPC + REST API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) pattern. It makes use of [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) library.
+<br />
+The gRPC handlers are automatically exposed as REST endpoints, so the same functionality is available over HTTP without duplicating code.
 <br />
 The API is designed to work seamlessly with either a MongoDB or PostgreSQL database instance, using the same business logic and handlers.
 
 ## 🚀 Features
 - **Hexagonal Architecture**: Clear separation of concerns with transport, business logic and repository layers.
+- **gRPC + gRPC-Gateway**: gRPC API implementation, with automatically generated REST endpoints from the gRPC handlers via gRPC-Gateway.
 - **Database Agnostic**: Decoupled repository adapters allow injecting a MongoDB or PostgreSQL storage without changing core logic.
-- **Authentication & Authorization**: Implements JWT authentication and claim-based authorization for secure endpoints for user management.
-- **Asyncronous Process**: Go routines management with an included process for periodically health checking the application.
+- **Authentication & Authorization**: Implements JWT authentication and claim-based authorization for secure endpoints.
+- **Asynchronous Processes**: Go routines management with built in processes for periodically health checking connectivity with HTTP and gRPC servers.
 - **Testing**: Comprehensive unit tests with code coverage and integration tests for the happy path.
-- **Developer Experience**: Built-in Makefile, Swagger UI for API documentation and management UIs for each database (pgAdmin and mongo-express).
-- **Lifecycle Management**: Multi-environment support with config files, dockerfile and docker-compose, CI/CD pipelines with GitHub Actions, Kubernetes deployment and New Relic observability.
+- **Developer Experience**: Built-in Makefile, Swagger UI, gRPC UI, pgAdmin, and mongo-express.
+- **Lifecycle Management**: Multi-environment support with config files, Dockerfile and docker-compose, CI/CD pipelines with GitHub Actions, Kubernetes deployment and New Relic observability.
 
 ## 🏁 Getting Started
 ### Run it with Docker
@@ -28,7 +31,7 @@ This command launches six containers:
 * Two database UIs (mongo-express and pgAdmin).
 * Two API instances, one for each database.
 
-The URLs for Swagger and the database UIs will be printed in the console.
+Check the console output for Swagger UI, gRPC UI, database UIs, and HTTP and gRPC command examples.
 
 To stop and remove all containers, run:
 ```
@@ -38,61 +41,70 @@ make down
 ### Run it with command line
 Run a single API instance with command-line arguments with the following command:
 ```
-    go run cmd/main.go --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn} --nrkey={newrelic_key}
+    go run cmd/main.go --ver={version} --env={environment} --hport={http_port} --gport={grpc_port} --db={database} --dsn={dsn} --nrkey={newrelic_key}
 ```
 or:
 ```
 go build cmd/main.go
- ./main --ver={version} --env={environment} --port={port} --db={database} --dsn={dsn} --nrkey={newrelic_key}
+ ./main --ver={version} --env={environment} --hport={http_port} --gport={grpc_port} --db={database} --dsn={dsn} --nrkey={newrelic_key}
 ```
-Provide the desired values for: `{version}`, `{environment}`, `{port}`, `{database}`, `{dsn}`.
+Provide the desired values for: `{version}`, `{environment}`, `{http_port}`, `{grpc_port}`, `{database}`, `{dsn}`.
 <br />
-The `--nrkey` flag and is value `{newrelic_key}` are optional and can be omitted if you do not want to configure New Relic observability.
+The `--nrkey` flag and its value `{newrelic_key}` are optional and can be omitted if you do not want to configure New Relic observability.
 <br />
-Then open `http://localhost:{port}/swagger/index.html` to access the Swagger UI page.
+Then open:
+* Swagger UI: `http://localhost:{http_port}/swagger/index.html`
+* gRPC UI: `http://localhost:{http_port}/grpcui/`
 <br />
 <br />
+
 NOTES:
 - The target database container needs to be up and running (run `make up`).
 
 ### Debug it with VS Code
 The project includes debugging profiles in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for both MongoDB and PostgreSQL setups. Simply select the desired configuration in the VS Code debugger and run it.
 <br />
-Then open `http://localhost:{port}/swagger/index.html` to access the Swagger UI page.
+Then open:
+* Swagger UI: `http://localhost:{http_port}/swagger/index.html`
+* gRPC UI: `http://localhost:{http_port}/grpcui/`
 <br />
 <br />
+
 NOTES:
 - The target database container needs to be up and running (run `make up`).
 
 ## 📦 API Endpoints
 ### Public Routes
-These endpoints don't require authentication.
-<br />
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | Performs a health check of the API's status. |
-| `POST` | `/v1/users` | Creates a new user. |
-| `POST` | `/v1/users/login` | Authenticates a user and returns a JWT token. |
-| `POST` | `/v1/users/many` | Creates multiple users from a list. |
+These endpoints do not require authentication.
+
+| HTTP Endpoint         | gRPC Method                         | Description                                   |
+| :-------------------- | :---------------------------------- | :-------------------------------------------- |
+| GET `/health`         | `health.HealthService.HealthCheck`  | Performs a health check.                      |
+| POST `/v1/users`      | `user.UserService.Create`           | Creates a new user.                           |
+| POST `/v1/users/many` | `user.UserService.CreateMany`       | Creates multiple users.                       |
+| POST `/v1/users/login`| `user.UserService.Login`            | Authenticates a user and returns a JWT token. |
 
 ### Protected Routes
 These endpoints require a valid JWT in the Authorization header, formatted as `Bearer {token}`.
-<br />
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/v1/users` | Retrieves all users. |
-| `GET` | `/v1/users/email/{email}` | Retrieves a user by their email address. |
-| `GET` | `/v1/users/{id}` | Retrieves a user by their unique ID. |
-| `PATCH` | `/v1/users/{id}` | Updates a user's information. |
-| `GET` | `/v1/claims` | Returns all existing claims. |
+* For HTTP, include it as `Authorization` header.
+* For gRPC, include it in the metadata with the key `authorization`.
 
+| HTTP Endpoint                  | gRPC Method                    | Description                   |
+| :----------------------------- | :----------------------------- | :---------------------------- |
+| GET `/v1/users`                | `user.UserService.GetAll`      | Retrieves all users.          |
+| GET `/v1/users/email/{email}`  | `user.UserService.GetByEmail`  | Retrieves a user by email.    |
+| GET `/v1/users/{id}`           | `user.UserService.GetByID`     | Retrieves a user by ID.       |
+| PATCH `/v1/users/{id}`         | `user.UserService.Update`      | Updates a user's information. |
+| GET `/v1/claims`               | `user.UserService.GetClaims`   | Returns all claims.           |
 
 ### Admin Routes
-These endpoints require a valid JWT in the Authorization header with the `admin:true' claim.
-<br />
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `DELETE` | `/v1/users/{id}` | Deletes a user by their unique ID. |
+These endpoints require a valid JWT, formatted as `Bearer {token}` and containing the `admin` claim.
+* For HTTP, include it as `Authorization` header.
+* For gRPC, include it in the metadata with the key `authorization`.
+
+| HTTP Endpoint           | gRPC Method                | Description           |
+| :---------------------- | :------------------------- | :-------------------- |
+| DELETE `/v1/users/{id}` | `user.UserService.Delete`  | Deletes a user by ID. |
 
 ## ✅ Testing
 ### Run unit tests with code coverage
@@ -112,8 +124,8 @@ make test-integration
  NOTES:
 - Docker is required for running integration tests.
 
-## 🛠️ Other Commands 
-### (Re)Generate Swagger documentation
+## 🛠️ Developer Commands 
+### (Re)Generate gRPC stubs and Swagger documentation
 ```
 make swagger
 ```
@@ -142,11 +154,7 @@ Open the mongo-express URL printed after running `make up`.
 Log in with the username and password specified as `MONGO_EXPRESS_LOGIN_USERNAME`and `MONGO_EXPRESS_LOGIN_PASSWORD`in the [.env](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.env) file.
 
 ## ☁️ Live Environment
-The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database.
-<br />
-The application is instrumented with the New Relic Go agent for APM and log forwarding.
-<br/>
-For public access, the Kubernetes Service is configured as ClusterIP, and traffic is routed to a custom domain using a Cloudflare tunnel, avoiding the need for a public IP on the cluster.
+The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database, New Relic Go agent for APM and log forwarding, and a Cloudflare tunnel for public access through HTTP.<br/>
 <br />
 Check the Swagger at:
 https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
