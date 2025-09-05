@@ -15,7 +15,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/entities"
 	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
-	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
+	"github.com/sergicanet9/scv-go-tools/v4/infrastructure"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

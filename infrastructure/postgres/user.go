@@ -9,8 +9,8 @@ import (
 	"github.com/lib/pq"
 	"github.com/sergicanet9/go-hexagonal-api/core/entities"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
-	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
-	"github.com/sergicanet9/scv-go-tools/v3/wrappers"
+	"github.com/sergicanet9/scv-go-tools/v4/infrastructure"
+	"github.com/sergicanet9/scv-go-tools/v4/wrappers"
 )
 
 // userRepository adapter of an user repository for postgres

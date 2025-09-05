@@ -15,9 +15,9 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
-	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
-	"github.com/sergicanet9/scv-go-tools/v3/testutils"
+	"github.com/sergicanet9/scv-go-tools/v4/api/utils"
+	"github.com/sergicanet9/scv-go-tools/v4/infrastructure"
+	"github.com/sergicanet9/scv-go-tools/v4/testutils"
 )
 
 const (

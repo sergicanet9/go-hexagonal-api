@@ -3,7 +3,7 @@ package models
 import (
 	"testing"
 
-	"github.com/sergicanet9/scv-go-tools/v3/wrappers"
+	"github.com/sergicanet9/scv-go-tools/v4/wrappers"
 	"github.com/stretchr/testify/assert"
 )
 

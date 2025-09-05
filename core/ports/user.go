@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/sergicanet9/go-hexagonal-api/core/models"
-	"github.com/sergicanet9/scv-go-tools/v3/repository"
+	"github.com/sergicanet9/scv-go-tools/v4/repository"
 )
 
 // UserRepositoy interface

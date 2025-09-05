@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/sergicanet9/scv-go-tools/v3/api/utils"
+	"github.com/sergicanet9/scv-go-tools/v4/api/utils"
 )
 
 type Async struct {

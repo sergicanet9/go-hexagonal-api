@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sergicanet9/scv-go-tools/v3/wrappers"
+	"github.com/sergicanet9/scv-go-tools/v4/wrappers"
 )
 
 // LoginUserReq login user request struct

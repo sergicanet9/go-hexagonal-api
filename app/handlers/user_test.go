@@ -11,7 +11,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
 	"github.com/sergicanet9/go-hexagonal-api/test/mocks"
-	"github.com/sergicanet9/scv-go-tools/v3/testutils"
+	"github.com/sergicanet9/scv-go-tools/v4/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc/codes"
