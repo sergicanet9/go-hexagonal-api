@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
-	"github.com/sergicanet9/scv-go-tools/v3/observability"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/observability"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"

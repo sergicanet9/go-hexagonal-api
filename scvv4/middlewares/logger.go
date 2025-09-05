@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sergicanet9/scv-go-tools/v3/observability"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/observability"
 )
 
 type responseWriterWrap struct {

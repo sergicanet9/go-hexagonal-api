@@ -29,8 +29,8 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
 	"github.com/sergicanet9/go-hexagonal-api/scvv4/interceptors"
 	"github.com/sergicanet9/go-hexagonal-api/scvv4/middlewares"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/observability"
 	"github.com/sergicanet9/scv-go-tools/v3/infrastructure"
-	"github.com/sergicanet9/scv-go-tools/v3/observability"
 )
 
 type api struct {

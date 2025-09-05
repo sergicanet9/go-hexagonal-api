@@ -11,7 +11,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/app/api"
 	"github.com/sergicanet9/go-hexagonal-api/app/async"
 	"github.com/sergicanet9/go-hexagonal-api/config"
-	"github.com/sergicanet9/scv-go-tools/v3/observability"
+	"github.com/sergicanet9/go-hexagonal-api/scvv4/observability"
 )
 
 func main() {

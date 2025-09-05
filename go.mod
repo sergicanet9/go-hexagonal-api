@@ -61,7 +61,7 @@ require (
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/newrelic/csec-go-agent v1.6.0 // indirect
-	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.2 // indirect
+	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.2
 	github.com/newrelic/go-agent/v3/integrations/nrgrpc v1.4.7
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
