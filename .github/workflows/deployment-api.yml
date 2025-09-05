@@ -74,7 +74,7 @@ jobs:
           sed -i "s|__version__|${{ inputs.VERSION }}|g" build/k8s/manifest-api.yml
           sed -i "s|__environment__|${{ inputs.ENVIRONMENT }}|g" build/k8s/manifest-api.yml
           sed -i "s|__httpport__|${{ inputs.HTTP_PORT }}|g" build/k8s/manifest-api.yml
-          sed -i "s|__httpport__|${{ inputs.GRPC_PORT }}|g" build/k8s/manifest-api.yml
+          sed -i "s|__grpcport__|${{ inputs.GRPC_PORT }}|g" build/k8s/manifest-api.yml
           sed -i "s|__database__|${{ inputs.DATABASE }}|g" build/k8s/manifest-api.yml
           sed -i "s|__nrkey__|${{ secrets.NEWRELIC_KEY }}|g" build/k8s/manifest-api.yml
 
