@@ -56,7 +56,6 @@ Then open:
 * Swagger UI: `http://localhost:{http_port}/swagger/index.html`
 * gRPC UI: `http://localhost:{http_port}/grpcui/`
 <br />
-<br />
 
 NOTES:
 - The target database container needs to be up and running (run `make up`).
@@ -67,7 +66,6 @@ The project includes debugging profiles in [launch.json](https://github.com/serg
 Then open:
 * Swagger UI: `http://localhost:{http_port}/swagger/index.html`
 * gRPC UI: `http://localhost:{http_port}/grpcui/`
-<br />
 <br />
 
 NOTES:
@@ -121,6 +119,8 @@ make cover
 ```
 make test-integration
 ```
+<br />
+
  NOTES:
 - Docker is required for running integration tests.
 
@@ -157,7 +157,6 @@ Log in with the username and password specified as `MONGO_EXPRESS_LOGIN_USERNAME
 The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database, New Relic Go agent for APM and log forwarding, and a Cloudflare tunnel for public access through HTTP.<br/>
 * Swagger UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
 * gRPC UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/grpcui/
-<br />
 <br />
 
 NOTES:
