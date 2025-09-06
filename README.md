@@ -4,7 +4,7 @@
 ![Coverage](https://img.shields.io/badge/Coverage-73.2%25-brightgreen)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergicanet9/go-hexagonal-api.svg)](https://pkg.go.dev/github.com/sergicanet9/go-hexagonal-api)
 
-A robust gRPC + REST API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) patter, built on top of the [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) library.
+A robust gRPC + REST API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) pattern, built on top of the [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) library.
 <br />
 The gRPC handlers are automatically exposed as REST endpoints, so the same functionality is available over HTTP without duplicating code.
 <br />
@@ -15,7 +15,7 @@ The API is designed to work seamlessly with either a MongoDB or PostgreSQL datab
 - **gRPC + gRPC-Gateway**: gRPC API implementation, with automatically generated REST endpoints from the gRPC handlers via gRPC-Gateway.
 - **Database Agnostic**: Decoupled repository adapters allow injecting a MongoDB or PostgreSQL storage without changing core logic.
 - **Authentication & Authorization**: Implements JWT authentication and claim-based authorization for secure endpoints.
-- **Asynchronous Processes**: Go routines management with built in processes for periodically health checking connectivity with HTTP and gRPC servers.
+- **Asynchronous Processes**: Go routines management with built in processes for periodically health checking connectivity with the HTTP and gRPC servers.
 - **Testing**: Comprehensive unit tests with code coverage and integration tests for the happy path.
 - **Developer Experience**: Built-in Makefile, Swagger UI, gRPC UI, pgAdmin, and mongo-express.
 - **Lifecycle Management**: Multi-environment support with config files, Dockerfile and docker-compose, CI/CD pipelines with GitHub Actions, Kubernetes deployment and New Relic observability.
