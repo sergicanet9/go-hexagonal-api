@@ -19,7 +19,7 @@ services:
     container_name: mongo-express
     restart: always
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_SERVER=$MONGO_HOST
       - ME_CONFIG_MONGODB_ADMINUSERNAME=$MONGO_USER
       - ME_CONFIG_MONGODB_ADMINPASSWORD=$MONGO_PASSWORD
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
