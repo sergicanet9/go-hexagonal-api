@@ -4,7 +4,7 @@
 ![Coverage](https://img.shields.io/badge/Coverage-73.2%25-brightgreen)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergicanet9/go-hexagonal-api.svg)](https://pkg.go.dev/github.com/sergicanet9/go-hexagonal-api)
 
-A robust gRPC + REST API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) pattern. It makes use of [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) library.
+A robust gRPC + REST API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) patter, built on top of the [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) library.
 <br />
 The gRPC handlers are automatically exposed as REST endpoints, so the same functionality is available over HTTP without duplicating code.
 <br />

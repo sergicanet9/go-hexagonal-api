@@ -12,7 +12,6 @@ import (
 	"github.com/fullstorydev/grpcui/standalone"
 	"github.com/gorilla/mux"
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/newrelic/go-agent/v3/integrations/nrgorilla"
 	"github.com/newrelic/go-agent/v3/integrations/nrgrpc"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -157,7 +156,6 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		httpRouter := mux.NewRouter()
 		httpRouter.Use(middlewares.Logger("/swagger", "/docs.swagger.json", "/grpcui"))
 		httpRouter.Use(middlewares.Recover)
-		httpRouter.Use(nrgorilla.Middleware(a.newrelicApp))
 
 		conn, err := grpc.NewClient(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
