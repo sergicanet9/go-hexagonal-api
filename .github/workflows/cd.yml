@@ -31,10 +31,11 @@ jobs:
 
     - name: Build and push image
       run: |
-        docker build -f build/docker/Dockerfile --build-arg version=${{ steps.vars.outputs.tag }} -t ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} .
-        docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }}
-        docker tag ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
-        docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
+        docker buildx build -f build/docker/Dockerfile --build-arg version=${{ steps.vars.outputs.tag }} \
+          --platform linux/amd64,linux/arm64 \
+          -t ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} \
+          -t ghcr.io/${{ github.repository }}/go-hexagonal-api:latest \
+          --push .
       
   mongo-prod:
     needs: build-and-push
