@@ -12,7 +12,6 @@ require (
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/lib/pq v1.10.9
 	github.com/newrelic/go-agent/v3 v3.40.1
-	github.com/newrelic/go-agent/v3/integrations/nrgorilla v1.2.5
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/stretchr/testify v1.11.0
 	github.com/swaggo/http-swagger v1.3.4
