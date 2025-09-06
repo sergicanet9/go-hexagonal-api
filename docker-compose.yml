@@ -66,6 +66,7 @@ services:
       - gp=$CONTAINER_GRPC_PORT
       - db=mongo
       - dsn=$MONGO_DSN
+      - jsecret=$JWT_SECRET
     depends_on:
       - mongo
     ports:
@@ -85,6 +86,7 @@ services:
       - gp=$CONTAINER_GRPC_PORT
       - db=postgres
       - dsn=$POSTGRES_DSN
+      - jsecret=$JWT_SECRET
     depends_on:
       - postgres
     ports:

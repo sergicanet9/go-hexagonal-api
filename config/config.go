@@ -20,6 +20,7 @@ type Config struct {
 	GRPCPort    int
 	Database    string
 	DSN         string
+	JWTSecret   string
 	NewRelicKey string
 
 	// set in json config files
@@ -28,7 +29,6 @@ type Config struct {
 
 type config struct {
 	PostgresMigrationsDir string
-	JWTSecret             string
 	Timeout               utils.Duration
 	Async                 Async
 }
@@ -36,7 +36,7 @@ type config struct {
 // ReadConfig from the project´s JSON config files.
 // Default values are specified in the default configuration file, config/config.json
 // and can be overrided with values specified in the environment configuration files, config/config.{env}.json.
-func ReadConfig(version, env string, httpPort, grpcPort int, database, dsn, newrelicKey, configPath string) (Config, error) {
+func ReadConfig(version, env string, httpPort, grpcPort int, database, dsn, jwtSecret, newrelicKey, configPath string) (Config, error) {
 	var c Config
 	c.Version = version
 	c.Environment = env

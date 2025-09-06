@@ -22,6 +22,7 @@ func main() {
 		GRPCPort    int    `long:"gport" description:"Running gRPC port" required:"true"`
 		Database    string `long:"db" description:"The database adapter to use" choice:"mongo" choice:"postgres" required:"true"`
 		DSN         string `long:"dsn" description:"DSN of the selected database" required:"true"`
+		JWTSecret   string `long:"jsecret" description:"Secret used to sign and validate JWT tokens" required:"true"`
 		NewRelicKey string `long:"nrkey" description:"New Relic Key" required:"false"`
 	}
 
@@ -30,7 +31,7 @@ func main() {
 		observability.Logger().Fatal(fmt.Errorf("provided flags not valid: %s, %w", args, err))
 	}
 
-	cfg, err := config.ReadConfig(opts.Version, opts.Environment, opts.HTTPPort, opts.GRPCPort, opts.Database, opts.DSN, opts.NewRelicKey, "config")
+	cfg, err := config.ReadConfig(opts.Version, opts.Environment, opts.HTTPPort, opts.GRPCPort, opts.Database, opts.DSN, opts.JWTSecret, opts.NewRelicKey, "config")
 	if err != nil {
 		observability.Logger().Fatal(fmt.Errorf("cannot parse config file for env %s: %w", opts.Environment, err))
 	}

@@ -35,7 +35,10 @@ ENV db=$database
 ARG dsn
 ENV dsn=$dsn
 
+ARG jwtSecret
+ENV jsecret=$jwtSecret
+
 ARG newrelicKey
 ENV nrkey=$newrelicKey
 
-CMD ["sh", "-c", "bin/main --ver $v --env $env --hport $hp --gport $gp --db $db --dsn $dsn --nrkey \"$nrkey\""]
+CMD ["sh", "-c", "bin/main --ver $v --env $env --hport $hp --gport $gp --db $db --dsn $dsn --jsecret $jsecret --nrkey \"$nrkey\""]

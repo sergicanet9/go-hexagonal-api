@@ -37,6 +37,8 @@ spec:
               value: "__database__"
             - name: dsn
               value: "__dsn__"
+            - name: jsecret
+              value: "__jwtsecret__"
             - name: nrkey
               value: "__nrkey__"
 ---

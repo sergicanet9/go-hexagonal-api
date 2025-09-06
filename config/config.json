@@ -1,6 +1,5 @@
 {
     "PostgresMigrationsDir": "infrastructure/postgres/migrations",
-    "JWTSecret": "CTeemck6Gg",
     "Timeout": "5s",
     "Async": {
         "Run": true,
