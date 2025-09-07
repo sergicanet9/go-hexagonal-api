@@ -227,9 +227,9 @@ func testConfig(t *testing.T, database string) (c config.Config, err error) {
 	default:
 		return config.Config{}, fmt.Errorf("database flag %s not valid", database)
 	}
+	c.JWTSecret = jwtSecret
 
 	c.PostgresMigrationsDir = "infrastructure/postgres/migrations"
-	c.JWTSecret = jwtSecret
 	c.Timeout = utils.Duration{Duration: 30 * time.Second}
 
 	return c, nil
