@@ -77,7 +77,7 @@ These endpoints do not require authentication.
 
 | HTTP Endpoint         | gRPC Method                         | Description                                   |
 | :-------------------- | :---------------------------------- | :-------------------------------------------- |
-| GET `/health`         | `health.HealthService.HealthCheck`  | Performs a health check.                      |
+| GET `/v1/health`      | `health.HealthService.HealthCheck`  | Performs a health check.                      |
 | POST `/v1/users`      | `user.UserService.Create`           | Creates a new user.                           |
 | POST `/v1/users/many` | `user.UserService.CreateMany`       | Creates multiple users.                       |
 | POST `/v1/users/login`| `user.UserService.Login`            | Authenticates a user and returns a JWT token. |

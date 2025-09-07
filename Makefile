@@ -13,7 +13,7 @@ up:
 	@echo "    👉 gRPC UI:       http://localhost:${HOST_HTTP_PORT_MONGOAPI}/grpcui/"
 	@echo "    👉 Mongo Express: http://localhost:${MONGO_EXPRESS_HOST_PORT}"
 	@echo "    🔧 Command examples:"
-	@echo "        curl http://localhost:${HOST_HTTP_PORT_MONGOAPI}/health"
+	@echo "        curl http://localhost:${HOST_HTTP_PORT_MONGOAPI}/v1/health"
 	@echo "        grpcurl -plaintext localhost:${HOST_GRPC_PORT_MONGOAPI} health.HealthService/HealthCheck"
 	@echo ""
 	@echo "🐘 Postgres API"
@@ -21,7 +21,7 @@ up:
 	@echo "    👉 gRPC UI:       http://localhost:${HOST_HTTP_PORT_POSTGRESAPI}/grpcui/"
 	@echo "    👉 pgAdmin:       http://localhost:${PGADMIN_HOST_PORT}"
 	@echo "    🔧 Command examples:"
-	@echo "        curl http://localhost:${HOST_HTTP_PORT_POSTGRESAPI}/health"
+	@echo "        curl http://localhost:${HOST_HTTP_PORT_POSTGRESAPI}/v1/health"
 	@echo "        grpcurl -plaintext localhost:${HOST_GRPC_PORT_POSTGRESAPI} health.HealthService/HealthCheck"
 	@echo ""
 down:

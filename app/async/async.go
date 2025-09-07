@@ -21,7 +21,7 @@ func New(cfg config.Config) async {
 
 func (a async) Run(ctx context.Context, cancel context.CancelFunc) func() error {
 	return func() error {
-		go healthchecker.RunHTTP(ctx, cancel, fmt.Sprintf("http://:%d/health", a.config.HTTPPort), a.config.Async.Interval.Duration)
+		go healthchecker.RunHTTP(ctx, cancel, fmt.Sprintf("http://:%d/v1/health", a.config.HTTPPort), a.config.Async.Interval.Duration)
 		go healthchecker.RunGRPC(ctx, cancel, fmt.Sprintf(":%d", a.config.GRPCPort), a.config.Async.Interval.Duration)
 
 		<-ctx.Done()

@@ -20,30 +20,6 @@
     "application/json"
   ],
   "paths": {
-    "/health": {
-      "get": {
-        "summary": "Health check",
-        "description": "Returns basic runtime information of the API when the service is up",
-        "operationId": "HealthService_HealthCheck",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/healthHealthCheckResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "HealthService"
-        ]
-      }
-    },
     "/v1/claims": {
       "get": {
         "summary": "Get user claims",
@@ -70,6 +46,30 @@
           {
             "Bearer": []
           }
+        ]
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "summary": "Health check",
+        "description": "Returns basic runtime information of the API when the service is up",
+        "operationId": "HealthService_HealthCheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/healthHealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "HealthService"
         ]
       }
     },
