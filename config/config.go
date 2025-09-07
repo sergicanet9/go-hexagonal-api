@@ -44,6 +44,7 @@ func ReadConfig(version, env string, httpPort, grpcPort int, database, dsn, jwtS
 	c.GRPCPort = grpcPort
 	c.Database = database
 	c.DSN = dsn
+	c.JWTSecret = jwtSecret
 	c.NewRelicKey = newrelicKey
 
 	var cfg config
