@@ -17,8 +17,8 @@
                 "--hport", "80",
                 "--gport", "50051",
                 "--db", "mongo",
-                "--jsecret", "CTeemck6Gg",
-                "--dsn", "mongodb://mongo:admin@localhost:4041/gohexagonalapilocal?authSource=admin&connect=direct"
+                "--dsn", "mongodb://mongo:admin@localhost:4041/gohexagonalapilocal?authSource=admin&connect=direct",
+                "--jsecret", "CTeemck6Gg"
             ]
         },
         {
@@ -34,8 +34,8 @@
                 "--hport", "80",
                 "--gport", "50051",
                 "--db", "postgres",
-                "--jsecret", "CTeemck6Gg",
-                "--dsn", "postgres://postgres:admin@localhost:4042/gohexagonalapilocal?sslmode=disable"
+                "--dsn", "postgres://postgres:admin@localhost:4042/gohexagonalapilocal?sslmode=disable",
+                "--jsecret", "CTeemck6Gg"
             ]
         }
     ]
