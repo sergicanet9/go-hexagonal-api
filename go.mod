@@ -13,6 +13,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/newrelic/go-agent/v3 v3.40.1
 	github.com/ory/dockertest/v3 v3.9.1
+	github.com/sergicanet9/scv-go-tools/v4 v4.0.2
 	github.com/stretchr/testify v1.11.0
 	github.com/swaggo/http-swagger v1.3.4
 	go.mongodb.org/mongo-driver v1.17.4
@@ -20,11 +21,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20250826171959-ef028d996bc1
 	google.golang.org/grpc v1.75.0
 	google.golang.org/protobuf v1.36.8
-)
-
-require (
-	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter v1.0.3 // indirect
-	github.com/sergicanet9/scv-go-tools/v4 v4.0.1
 )
 
 require (
@@ -64,6 +60,7 @@ require (
 	github.com/moby/term v0.0.0-20221205130635-1aeaba878587 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/newrelic/csec-go-agent v1.6.0 // indirect
+	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/logWriter v1.0.3 // indirect
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrwriter v1.0.2 // indirect
 	github.com/newrelic/go-agent/v3/integrations/nrgrpc v1.4.7
 	github.com/opencontainers/go-digest v1.0.0 // indirect
