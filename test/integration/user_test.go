@@ -133,8 +133,8 @@ func TestCreateUser_Ok(t *testing.T) {
 		assert.Equal(t, testUser.Email, createdUser.Email)
 		assert.NotNil(t, createdUser.PasswordHash)
 		assert.Equal(t, testUser.ClaimIDs, createdUser.ClaimIDs)
-		assert.NotNil(t, testUser.CreatedAt)
-		assert.NotNil(t, testUser.UpdatedAt)
+		assert.NotNil(t, createdUser.CreatedAt)
+		assert.NotNil(t, createdUser.UpdatedAt)
 	})
 }
 
