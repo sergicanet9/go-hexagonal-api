@@ -9,19 +9,31 @@ jobs:
   # test:
   #   uses: ./.github/workflows/test.yml #TODO put back
 
+  # buf:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: bufbuild/buf-setup-action@v1
+  #     - uses: bufbuild/buf-breaking-action@v1
+  #       with:
+  #         input: proto
+  #         against: https://github.com/${{ github.repository }}.git#branch=main,subdir=proto
+  #     - uses: bufbuild/buf-push-action@v1
+  #       with:
+  #         input: proto
+  #         buf_token: ${{ secrets.BUF_TOKEN }}
   buf:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: bufbuild/buf-setup-action@v1
-      - uses: bufbuild/buf-breaking-action@v1
+      - uses: actions/checkout@v4
+      - uses: bufbuild/buf-action@v1
         with:
+          token: ${{ secrets.BUF_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           input: proto
-          against: https://github.com/${{ github.repository }}.git#branch=main,subdir=proto
-      - uses: bufbuild/buf-push-action@v1
-        with:
-          input: proto
-          buf_token: ${{ secrets.BUF_TOKEN }}
+          lint: false
+          breaking: true
+          push: true
 
   build-and-push:
     runs-on: ubuntu-latest
