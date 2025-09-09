@@ -22,12 +22,11 @@ import (
 
 const (
 	contentType           = "application/json"
-	mongoDBName           = "test-db"
+	dbName                = "test-db"
 	mongoUser             = "mongo"
 	mongoPassword         = "test"
 	mongoContainerPort    = "27017/tcp"
 	mongoDSNEnv           = "mongoDSN"
-	postgresDBName        = "test-db"
 	postgresUser          = "postgres"
 	postgresPassword      = "test"
 	postgresContainerPort = "5432/tcp"
@@ -84,7 +83,7 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 		Repository: "mongo",
 		Tag:        "5.0",
 		Env: []string{
-			fmt.Sprintf("MONGO_INITDB_DATABASE=%s", mongoDBName),
+			fmt.Sprintf("MONGO_INITDB_DATABASE=%s", dbName),
 			fmt.Sprintf("MONGO_INITDB_ROOT_USERNAME=%s", mongoUser),
 			fmt.Sprintf("MONGO_INITDB_ROOT_PASSWORD=%s", mongoPassword),
 		},
@@ -109,7 +108,7 @@ func setupMongo(pool *dockertest.Pool) *dockertest.Resource {
 		log.Panicf("failure executing command in the resource, exit code was %d", exitCode)
 	}
 
-	dsn := fmt.Sprintf("mongodb://%s:%s@localhost:%s/%s?authSource=admin&connect=direct", mongoUser, mongoPassword, resource.GetPort(mongoContainerPort), mongoDBName)
+	dsn := fmt.Sprintf("mongodb://%s:%s@localhost:%s/%s?authSource=admin&connect=direct", mongoUser, mongoPassword, resource.GetPort(mongoContainerPort), dbName)
 	os.Setenv(mongoDSNEnv, dsn)
 
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
@@ -141,7 +140,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 		Env: []string{
 			fmt.Sprintf("POSTGRES_USER=%s", postgresUser),
 			fmt.Sprintf("POSTGRES_PASSWORD=%s", postgresPassword),
-			fmt.Sprintf("POSTGRES_DB=%s", postgresDBName),
+			fmt.Sprintf("POSTGRES_DB=%s", dbName),
 		},
 	}, func(config *docker.HostConfig) {
 		// set AutoRemove to true so that stopped container goes away by itself
@@ -154,7 +153,7 @@ func setupPostgres(pool *dockertest.Pool) *dockertest.Resource {
 		log.Panicf("could not start resource: %s", err)
 	}
 
-	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", postgresUser, postgresPassword, resource.GetPort(postgresContainerPort), postgresDBName)
+	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", postgresUser, postgresPassword, resource.GetPort(postgresContainerPort), dbName)
 	os.Setenv(postgresDSNEnv, dsn)
 
 	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
