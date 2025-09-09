@@ -35,7 +35,14 @@ jobs:
         docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }}
         docker tag ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
         docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
-      
+    
+    - name: Install Buf CLI
+      uses: bufbuild/buf-setup-action@v1
+
+    - name: Publish protobufs
+      run: buf push ghcr.io/${{ github.repository }}/go-hexagonal-api-protos:${{ steps.vars.outputs.tag }}
+      working-directory: protos
+
   mongo-prod:
     needs: build-and-push
     uses: ./.github/workflows/deployment-api.yml
