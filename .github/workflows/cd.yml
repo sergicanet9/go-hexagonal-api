@@ -40,8 +40,7 @@ jobs:
       uses: bufbuild/buf-setup-action@v1
 
     - name: Publish protobufs
-      run: buf push ghcr.io/${{ github.repository }}/go-hexagonal-api-protos:${{ steps.vars.outputs.tag }}
-      working-directory: proto
+      run: cd proto && buf push ghcr.io/${{ github.repository }}/go-hexagonal-api-protos:${{ steps.vars.outputs.tag }}
 
   mongo-prod:
     needs: build-and-push
