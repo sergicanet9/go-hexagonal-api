@@ -17,6 +17,7 @@ jobs:
         with:
           token: ${{ secrets.BUF_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: proto
 
   build-and-push:
     runs-on: ubuntu-latest
@@ -38,46 +39,40 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push image
-      run: |
-        docker build -f build/docker/Dockerfile --build-arg version=${{ steps.vars.outputs.tag }} -t ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} .
-        docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }}
-        docker tag ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
-        docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
-    
-    - name: Install Buf CLI
-      uses: bufbuild/buf-setup-action@v1
+    # - name: Build and push image # TODO put back
+    #   run: |
+    #     docker build -f build/docker/Dockerfile --build-arg version=${{ steps.vars.outputs.tag }} -t ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} .
+    #     docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }}
+    #     docker tag ghcr.io/${{ github.repository }}/go-hexagonal-api:${{ steps.vars.outputs.tag }} ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
+    #     docker push ghcr.io/${{ github.repository }}/go-hexagonal-api:latest
 
-    - name: Publish protobufs
-      run: cd proto && buf push ghcr.io/${{ github.repository }}/go-hexagonal-api-protos:${{ steps.vars.outputs.tag }}
+  # mongo-prod:
+  #   needs: build-and-push
+  #   uses: ./.github/workflows/deployment-api.yml
+  #   with:
+  #     GITHUB_CONTAINERREGISTRY_URL: ghcr.io
+  #     GCP_CLUSTER_REGION: us-east1-b
+  #     GCP_CLUSTER_NAME: scv-gke-cluster
+  #     ENVIRONMENT: prod
+  #     HTTP_PORT: 80
+  #     GRPC_PORT: 50051
+  #     DATABASE: mongo
+  #     VERSION: ${{ needs.build-and-push.outputs.tag }}
+  #   secrets:
+  #     GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  #     GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  #     DSN: ${{ secrets.MONGO_DSN }}
+  #     JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  #     NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
 
-  mongo-prod:
-    needs: build-and-push
-    uses: ./.github/workflows/deployment-api.yml
-    with:
-      GITHUB_CONTAINERREGISTRY_URL: ghcr.io
-      GCP_CLUSTER_REGION: us-east1-b
-      GCP_CLUSTER_NAME: scv-gke-cluster
-      ENVIRONMENT: prod
-      HTTP_PORT: 80
-      GRPC_PORT: 50051
-      DATABASE: mongo
-      VERSION: ${{ needs.build-and-push.outputs.tag }}
-    secrets:
-      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      DSN: ${{ secrets.MONGO_DSN }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
-
-  cloudflared-prod:
-    needs: mongo-prod
-    uses: ./.github/workflows/deployment-cloudflared.yml
-    with:
-      GCP_CLUSTER_REGION: us-east1-b
-      GCP_CLUSTER_NAME: scv-gke-cluster
-    secrets:
-      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-      CLOUDFLARED_TOKEN: ${{ secrets.CLOUDFLARED_TOKEN }}
+  # cloudflared-prod:
+  #   needs: mongo-prod
+  #   uses: ./.github/workflows/deployment-cloudflared.yml
+  #   with:
+  #     GCP_CLUSTER_REGION: us-east1-b
+  #     GCP_CLUSTER_NAME: scv-gke-cluster
+  #   secrets:
+  #     GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  #     GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  #     CLOUDFLARED_TOKEN: ${{ secrets.CLOUDFLARED_TOKEN }}
 
