@@ -17,7 +17,7 @@ jobs:
         with:
           token: ${{ secrets.BUF_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: proto
+          input: proto
 
   build-and-push:
     runs-on: ubuntu-latest
