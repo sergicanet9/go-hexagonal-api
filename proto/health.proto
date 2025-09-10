@@ -24,7 +24,7 @@ service HealthService {
 message HealthCheckRequest {}
 
 message HealthCheckResponse {
-  string version = 1;
+  string Versionsss = 1; // TODO put back Version
   string environment = 2;
   string database = 3;
   int32 httpPort = 4;
