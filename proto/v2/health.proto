@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package health;
+
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb";
+
+import "google/api/annotations.proto";
+import "google/api/http.proto";
+import "google/protobuf/empty.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+service HealthService {
+  rpc HealthCheck(google.protobuf.Empty) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/health"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Health check"
+            description: "Returns basic runtime information of the API when the service is up"
+        };
+  }
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+  string VERSIONSSS = 1;
+  string environment = 2;
+  string database = 3;
+  int32 httpPort = 4;
+  int32 grpcPort = 5;
+  string dsn = 6;
+}
