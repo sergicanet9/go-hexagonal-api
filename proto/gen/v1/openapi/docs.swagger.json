@@ -342,27 +342,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "surnames": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "oldPassword": {
-                  "type": "string"
-                },
-                "newPassword": {
-                  "type": "string"
-                },
-                "claims": {
-                  "$ref": "#/definitions/userClaimIds"
-                }
-              }
+              "$ref": "#/definitions/UserServiceUpdateBody"
             }
           }
         ],
@@ -378,6 +358,29 @@
     }
   },
   "definitions": {
+    "UserServiceUpdateBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "surnames": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "oldPassword": {
+          "type": "string"
+        },
+        "newPassword": {
+          "type": "string"
+        },
+        "claims": {
+          "$ref": "#/definitions/userClaimIds"
+        }
+      }
+    },
     "healthHealthCheckResponse": {
       "type": "object",
       "properties": {
