@@ -14,7 +14,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/entities"
-	"github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb"
+	"github.com/sergicanet9/go-hexagonal-api/proto/v1/gen/go/pb"
 	"github.com/sergicanet9/scv-go-tools/v4/infrastructure"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"

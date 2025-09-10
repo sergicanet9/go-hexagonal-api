@@ -1,0 +1,7 @@
+version: v2
+modules:
+  - path: .
+    name: buf.build/sergicanet9/go-hexagonal-api-test-v1 # TODO remove /test
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway

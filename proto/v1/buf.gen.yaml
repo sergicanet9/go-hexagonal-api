@@ -3,19 +3,19 @@ managed:
   enabled: true
 plugins:
   - remote: buf.build/protocolbuffers/go
-    out: gen/v1/go/pb
+    out: gen/go/pb
     opt:
       - paths=source_relative
   - remote: buf.build/grpc/go
-    out: gen/v1/go/pb
+    out: gen/go/pb
     opt:
       - paths=source_relative
   - remote: buf.build/grpc-ecosystem/gateway
-    out: gen/v1/go/pb
+    out: gen/go/pb
     opt:
       - paths=source_relative
   - remote: buf.build/grpc-ecosystem/openapiv2
-    out: gen/v1/openapi
+    out: gen/openapi
     opt:
       - allow_merge=true
       - merge_file_name=docs

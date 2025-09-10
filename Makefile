@@ -33,8 +33,8 @@ cover:
 test-integration:
 	go test -race test/integration/*.go
 protos:
-	cd proto && buf dep update
-	cd proto && buf generate --clean
+	cd proto/v1 && buf dep update
+	cd proto/v1 && buf generate --clean
 mocks:
 	go install github.com/vektra/mockery/v2@latest
 	mockery --dir=core/ports --all --output=test/mocks
