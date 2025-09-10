@@ -5,6 +5,10 @@ on:
     tags:
       - "*"
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   # test:
   #   uses: ./.github/workflows/test.yml #TODO put back
@@ -15,8 +19,8 @@ jobs:
       # needs: test # TODO put back
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  #TODO remove if breaking disabled
+        # with:
+          # fetch-depth: 0  #TODO remove if breaking disabled
       - uses: bufbuild/buf-action@v1
         with:
           token: ${{ secrets.BUF_TOKEN }}
