@@ -28,6 +28,7 @@ jobs:
           input: proto
           lint: false
           breaking: true
+          breaking_against_registry: true
           push: true
 
   build-and-push-api:

@@ -3,7 +3,3 @@ name: buf.build/sergicanet9/go-hexagonal-api
 deps:
   - buf.build/googleapis/googleapis
   - buf.build/grpc-ecosystem/grpc-gateway
-
-breaking:
-  against:
-    - buf.build/sergicanet9/go-hexagonal-api
