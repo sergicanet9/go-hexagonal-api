@@ -153,9 +153,11 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 
 		}
 
-		httpRouter := mux.NewRouter()
-		httpRouter.Use(middlewares.Logger("/swagger", "/docs.swagger.json", "/grpcui"))
-		httpRouter.Use(middlewares.Recover)
+		router := mux.NewRouter()
+		router.Use(middlewares.Logger("/swagger", "/docs.swagger.json", "/grpcui"))
+		router.Use(middlewares.Recover)
+
+		v1Router := router.PathPrefix("/v1").Subrouter()
 
 		conn, err := grpc.NewClient(grpcServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
@@ -167,22 +169,22 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		if err != nil {
 			observability.Logger().Fatalf("error creating grpcui handler: %s", err)
 		}
-		httpRouter.PathPrefix("/grpcui/").Handler(http.StripPrefix("/grpcui", grpcuiHandler))
+		v1Router.PathPrefix("/grpcui").Handler(http.StripPrefix("/v1/grpcui", grpcuiHandler))
 
-		swaggerHandler := httpSwagger.Handler(httpSwagger.URL("/docs.swagger.json"))
-		httpRouter.PathPrefix("/docs.swagger.json").Handler(http.FileServer(http.Dir("proto/gen/v1/openapi")))
-		httpRouter.PathPrefix("/swagger").Handler(swaggerHandler)
+		v1Router.PathPrefix("/docs.swagger.json").Handler(http.StripPrefix("/v1", http.FileServer(http.Dir("proto/gen/v1/openapi"))))
+		swaggerHandler := httpSwagger.Handler(httpSwagger.URL("/v1/docs.swagger.json"))
+		v1Router.PathPrefix("/swagger").Handler(swaggerHandler)
 
-		httpRouter.PathPrefix("/").Handler(gmux)
+		v1Router.PathPrefix("/").Handler(http.StripPrefix("/v1", gmux))
 
 		server := &http.Server{
 			Addr:    fmt.Sprintf(":%d", a.config.HTTPPort),
-			Handler: httpRouter,
+			Handler: router,
 		}
 		go shutdownHTTP(ctx, server)
 
 		observability.Logger().Printf("gRPC-Gateway server listening on HTTP port %d, proxying to gRPC port %d", a.config.HTTPPort, a.config.GRPCPort)
-		return http.ListenAndServe(fmt.Sprintf(":%d", a.config.HTTPPort), httpRouter)
+		return http.ListenAndServe(fmt.Sprintf(":%d", a.config.HTTPPort), router)
 	}
 }
 

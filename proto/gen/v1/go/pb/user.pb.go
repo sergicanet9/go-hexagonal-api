@@ -899,39 +899,38 @@ const file_user_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value\"#\n" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id2\xd1\t\n" +
-	"\vUserService\x12s\n" +
-	"\x05Login\x12\x16.user.LoginUserRequest\x1a\x17.user.LoginUserResponse\"9\x92A\x1c\x12\n" +
-	"Login user\x1a\x0eLogs in a user\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/users/login\x12u\n" +
-	"\x06Create\x12\x17.user.CreateUserRequest\x1a\x18.user.CreateUserResponse\"8\x92A!\x12\vCreate user\x1a\x12Creates a new user\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/users\x12\x9d\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id2\xb4\t\n" +
+	"\vUserService\x12p\n" +
+	"\x05Login\x12\x16.user.LoginUserRequest\x1a\x17.user.LoginUserResponse\"6\x92A\x1c\x12\n" +
+	"Login user\x1a\x0eLogs in a user\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/users/login\x12r\n" +
+	"\x06Create\x12\x17.user.CreateUserRequest\x1a\x18.user.CreateUserResponse\"5\x92A!\x12\vCreate user\x1a\x12Creates a new user\x82\xd3\xe4\x93\x02\v:\x01*\"\x06/users\x12\x9a\x01\n" +
 	"\n" +
-	"CreateMany\x12\x1c.user.CreateManyUsersRequest\x1a\x1d.user.CreateManyUsersResponse\"R\x92A6\x12\x11Create many users\x1a!Creates multiple users atomically\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/users/many\x12\x82\x01\n" +
-	"\x06GetAll\x12\x16.google.protobuf.Empty\x1a\x19.user.GetAllUsersResponse\"E\x92A1\x12\rGet all users\x1a\x12Gets all the usersb\f\n" +
-	"\n" +
-	"\n" +
-	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\v\x12\t/v1/users\x12\x9b\x01\n" +
-	"\n" +
-	"GetByEmail\x12\x1b.user.GetUserByEmailRequest\x1a\x15.user.GetUserResponse\"Y\x92A7\x12\x11Get user by email\x1a\x14Gets a user by emailb\f\n" +
+	"CreateMany\x12\x1c.user.CreateManyUsersRequest\x1a\x1d.user.CreateManyUsersResponse\"O\x92A6\x12\x11Create many users\x1a!Creates multiple users atomically\x82\xd3\xe4\x93\x02\x10:\x01*\"\v/users/many\x12\x7f\n" +
+	"\x06GetAll\x12\x16.google.protobuf.Empty\x1a\x19.user.GetAllUsersResponse\"B\x92A1\x12\rGet all users\x1a\x12Gets all the usersb\f\n" +
 	"\n" +
 	"\n" +
-	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\x19\x12\x17/v1/users/email/{email}\x12\x86\x01\n" +
-	"\aGetByID\x12\x18.user.GetUserByIDRequest\x1a\x15.user.GetUserResponse\"J\x92A1\x12\x0eGet user by ID\x1a\x11Gets a user by IDb\f\n" +
+	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\b\x12\x06/users\x12\x98\x01\n" +
+	"\n" +
+	"GetByEmail\x12\x1b.user.GetUserByEmailRequest\x1a\x15.user.GetUserResponse\"V\x92A7\x12\x11Get user by email\x1a\x14Gets a user by emailb\f\n" +
 	"\n" +
 	"\n" +
-	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/users/{id}\x12\x82\x01\n" +
-	"\x06Update\x12\x17.user.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"G\x92A+\x12\vUpdate user\x1a\x0eUpdates a userb\f\n" +
+	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\x16\x12\x14/users/email/{email}\x12\x83\x01\n" +
+	"\aGetByID\x12\x18.user.GetUserByIDRequest\x1a\x15.user.GetUserResponse\"G\x92A1\x12\x0eGet user by ID\x1a\x11Gets a user by IDb\f\n" +
 	"\n" +
 	"\n" +
-	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\x13:\x01*2\x0e/v1/users/{id}\x12\x83\x01\n" +
-	"\tGetClaims\x12\x16.google.protobuf.Empty\x1a\x17.user.GetClaimsResponse\"E\x92A0\x12\x0fGet user claims\x1a\x0fGets all claimsb\f\n" +
+	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\r\x12\v/users/{id}\x12\x7f\n" +
+	"\x06Update\x12\x17.user.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"D\x92A+\x12\vUpdate user\x1a\x0eUpdates a userb\f\n" +
 	"\n" +
 	"\n" +
-	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\f\x12\n" +
-	"/v1/claims\x12\x7f\n" +
-	"\x06Delete\x12\x17.user.DeleteUserRequest\x1a\x16.google.protobuf.Empty\"D\x92A+\x12\vDelete user\x1a\x0eDeletes a userb\f\n" +
+	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\x10:\x01*2\v/users/{id}\x12\x80\x01\n" +
+	"\tGetClaims\x12\x16.google.protobuf.Empty\x1a\x17.user.GetClaimsResponse\"B\x92A0\x12\x0fGet user claims\x1a\x0fGets all claimsb\f\n" +
 	"\n" +
 	"\n" +
-	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\x10*\x0e/v1/users/{id}B\x81\x01\n" +
+	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\t\x12\a/claims\x12|\n" +
+	"\x06Delete\x12\x17.user.DeleteUserRequest\x1a\x16.google.protobuf.Empty\"A\x92A+\x12\vDelete user\x1a\x0eDeletes a userb\f\n" +
+	"\n" +
+	"\n" +
+	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\r*\v/users/{id}B\x81\x01\n" +
 	"\bcom.userB\tUserProtoP\x01Z:github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb\xa2\x02\x03UXX\xaa\x02\x04User\xca\x02\x04User\xe2\x02\x10User\\GPBMetadata\xea\x02\x04Userb\x06proto3"
 
 var (

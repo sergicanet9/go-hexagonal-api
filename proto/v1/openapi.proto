@@ -12,6 +12,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
     version: "v1"
     description: "User management API"
   }
+  base_path: "/v1"
   external_docs: {
     url: "https://github.com/sergicanet9/scv-go-tools"
     description: "Powered by scv-go-tools"

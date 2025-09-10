@@ -12,7 +12,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 service UserService {
     rpc Login(LoginUserRequest) returns (LoginUserResponse) {
         option (google.api.http) = {
-            post: "/v1/users/login"
+            post: "/users/login"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -23,7 +23,7 @@ service UserService {
 
     rpc Create(CreateUserRequest) returns (CreateUserResponse) {
         option (google.api.http) = {
-            post: "/v1/users"
+            post: "/users"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -34,7 +34,7 @@ service UserService {
 
     rpc CreateMany(CreateManyUsersRequest) returns (CreateManyUsersResponse) {
         option (google.api.http) = {
-            post: "/v1/users/many"
+            post: "/users/many"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -45,7 +45,7 @@ service UserService {
 
     rpc GetAll(google.protobuf.Empty) returns (GetAllUsersResponse) {
         option (google.api.http) = {
-            get: "/v1/users"
+            get: "/users"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get all users"
@@ -58,7 +58,7 @@ service UserService {
 
     rpc GetByEmail(GetUserByEmailRequest) returns (GetUserResponse) {
         option (google.api.http) = {
-            get: "/v1/users/email/{email}"
+            get: "/users/email/{email}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get user by email"
@@ -71,7 +71,7 @@ service UserService {
 
     rpc GetByID(GetUserByIDRequest) returns (GetUserResponse) {
         option (google.api.http) = {
-            get: "/v1/users/{id}"
+            get: "/users/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get user by ID"
@@ -84,7 +84,7 @@ service UserService {
 
     rpc Update(UpdateUserRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            patch: "/v1/users/{id}"
+            patch: "/users/{id}"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -98,7 +98,7 @@ service UserService {
 
     rpc GetClaims(google.protobuf.Empty) returns (GetClaimsResponse) {
         option (google.api.http) = {
-            get: "/v1/claims"
+            get: "/claims"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get user claims"
@@ -111,7 +111,7 @@ service UserService {
 
     rpc Delete(DeleteUserRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/v1/users/{id}"
+            delete: "/users/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete user"

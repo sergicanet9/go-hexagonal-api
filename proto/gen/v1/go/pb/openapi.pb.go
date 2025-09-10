@@ -25,8 +25,8 @@ var File_openapi_proto protoreflect.FileDescriptor
 
 const file_openapi_proto_rawDesc = "" +
 	"\n" +
-	"\ropenapi.proto\x12\aopenapi\x1a.protoc-gen-openapiv2/options/annotations.protoB\xc7\x02\x92A\xb0\x01\x12+\n" +
-	"\x10Go Hexagonal API\x12\x13User management API2\x02v1Z9\n" +
+	"\ropenapi.proto\x12\aopenapi\x1a.protoc-gen-openapiv2/options/annotations.protoB\xcc\x02\x92A\xb5\x01\x12+\n" +
+	"\x10Go Hexagonal API\x12\x13User management API2\x02v1\"\x03/v1Z9\n" +
 	"7\n" +
 	"\x06Bearer\x12-\b\x02\x12\x18JWT token authentication\x1a\rAuthorization \x02rF\n" +
 	"\x17Powered by scv-go-tools\x12+https://github.com/sergicanet9/scv-go-tools\n" +

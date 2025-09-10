@@ -13,6 +13,7 @@
       "name": "UserService"
     }
   ],
+  "basePath": "/v1",
   "consumes": [
     "application/json"
   ],
@@ -20,7 +21,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/claims": {
+    "/claims": {
       "get": {
         "summary": "Get user claims",
         "description": "Gets all claims",
@@ -49,7 +50,7 @@
         ]
       }
     },
-    "/v1/health": {
+    "/health": {
       "get": {
         "summary": "Health check",
         "description": "Returns basic runtime information of the API when the service is up",
@@ -73,7 +74,7 @@
         ]
       }
     },
-    "/v1/users": {
+    "/users": {
       "get": {
         "summary": "Get all users",
         "description": "Gets all the users",
@@ -134,7 +135,7 @@
         ]
       }
     },
-    "/v1/users/email/{email}": {
+    "/users/email/{email}": {
       "get": {
         "summary": "Get user by email",
         "description": "Gets a user by email",
@@ -171,7 +172,7 @@
         ]
       }
     },
-    "/v1/users/login": {
+    "/users/login": {
       "post": {
         "summary": "Login user",
         "description": "Logs in a user",
@@ -205,7 +206,7 @@
         ]
       }
     },
-    "/v1/users/many": {
+    "/users/many": {
       "post": {
         "summary": "Create many users",
         "description": "Creates multiple users atomically",
@@ -239,7 +240,7 @@
         ]
       }
     },
-    "/v1/users/{id}": {
+    "/users/{id}": {
       "get": {
         "summary": "Get user by ID",
         "description": "Gets a user by ID",
