@@ -5,9 +5,9 @@ on:
     tags:
       - "*"
 
-permissions: # todo remove?
-  contents: read
-  pull-requests: write
+# permissions: # todo remove?
+#   contents: read
+#   pull-requests: write
 
 jobs:
   # test:
@@ -19,8 +19,8 @@ jobs:
       # needs: test # TODO put back
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  #TODO remove if breaking disabled
+        # with:
+          # fetch-depth: 0  #TODO remove if breaking disabled
       - uses: bufbuild/buf-action@v1
         with:
           token: ${{ secrets.BUF_TOKEN }}
