@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package health;
 
-option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb";
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb";
 
 import "google/api/annotations.proto";
 import "google/api/http.proto";
@@ -24,7 +24,7 @@ service HealthService {
 message HealthCheckRequest {}
 
 message HealthCheckResponse {
-  string Versionsss = 1; // TODO put back Version
+  string version = 1;
   string environment = 2;
   string database = 3;
   int32 httpPort = 4;

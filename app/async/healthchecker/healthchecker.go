@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb"
 	"github.com/sergicanet9/scv-go-tools/v4/observability"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

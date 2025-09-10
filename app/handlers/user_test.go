@@ -9,7 +9,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/models"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
-	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb"
 	"github.com/sergicanet9/go-hexagonal-api/test/mocks"
 	"github.com/sergicanet9/scv-go-tools/v4/testutils"
 	"github.com/stretchr/testify/assert"

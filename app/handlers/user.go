@@ -6,7 +6,7 @@ import (
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/models"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
-	"github.com/sergicanet9/go-hexagonal-api/proto/gen/go/pb"
+	"github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb"
 	"github.com/sergicanet9/scv-go-tools/v4/api/interceptors"
 	"github.com/sergicanet9/scv-go-tools/v4/api/utils"
 	"google.golang.org/protobuf/types/known/emptypb"

@@ -1,5 +1,7 @@
-version: v1
-name: buf.build/sergicanet9/go-hexagonal-api
+version: v2
+modules:
+  - path: v1
+    name: buf.build/sergicanet9/go-hexagonal-api
 deps:
   - buf.build/googleapis/googleapis
   - buf.build/grpc-ecosystem/grpc-gateway
