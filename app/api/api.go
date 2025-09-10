@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/sergicanet9/go-hexagonal-api/app/handlers"
+	handlersV1 "github.com/sergicanet9/go-hexagonal-api/app/handlers/v1"
 	"github.com/sergicanet9/go-hexagonal-api/config"
 	"github.com/sergicanet9/go-hexagonal-api/core/ports"
 	"github.com/sergicanet9/go-hexagonal-api/core/services"
@@ -90,8 +90,8 @@ func (a *api) RunGRPC(ctx context.Context, cancel context.CancelFunc, grpcServer
 			log.Fatalf("failed to listen on gRPC port: %s", err)
 		}
 
-		healthHander := handlers.NewHealthHandler(ctx, a.config)
-		userHandler := handlers.NewUserHandler(ctx, a.config, a.services.user)
+		healthHander := handlersV1.NewHealthHandler(ctx, a.config)
+		userHandler := handlersV1.NewUserHandler(ctx, a.config, a.services.user)
 
 		methodPolicies := []interceptors.MethodPolicy{}
 		methodPolicies = append(methodPolicies, userHandler.JWTMethodPolicies()...)
@@ -170,7 +170,7 @@ func (a *api) RunHTTP(ctx context.Context, cancel context.CancelFunc, grpcServer
 		httpRouter.PathPrefix("/grpcui/").Handler(http.StripPrefix("/grpcui", grpcuiHandler))
 
 		swaggerHandler := httpSwagger.Handler(httpSwagger.URL("/docs.swagger.json"))
-		httpRouter.PathPrefix("/docs.swagger.json").Handler(http.FileServer(http.Dir("proto/gen/openapi")))
+		httpRouter.PathPrefix("/docs.swagger.json").Handler(http.FileServer(http.Dir("proto/gen/v1/openapi")))
 		httpRouter.PathPrefix("/swagger").Handler(swaggerHandler)
 
 		httpRouter.PathPrefix("/").Handler(gmux)
