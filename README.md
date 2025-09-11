@@ -172,6 +172,9 @@ The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atl
 NOTES:
 - The gRPC UI is publically exposed through HTTP. However, direct gRPC calls (e.g., using `grpcurl`) are not allowed outside the cluster.
 
+## 📝 Other usage examples
+Check out [go-microservices-demo](https://github.com/sergicanet9/go-microservices-demo) to see this project used as a component in a microservices architecture.
+
 ## ✍️ Author
 Sergi Canet Vela
 
