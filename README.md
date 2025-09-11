@@ -1,7 +1,7 @@
 # go-hexagonal-api
 ![CI](https://github.com/sergicanet9/go-hexagonal-api/actions/workflows/ci.yml/badge.svg)
 ![CD](https://github.com/sergicanet9/go-hexagonal-api/actions/workflows/cd.yml/badge.svg)
-![Coverage](https://img.shields.io/badge/Coverage-73.2%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-73.5%25-brightgreen)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sergicanet9/go-hexagonal-api.svg)](https://pkg.go.dev/github.com/sergicanet9/go-hexagonal-api)
 
 A robust gRPC + REST API for user management built with **Go** and implementing the **Hexagonal Architecture** (Ports & Adapters) pattern, built on top of the [scv-go-tools](https://github.com/sergicanet9/scv-go-tools) library.
