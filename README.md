@@ -53,8 +53,8 @@ Provide the desired values for: `{version}`, `{environment}`, `{http_port}`, `{g
 The `--nrkey` flag and its value `{newrelic_key}` are optional and can be omitted if you do not want to configure New Relic observability.
 <br />
 Then open:
-* Swagger UI: `http://localhost:{http_port}/swagger/index.html`
-* gRPC UI: `http://localhost:{http_port}/grpcui/`
+* Swagger UI: `http://localhost:{http_port}/v1/swagger/index.html`
+* gRPC UI: `http://localhost:{http_port}/v1/grpcui/`
 <br />
 
 NOTES:
@@ -64,8 +64,8 @@ NOTES:
 The project includes debugging profiles in [launch.json](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.vscode/launch.json) for both MongoDB and PostgreSQL setups. Simply select the desired configuration in the VS Code debugger and run it.
 <br />
 Then open:
-* Swagger UI: `http://localhost:{http_port}/swagger/index.html`
-* gRPC UI: `http://localhost:{http_port}/grpcui/`
+* Swagger UI: `http://localhost:{http_port}/v1/swagger/index.html`
+* gRPC UI: `http://localhost:{http_port}/v1/grpcui/`
 <br />
 
 NOTES:
@@ -165,8 +165,8 @@ The following GitHub Actions workflows are included for Continuous Integration a
 
 ## ☁️ Live Environment
 The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database, New Relic Go agent for APM and log forwarding, and a Cloudflare tunnel for public access through HTTP.<br/>
-* Swagger UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/swagger/index.html
-* gRPC UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/grpcui/
+* Swagger UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/v1/swagger/index.html
+* gRPC UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/v1/grpcui/
 <br />
 
 NOTES:
