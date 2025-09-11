@@ -203,7 +203,7 @@ func TestCreate_Ok(t *testing.T) {
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return(expectedResponse.ID, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), mock.Anything, mock.AnythingOfType("entities.User")).Return(expectedResponse.ID, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -229,7 +229,7 @@ func TestCreate_CreateError(t *testing.T) {
 	expectedError := "repository-error"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), context.Background(), mock.AnythingOfType("entities.User")).Return("", errors.New(expectedError)).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Create), mock.Anything, mock.AnythingOfType("entities.User")).Return("", errors.New(expectedError)).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -308,7 +308,7 @@ func TestCreateMany_Ok(t *testing.T) {
 	}
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return(expectedResponse.IDs, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), mock.Anything, mock.AnythingOfType("[]interface {}")).Return(expectedResponse.IDs, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -336,7 +336,7 @@ func TestCreateMany_CreateManyError(t *testing.T) {
 	expectedError := "repository-error"
 
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), context.Background(), mock.AnythingOfType("[]interface {}")).Return([]string{}, errors.New(expectedError)).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.CreateMany), mock.Anything, mock.AnythingOfType("[]interface {}")).Return([]string{}, errors.New(expectedError)).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -417,7 +417,7 @@ func TestGetAll_Ok(t *testing.T) {
 
 	var nilPointer *int
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Get), context.Background(), map[string]interface{}{}, nilPointer, nilPointer).Return(result, nil).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Get), mock.Anything, map[string]interface{}{}, nilPointer, nilPointer).Return(result, nil).Once()
 
 	service := &userService{
 		config:     config.Config{},
@@ -437,7 +437,7 @@ func TestGetAll_NoResourcesFound(t *testing.T) {
 	// Arrange
 	var nilPointer *int
 	userRepositoryMock := mocks.NewUserRepository(t)
-	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Get), context.Background(), map[string]interface{}{}, nilPointer, nilPointer).Return(nil, wrappers.NonExistentErr).Once()
+	userRepositoryMock.On(testutils.FunctionName(t, ports.UserRepository.Get), mock.Anything, map[string]interface{}{}, nilPointer, nilPointer).Return(nil, wrappers.NonExistentErr).Once()
 
 	service := &userService{
 		config:     config.Config{},
