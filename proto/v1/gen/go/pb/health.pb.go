@@ -160,7 +160,7 @@ const file_health_proto_rawDesc = "" +
 	"\rHealthService\x12\xa9\x01\n" +
 	"\vHealthCheck\x12\x16.google.protobuf.Empty\x1a\x1b.health.HealthCheckResponse\"e\x92AS\x12\fHealth check\x1aCReturns basic runtime information of the API when the service is up\x82\xd3\xe4\x93\x02\t\x12\a/healthB\x8d\x01\n" +
 	"\n" +
-	"com.healthB\vHealthProtoP\x01Z:github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb\xa2\x02\x03HXX\xaa\x02\x06Health\xca\x02\x06Health\xe2\x02\x12Health\\GPBMetadata\xea\x02\x06Healthb\x06proto3"
+	"com.healthB\vHealthProtoP\x01Z:github.com/sergicanet9/go-hexagonal-api/proto/v1/gen/go/pb\xa2\x02\x03HXX\xaa\x02\x06Health\xca\x02\x06Health\xe2\x02\x12Health\\GPBMetadata\xea\x02\x06Healthb\x06proto3"
 
 var (
 	file_health_proto_rawDescOnce sync.Once

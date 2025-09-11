@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb";
+option go_package = "github.com/sergicanet9/go-hexagonal-api/proto/v1/gen/go/pb";
 
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";

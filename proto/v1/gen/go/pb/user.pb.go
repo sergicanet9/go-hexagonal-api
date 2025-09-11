@@ -931,7 +931,7 @@ const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
 	"\x06Bearer\x12\x00\x82\xd3\xe4\x93\x02\r*\v/users/{id}B\x81\x01\n" +
-	"\bcom.userB\tUserProtoP\x01Z:github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb\xa2\x02\x03UXX\xaa\x02\x04User\xca\x02\x04User\xe2\x02\x10User\\GPBMetadata\xea\x02\x04Userb\x06proto3"
+	"\bcom.userB\tUserProtoP\x01Z:github.com/sergicanet9/go-hexagonal-api/proto/v1/gen/go/pb\xa2\x02\x03UXX\xaa\x02\x04User\xca\x02\x04User\xe2\x02\x10User\\GPBMetadata\xea\x02\x04Userb\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once

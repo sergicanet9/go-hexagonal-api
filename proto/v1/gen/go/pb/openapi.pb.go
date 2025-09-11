@@ -30,7 +30,7 @@ const file_openapi_proto_rawDesc = "" +
 	"7\n" +
 	"\x06Bearer\x12-\b\x02\x12\x18JWT token authentication\x1a\rAuthorization \x02rF\n" +
 	"\x17Powered by scv-go-tools\x12+https://github.com/sergicanet9/scv-go-tools\n" +
-	"\vcom.openapiB\fOpenapiProtoP\x01Z:github.com/sergicanet9/go-hexagonal-api/proto/gen/v1/go/pb\xa2\x02\x03OXX\xaa\x02\aOpenapi\xca\x02\aOpenapi\xe2\x02\x13Openapi\\GPBMetadata\xea\x02\aOpenapib\x06proto3"
+	"\vcom.openapiB\fOpenapiProtoP\x01Z:github.com/sergicanet9/go-hexagonal-api/proto/v1/gen/go/pb\xa2\x02\x03OXX\xaa\x02\aOpenapi\xca\x02\aOpenapi\xe2\x02\x13Openapi\\GPBMetadata\xea\x02\aOpenapib\x06proto3"
 
 var file_openapi_proto_goTypes = []any{}
 var file_openapi_proto_depIdxs = []int32{
