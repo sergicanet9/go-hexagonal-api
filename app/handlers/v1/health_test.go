@@ -20,7 +20,6 @@ func TestHealthCheck_WhenEnvironmentIsNotLocal_DSNIsFiltered(t *testing.T) {
 		DSN:         "test-dsn",
 	}
 	healthHandler := NewHealthHandler(context.Background(), cfg)
-	// var req *emptypb.Empty
 	expectedDSN := "***FILTERED***"
 
 	// Act

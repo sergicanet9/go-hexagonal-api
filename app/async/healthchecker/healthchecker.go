@@ -47,7 +47,7 @@ func RunHTTP(ctx context.Context, cancel context.CancelFunc, url string, interva
 			continue
 		}
 
-		observability.Logger().Printf("HTTP healthchecker process - health Check complete, time elapsed: %s", elapsed)
+		observability.Logger().Printf("HTTP healthchecker process - health check complete, time elapsed: %s", elapsed)
 	}
 }
 
@@ -83,6 +83,6 @@ func RunGRPC(ctx context.Context, cancel context.CancelFunc, target string, inte
 			observability.Logger().Printf("gRPC healthchecker process - error: %v", err)
 		}
 
-		observability.Logger().Printf("gRPC healthchecker process - health Check complete, time elapsed: %s", elapsed)
+		observability.Logger().Printf("gRPC healthchecker process - health check complete, time elapsed: %s", elapsed)
 	}
 }
