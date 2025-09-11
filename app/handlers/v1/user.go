@@ -31,26 +31,23 @@ func NewUserHandler(ctx context.Context, cfg config.Config, svc ports.UserServic
 
 // JWTMethodPolicies defines custom JWT method policies
 func (u *userHandler) JWTMethodPolicies() []interceptors.MethodPolicy {
-	srv := "user.UserService"
-	methods := []struct {
-		name   string
-		claims []string
-	}{
-		{"GetAll", nil},
-		{"GetByEmail", nil},
-		{"GetByID", nil},
-		{"Update", nil},
-		{"GetClaims", nil},
-		{"Delete", []string{"admin"}},
+	methodClaims := map[string][]string{
+		pb.UserService_GetAll_FullMethodName:     nil,
+		pb.UserService_GetByEmail_FullMethodName: nil,
+		pb.UserService_GetByID_FullMethodName:    nil,
+		pb.UserService_Update_FullMethodName:     nil,
+		pb.UserService_GetClaims_FullMethodName:  nil,
+		pb.UserService_Delete_FullMethodName:     {"admin"},
 	}
 
 	var policies []interceptors.MethodPolicy
-	for _, m := range methods {
+	for method, claims := range methodClaims {
 		policies = append(policies, interceptors.MethodPolicy{
-			MethodName:     "/" + srv + "/" + m.name,
-			RequiredClaims: m.claims,
+			MethodName:     method,
+			RequiredClaims: claims,
 		})
 	}
+
 	return policies
 }
 

@@ -368,7 +368,7 @@ func TestUpdateUser_Ok(t *testing.T) {
 	cfg := config.Config{}
 	handler := NewUserHandler(context.Background(), cfg, userService)
 
-	req := &pb.UpdateUserRequest{Id: testID}
+	req := &pb.UpdateUserRequest{Id: testID, Claims: &pb.ClaimIds{Ids: []int32{0}}}
 
 	// Act
 	_, err := handler.Update(context.Background(), req)
