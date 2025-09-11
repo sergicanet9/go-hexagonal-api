@@ -18,7 +18,7 @@ The API is designed to work seamlessly with either a MongoDB or PostgreSQL datab
 - **Asynchronous Processes**: Go routines management with built in processes for periodically health checking connectivity with the HTTP and gRPC servers.
 - **Testing**: Comprehensive unit tests with code coverage and integration tests for the happy path.
 - **Developer Experience**: Built-in Makefile, Swagger UI, gRPC UI, pgAdmin, and mongo-express.
-- **Lifecycle Management**: Multi-environment support with config files, Dockerfile and docker-compose, CI/CD pipelines with GitHub Actions, Kubernetes deployment and New Relic observability.
+- **Lifecycle Management**: Multi-environment support with config files, Dockerfile and docker-compose, CI/CD pipelines, Kubernetes deployment and New Relic observability.
 
 ## 🏁 Getting Started
 ### Run it with Docker
@@ -152,6 +152,16 @@ When prompted for the database user password, use the value of `POSTGRES_PASSWOR
 Open the mongo-express URL printed after running `make up`.
 <br />
 Log in with the username and password specified as `MONGO_EXPRESS_LOGIN_USERNAME`and `MONGO_EXPRESS_LOGIN_PASSWORD`in the [.env](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.env) file.
+
+## 📤 CI/CD
+The following GitHub Actions workflows are included for Continuous Integration and Continuous Deployment (CI/CD):
+* [ci.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/ci.yml): Runs on every push to the main branch. It executes unit tests and integration tests to ensure code quality and stability before deploying.
+* [cd.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/cd.yml): Triggered when a Git tag is pushed. It performs the following steps:
+  1. Runs all the tests to validate the codebase.
+  2. Validates and pushes protobuf schemas to the [Buf Schema Registry (BSR)](https://buf.build/sergicanet9/go-hexagonal-api-v1).
+  3. Builds and publishes the API Docker image to [GitHub Container Registry (GHCR)](https://github.com/sergicanet9/go-hexagonal-api/pkgs/container/go-hexagonal-api%2Fgo-hexagonal-api).
+  4. Deploys the application to Kubernetes using the appropriate secrets and configs.
+  5. Exposes the API to the internet through a tunnel.
 
 ## ☁️ Live Environment
 The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database, New Relic Go agent for APM and log forwarding, and a Cloudflare tunnel for public access through HTTP.<br/>
