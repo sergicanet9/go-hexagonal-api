@@ -158,8 +158,8 @@ The following GitHub Actions workflows are included for Continuous Integration a
 * [ci.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/ci.yml): Runs on every push to the main branch. It executes unit tests and integration tests to ensure code quality and stability before deploying.
 * [cd.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/cd.yml): Triggered when a Git tag is pushed. It performs the following steps:
   1. Runs all the tests to validate the codebase.
-  2. Validates and pushes protobuf schemas to the [Buf Schema Registry (BSR)](https://buf.build/sergicanet9/go-hexagonal-api-v1).
-  3. Builds and publishes the API Docker image to [GitHub Container Registry (GHCR)](https://github.com/sergicanet9/go-hexagonal-api/pkgs/container/go-hexagonal-api%2Fgo-hexagonal-api).
+  2. Builds, validates and pushes protobuf schemas to the [Buf Schema Registry (BSR)](https://buf.build/sergicanet9/go-hexagonal-api-v1).
+  3. Builds and publishes the API Docker image to the [GitHub Container Registry (GHCR)](https://github.com/sergicanet9/go-hexagonal-api/pkgs/container/go-hexagonal-api%2Fgo-hexagonal-api).
   4. Deploys the application to Kubernetes using the appropriate secrets and configs.
   5. Exposes the API to the internet through a tunnel.
 
