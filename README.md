@@ -18,7 +18,7 @@ The API is designed to work seamlessly with either a MongoDB or PostgreSQL datab
 - **Asynchronous Processes**: Go routines management with built in processes for periodically health checking connectivity with the HTTP and gRPC servers.
 - **Testing**: Comprehensive unit tests with code coverage and integration tests for the happy path.
 - **Developer Experience**: Built-in Makefile, Swagger UI, gRPC UI, pgAdmin, and mongo-express.
-- **Lifecycle Management**: Multi-environment support with config files, Dockerfile and docker-compose, CI/CD pipelines, Kubernetes deployment and New Relic observability.
+- **Lifecycle Management**: Multi-environment support with config files, Dockerfile and docker compose, CI/CD pipelines, Kubernetes deployment and New Relic observability.
 
 ## 🏁 Getting Started
 ### Run it with Docker

@@ -6,7 +6,7 @@ up:
 	rm -f mongo.keyfile
 	openssl rand -base64 24 > mongo.keyfile
 	chmod 400 mongo.keyfile
-	docker-compose up -d --build
+	docker compose up -d --build
 	@echo ""
 	@echo "🍃 Mongo API"
 	@echo "    👉 Swagger UI:    http://localhost:${HOST_HTTP_PORT_MONGOAPI}/v1/swagger/index.html"
@@ -25,7 +25,7 @@ up:
 	@echo "        grpcurl -plaintext localhost:${HOST_GRPC_PORT_POSTGRESAPI} health.HealthService/HealthCheck"
 	@echo ""
 down:
-	docker-compose down
+	docker compose down
 test-unit:
 	go test -race $(shell go list ./... | grep -v /test | grep -v /pb) -coverprofile=coverage.out
 cover:
