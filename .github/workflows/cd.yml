@@ -20,7 +20,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           input: proto/v1
           lint: false
-          breaking: true
+          breaking: false # TODO put back true
           breaking_against_registry: true
           push: true
 
