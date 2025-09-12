@@ -13,7 +13,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/newrelic/go-agent/v3 v3.40.1
 	github.com/ory/dockertest/v3 v3.9.1
-	github.com/sergicanet9/scv-go-tools/v4 v4.0.2
+	github.com/sergicanet9/scv-go-tools/v4 v4.1.1
 	github.com/stretchr/testify v1.11.0
 	github.com/swaggo/http-swagger v1.3.4
 	go.mongodb.org/mongo-driver v1.17.4
