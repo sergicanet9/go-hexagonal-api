@@ -8,8 +8,8 @@ on:
         required: true
         type: choice
         options:
-          - create
-          - delete
+          - create GKE cluster
+          - delete GKE cluster
 
 jobs:
   cluster:
@@ -22,14 +22,14 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Create cluster
-        if: ${{ github.event.inputs.action == 'create' }}
+        if: ${{ github.event.inputs.action == 'create GKE cluster' }}
         run: |
           gcloud container clusters create scv-gke-cluster \
             --zone us-east1-b \
             --num-nodes=1
 
       - name: Delete cluster
-        if: ${{ github.event.inputs.action == 'delete' }}
+        if: ${{ github.event.inputs.action == 'delete GKE cluster' }}
         run: |
           gcloud container clusters delete scv-gke-cluster \
             --zone us-east1-b --quiet
