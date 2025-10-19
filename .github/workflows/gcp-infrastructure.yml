@@ -1,0 +1,33 @@
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - create
+          - delete
+          
+jobs:
+  cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Create cluster
+        if: ${{ github.event.inputs.action == 'create' }}
+        run: |
+          gcloud container clusters create scv-gke-cluster \
+            --zone us-east1-b \
+            --num-nodes=1
+
+      - name: Delete cluster
+        if: ${{ github.event.inputs.action == 'delete' }}
+        run: |
+          gcloud container clusters delete scv-gke-cluster \
+            --zone us-east1-b --quiet
