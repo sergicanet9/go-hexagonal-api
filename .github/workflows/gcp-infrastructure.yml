@@ -1,3 +1,5 @@
+name: gcp-infrastructure
+
 on:
   workflow_dispatch:
     inputs:
@@ -8,7 +10,7 @@ on:
         options:
           - create
           - delete
-          
+
 jobs:
   cluster:
     runs-on: ubuntu-latest
