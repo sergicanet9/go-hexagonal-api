@@ -153,7 +153,7 @@ Open the mongo-express URL printed after running `make up`.
 <br />
 Log in with the username and password specified as `MONGO_EXPRESS_LOGIN_USERNAME`and `MONGO_EXPRESS_LOGIN_PASSWORD`in the [.env](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.env) file.
 
-## 📤 CI/CD
+## 📤 Github Actions
 The following GitHub Actions workflows are included for Continuous Integration and Continuous Deployment (CI/CD):
 * [ci.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/ci.yml): Runs on every push to the main branch. It executes unit tests and integration tests to ensure code quality and stability before deploying.
 * [cd.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/cd.yml): Triggered when a Git tag is pushed. It performs the following steps:
@@ -162,15 +162,19 @@ The following GitHub Actions workflows are included for Continuous Integration a
   3. Builds and publishes the API Docker image to the [GitHub Container Registry (GHCR)](https://github.com/sergicanet9/go-hexagonal-api/pkgs/container/go-hexagonal-api%2Fgo-hexagonal-api).
   4. Deploys the application to Kubernetes using the appropriate secrets and configs.
   5. Exposes the API to the internet through a tunnel.
+* [gcp-infrastructure.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/gcp-infrastructure.yml): Manually triggered. It allows creating and deleting the GKE cluster required for deploying the application.
 
 ## ☁️ Live Environment
-The API is deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database, New Relic Go agent for APM and log forwarding, and a Cloudflare tunnel for public access through HTTP.<br/>
+⚠️ **Cluster may be turned off:** To save costs, the cluster is usually deleted after use via the [gcp-infrastructure.yml](https://github.com/sergicanet9/go-hexagonal-api/blob/main/.github/workflows/gcp-infrastructure.yml) action.
+<br />
+<br />
+The API gets deployed on a Google Kubernetes Engine (GKE) cluster, using Mongo Atlas as database, New Relic Go agent for APM and log forwarding, and a Cloudflare tunnel for public access through HTTP.<br/>
 * Swagger UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/v1/swagger/index.html
 * gRPC UI: https://mongo-prod-go-hexagonal-api.sergicanet.com/v1/grpcui/
 <br />
 
 NOTES:
-- The gRPC UI is publically exposed through HTTP. However, direct gRPC calls (e.g., using `grpcurl`) are not allowed outside the cluster.
+- The gRPC UI gets publically exposed through HTTP. However, direct gRPC calls (e.g., using `grpcurl`) are not allowed outside the cluster.
 
 ## 📝 Other usage examples
 Check out [go-microservices-demo](https://github.com/sergicanet9/go-microservices-demo) to see this project used as a component in a microservices architecture.
