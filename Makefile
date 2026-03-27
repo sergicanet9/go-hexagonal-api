@@ -3,6 +3,7 @@ include .env
 .PHONY: test
 
 up:
+	go mod vendor
 	rm -f mongo.keyfile
 	openssl rand -base64 24 > mongo.keyfile
 	chmod 400 mongo.keyfile

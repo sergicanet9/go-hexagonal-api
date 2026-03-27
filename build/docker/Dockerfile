@@ -2,11 +2,9 @@ FROM golang:alpine AS builder
 
 WORKDIR /opt/go-hexagonal-api
 
-COPY go.mod go.sum ./
-RUN go mod download
 COPY . .
 
-RUN go build -o bin/main cmd/main.go
+RUN go build -mod=vendor -o bin/main cmd/main.go
 
 FROM alpine:latest
 
